@@ -1,8 +1,26 @@
 .App {
   display: flex;
   justify-content: center;
+  color: light-dark(var(--color-darkest), var(--color-lightest));
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  margin-top: 2rem;
+  line-height: 58px;
 }
 
 h1 {
-  color: light-dark(var(--color-darkest), var(--color-lightest));
+  margin: 0.3rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+h3 {
+  margin: 0.3rem;
+  line-height: 1.5rem;
+  font-weight: 100;
+  color: light-dark(var(--color-darker), var(--color-lighter));
 }
