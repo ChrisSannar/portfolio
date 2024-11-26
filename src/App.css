@@ -1,6 +1,9 @@
 .App {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  width: 100%;
+  height: 100%;
   color: light-dark(var(--color-darkest), var(--color-lightest));
 }
 
@@ -13,14 +16,16 @@
 }
 
 h1 {
-  margin: 0.3rem;
-  font-size: 2.5rem;
+  margin: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 3rem;
   font-weight: 700;
 }
 
 h3 {
   margin: 0.3rem;
-  line-height: 1.5rem;
+  line-height: 2rem;
+  font-size: 1.5rem;
   font-weight: 100;
-  color: light-dark(var(--color-darker), var(--color-lighter));
+  color: light-dark(var(--color-dark), var(--color-lightest-gray));
 }

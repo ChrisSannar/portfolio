@@ -1,0 +1,33 @@
+.PortfolioAppList {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    flex: 1;
+    height: 100%;
+    margin: 1.5rem;
+}
+
+.LeftLables {
+    flex: 1;
+    align-self: center;
+}
+
+.RightLables {
+    flex: 1;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.AppList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    /* justify-content: space-between; */
+    flex: 4;
+    max-width: 75%;
+    gap: 5rem;
+}

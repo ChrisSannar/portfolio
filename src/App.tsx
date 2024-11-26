@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import { PortfolioAppList } from './components/PortfolioAppList';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
         <h1>Hi, I&apos;m Chris</h1>
         <h3>Full Stack Software Engineer<br/>Networking Emphasis</h3>
       </div>
+      <PortfolioAppList />
     </div>
   );
 }
