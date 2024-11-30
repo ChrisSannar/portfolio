@@ -8,9 +8,26 @@
   --color-lightest-gray: #DEE2E6;
   --color-lighter: #E9ECEF;
   --color-lightest: #F8F9FA;
+  --portfolio-border-radius: 2px;
+
+  --ld-inactive: light-dark(var(--color-gray), var(--color-gray));
+  --ld-active: light-dark(var(--color-darker), var(--color-lighter));
+
   color-scheme: light dark;
   font-family: 'Inter', sans-serif;
   height: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --portfolio-border: 2px solid var(--color-lighter);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --portfolio-border: 2px solid var(--color-darker);
+  }
 }
 
 body {

@@ -31,3 +31,7 @@
     max-width: 75%;
     gap: 5rem;
 }
+
+.AppList > * {
+    margin-bottom: -2.5rem;
+}

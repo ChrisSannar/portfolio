@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { PortfolioAppList } from './components/PortfolioAppList';
+import { PortfolioFooter } from './components/PortfolioFooter';
 
 function App() {
   return (
@@ -10,6 +11,9 @@ function App() {
         <h3>Full Stack Software Engineer<br/>Networking Emphasis</h3>
       </div>
       <PortfolioAppList />
+      <div className="footer">
+        <PortfolioFooter />
+      </div>
     </div>
   );
 }

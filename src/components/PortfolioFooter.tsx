@@ -1,0 +1,45 @@
+import React from 'react';
+
+import './PortfolioFooter.css';
+import nightIcon from '../assets/night-icon.svg';
+import dayIcon from  '../assets/day-icon.svg';
+
+export const PortfolioFooter: React.FC = () => {
+
+    return (
+        <div className='PortfolioFooter'>
+            <div className='left'>
+                <h3>Contact</h3>
+                <div className="contactInfo">
+                    <p><a href="mailto:chris.sannar.dev@gmail.com">chris.sannar.dev@gmail.com</a></p>
+                    <p><a href="https://www.linkedin.com/in/christopher-sannar-8753ab9a/" target="_blank">LinkedIn</a></p>
+                </div>
+            </div>
+            <div className="center">
+                <h4>How did I make this?</h4>
+            </div>
+            <div className="right">
+                <div className="logic">
+                    <div className="and-or">
+                        <p className={`and`}>AND</p>
+                        <p className={`or logic-selected`}>OR</p>
+                        <div className="and-or-selector" style={{ transform: `translateX(100%)` }} />
+                    </div>
+                    <div className="not">
+                        <p className={`logic-selected`}>NOT</p>
+                        <div className='not-selector' />
+                    </div>
+                </div>
+                <div className="color-mode">
+                    <div className={`night logic-selected`}>
+                        <img src={nightIcon} alt="night-mode" />
+                    </div>
+                    <div className={`day`}>
+                        <img src={dayIcon} alt="day-mode" />
+                    </div>
+                    <div className="color-mode-selector" style={{ transform: `translateX(0)`}} />
+                </div>
+            </div>
+        </div>
+    );
+};
