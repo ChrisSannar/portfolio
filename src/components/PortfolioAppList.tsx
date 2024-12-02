@@ -28,7 +28,11 @@ export const PortfolioAppList: React.FC = () => {
       </div>
       <div className="AppList">
         <div className="PortfolioApps">
-          {apps.map(app => <PortfolioApp key={app.id} app={app} />)}
+          {apps.map(app => 
+            <div className="PortfolioAppWrapper">
+              <PortfolioApp key={app.id} app={app} />
+            </div>
+          )}
         </div>
       </div>
     </div>

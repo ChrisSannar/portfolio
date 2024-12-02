@@ -27,22 +27,31 @@ h4 {
 .center {
     position: absolute;
     left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 50%;
+    transform: translate(-50%, 50%);
     color: var(--ld-inactive);
 }
 
-.contactInfo {
+.contact-info {
     padding: 0.4rem 0.8rem;
     border: var(--portfolio-border);
     border-color: light-dark(var(--color-gray), var(--color-gray));
     border-radius: var(--portfolio-border-radius);
 }
 
+.contact-icons {
+    display: none;
+}
+
 a {
     color: light-dark(var(--color-gray), var(--color-gray));
     text-decoration: none;
     transition: 0.2s;
+}
+
+.this {
+    display: none;
+    font-weight: bold;
 }
 
 .logic, .color-mode {
@@ -96,6 +105,10 @@ a {
     width: 1.8rem;
 }
 
+.color-mode {
+    gap: 1.4rem;
+}
+
 .color-mode img {
     height: 1.1rem;
 }
@@ -104,11 +117,42 @@ a {
     width: 1.8rem;
 }
 
+@media (max-width: 1023px) {
+    .left, .right {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .left {
+        align-items: flex-start;
+    }
+
+    .right {
+        align-items: flex-end;
+        gap: 0.75rem;
+    }
+
+    .center {
+        bottom: 1.5rem;
+        transform: translate(-50%, -25%);
+    }
+
+    .logic {
+        flex-direction: column-reverse;
+        align-items: flex-end;
+        gap: 0.75rem;
+    }
+
+    .left h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+}
+
 /* Mobile Styles */
 @media (max-width: 768px) {
     .PortfolioFooter {
-        flex-direction: column;
-        margin: 1rem;
+        margin: 1rem 2rem;
         gap: 2rem;
     }
 
@@ -124,13 +168,29 @@ a {
         font-size: 1.5rem;
     }
 
-    .contactInfo {
-        width: 100%;
-        box-sizing: border-box;
+    .contact-info {
+        display: none;
     }
 
-    .contactInfo p {
-        margin: 0.25rem 0;
+    .contact-icons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .contact-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: light-dark(var(--color-lightest), var(--color-darkest));
+        width: 3rem;
+        height: 3rem;
+        border: var(--portfolio-border);
+        border-radius: 100%;
+    }
+
+    .this {
+        display: flex;
     }
 
     .center {
@@ -140,47 +200,16 @@ a {
     .right {
         width: 100%;
         justify-content: flex-end;
-        gap: 0.5rem;
+        gap: 0.75rem;
     }
 
     .logic {
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 426px) {
+    .contact-icons {
         gap: 0.5rem;
-    }
-
-    .and-or, .not, .color-mode {
-        padding: 0.3rem 0.4rem;
-    }
-
-    .and, .or {
-        width: 1.8rem;
-        height: 1.1rem;
-        font-size: 0.9rem;
-    }
-
-    .not {
-        width: 2.2rem;
-        font-size: 0.9rem;
-    }
-
-    .and-or-selector, .not-selector {
-        width: 2.2rem;
-        height: 1.2rem;
-    }
-
-    .not-selector {
-        width: 2.6rem;
-    }
-
-    .day, .night {
-        width: 1.6rem;
-    }
-
-    .color-mode img {
-        height: 1rem;
-    }
-
-    .color-mode-selector {
-        width: 1.6rem;
-        height: 1.2rem;
     }
 }
