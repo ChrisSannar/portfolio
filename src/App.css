@@ -32,7 +32,43 @@ h3 {
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
+  position: sticky;
   width: 100%;
+}
+
+@media (max-width: 1023px) {
+  .footer {
+    position: absolute;
+    bottom: 0;
+  }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .App {
+    justify-content: flex-start;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .header {
+    margin-top: 1.5rem;
+    line-height: normal;
+  }
+
+  .footer {
+    position: sticky;
+  }
+
+  h1 {
+    margin: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+  }
+
+  h3 {
+    margin: 0.2rem;
+    line-height: 1.6rem;
+    font-size: 1.2rem;
+  }
 }

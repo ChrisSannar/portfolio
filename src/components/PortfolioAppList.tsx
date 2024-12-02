@@ -8,23 +8,31 @@ export const PortfolioAppList: React.FC = () => {
 
   return (
     <div className='PortfolioAppList'>
-      <div className="LeftLables">
-        <div className='PortfolioLabel'>
-          <h3>Lorem</h3>
+      <div className="labels-container">
+        <div className="LeftLables">
+          <div className='PortfolioLabel'>
+            <h3>Lorem</h3>
+          </div>
+          <div className='PortfolioLabel'>
+            <h3>Ipsum</h3>
+          </div>
         </div>
-        <div className='PortfolioLabel'>
-          <h3>Ipsum</h3>
+        <div className="RightLables">
+          <div className='PortfolioLabel'>
+            <h3>Lorem Ipsum</h3>
+          </div>
+          <div className='PortfolioLabel'>
+            <h3>Ipsum Lorem</h3>
+          </div>
         </div>
       </div>
       <div className="AppList">
-        {apps.map(app => <PortfolioApp key={app.id} app={app} />)}
-      </div>
-      <div className="RightLables">
-      <div className='PortfolioLabel'>
-          <h3>Lorem</h3>
-        </div>
-        <div className='PortfolioLabel'>
-          <h3>Ipsum</h3>
+        <div className="PortfolioApps">
+          {apps.map(app => 
+            <div className="PortfolioAppWrapper">
+              <PortfolioApp key={app.id} app={app} />
+            </div>
+          )}
         </div>
       </div>
     </div>
