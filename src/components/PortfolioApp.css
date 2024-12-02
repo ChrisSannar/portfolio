@@ -1,0 +1,18 @@
+.PortfolioApp {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.appImg {
+    width: 6rem;
+    height: 6rem;
+    border: 2px solid var(--color-lighter);
+}
+
+h4 {
+    text-align: center;
+    margin: 0;
+    font-weight: 400;
+}

@@ -1,25 +1,19 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { PortfolioAppList } from './components/PortfolioAppList';
+import { PortfolioFooter } from './components/PortfolioFooter';
 
 function App() {
-  console.log('test')
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="header">
+        <h1>Hi, I&apos;m Chris</h1>
+        <h3>Full Stack Software Engineer<br/>Networking Emphasis</h3>
+      </div>
+      <PortfolioAppList />
+      <div className="footer">
+        <PortfolioFooter />
+      </div>
     </div>
   );
 }
