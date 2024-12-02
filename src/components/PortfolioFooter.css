@@ -40,7 +40,6 @@ h4 {
 }
 
 a {
-    /* color: light-dark(var(--color-darker), var(--color-lightest)); */
     color: light-dark(var(--color-gray), var(--color-gray));
     text-decoration: none;
     transition: 0.2s;
@@ -103,4 +102,85 @@ a {
 
 .color-mode-selector {
     width: 1.8rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .PortfolioFooter {
+        flex-direction: column;
+        margin: 1rem;
+        gap: 2rem;
+    }
+
+    .left {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .left h3 {
+        margin: 0;
+        font-size: 1.5rem;
+    }
+
+    .contactInfo {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .contactInfo p {
+        margin: 0.25rem 0;
+    }
+
+    .center {
+        display: none;
+    }
+
+    .right {
+        width: 100%;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    .logic {
+        gap: 0.5rem;
+    }
+
+    .and-or, .not, .color-mode {
+        padding: 0.3rem 0.4rem;
+    }
+
+    .and, .or {
+        width: 1.8rem;
+        height: 1.1rem;
+        font-size: 0.9rem;
+    }
+
+    .not {
+        width: 2.2rem;
+        font-size: 0.9rem;
+    }
+
+    .and-or-selector, .not-selector {
+        width: 2.2rem;
+        height: 1.2rem;
+    }
+
+    .not-selector {
+        width: 2.6rem;
+    }
+
+    .day, .night {
+        width: 1.6rem;
+    }
+
+    .color-mode img {
+        height: 1rem;
+    }
+
+    .color-mode-selector {
+        width: 1.6rem;
+        height: 1.2rem;
+    }
 }
