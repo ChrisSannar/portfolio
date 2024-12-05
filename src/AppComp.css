@@ -1,4 +1,4 @@
-.App {
+.AppComp {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -45,7 +45,7 @@ h3 {
 
 /* Mobile Styles */
 @media (max-width: 768px) {
-  .App {
+  .AppComp {
     justify-content: flex-start;
     height: auto;
     min-height: 100vh;

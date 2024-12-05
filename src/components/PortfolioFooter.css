@@ -63,10 +63,11 @@ a {
     position: relative;
     display: flex;
     align-items: center;
-    border: var(--portfolio-border);
     padding: 0.4rem 0.5rem;
     font-weight: 900;
     gap: 1rem;
+    border: var(--portfolio-border);
+    background-color: light-dark(var(--color-lighter), var(--color-darker));
 }
 
 .and, .or, .day, .night {
@@ -84,9 +85,10 @@ a {
     width: 2.5rem;
     height: 1.3rem;
     z-index: 1;
+    border: var(--portfolio-border);
     border-radius: 1px;
     transition: 0.2s;
-    background-color: light-dark(var(--color-darker), var(--color-lightest));
+    background-color: light-dark(var(--color-darker), var(--color-lighter));
 }
 
 .not-selector {
@@ -94,11 +96,12 @@ a {
 }
 
 .logic-selected {
-    color: light-dark(var(--color-lightest), var(--color-darkest));
+    color: light-dark(var(--color-lighter), var(--color-darker));
     z-index: 2;
 }
 
 .day, .night {
+    z-index: 2;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -170,6 +173,7 @@ a {
 
     .contact-info {
         display: none;
+        transition: 0.2s;
     }
 
     .contact-icons {
@@ -182,11 +186,12 @@ a {
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: light-dark(var(--color-lightest), var(--color-darkest));
+        background-color: var(--color-darker);
         width: 3rem;
         height: 3rem;
         border: var(--portfolio-border);
         border-radius: 100%;
+        transition: 0.2s;
     }
 
     .this {

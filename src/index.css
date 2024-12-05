@@ -9,6 +9,7 @@
   --color-lighter: #E9ECEF;
   --color-lightest: #F8F9FA;
   --portfolio-border-radius: 2px;
+  --portfolio-border: 2px solid light-dark(var(--color-darker), var(--color-lighter));
 
   --ld-inactive: light-dark(var(--color-gray), var(--color-gray));
   --ld-active: light-dark(var(--color-darker), var(--color-lighter));
@@ -18,13 +19,13 @@
   height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (color-scheme: dark) {
   :root {
     --portfolio-border: 2px solid var(--color-lighter);
   }
 }
 
-@media (prefers-color-scheme: light) {
+@media (color-scheme: light) {
   :root {
     --portfolio-border: 2px solid var(--color-darker);
   }
@@ -34,5 +35,5 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
-  background-color: light-dark(var(--color-lightest), var(--color-darkest));
+  background-color: light-dark(var(--color-lighter), var(--color-darker));
 }
