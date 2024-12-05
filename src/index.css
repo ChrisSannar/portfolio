@@ -14,7 +14,7 @@
   --ld-inactive: light-dark(var(--color-gray), var(--color-gray));
   --ld-active: light-dark(var(--color-darker), var(--color-lighter));
 
-  color-scheme: dark;
+  color-scheme: light dark;
   font-family: 'Inter', sans-serif;
   height: 100%;
 }

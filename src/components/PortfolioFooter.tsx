@@ -9,7 +9,7 @@ import figmaIcon from '../assets/figma-icon.svg';
 import { App } from '../data/App';
 
 export const PortfolioFooter: React.FC = () => {
-    // const app = App.getHotInstance().subscribe('PortfolioFooter');
+    const app = App.getHotInstance().subscribe('PortfolioFooter');
 
     return (
         <div className='PortfolioFooter'>
@@ -55,8 +55,7 @@ export const PortfolioFooter: React.FC = () => {
                         <div className='not-selector' />
                     </div>
                 </div>
-                {/* <div className="color-mode" onClick={() => App.toggleColorMode()}> */}
-                <div className="color-mode">
+                <div className="color-mode" onClick={() => App.toggleColorMode()}>
                     <div className={`night logic-selected`}>
                         <img src={nightIcon} alt="night-mode" />
                     </div>
