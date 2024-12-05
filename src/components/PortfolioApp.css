@@ -8,7 +8,7 @@
 .appImg {
     width: 6rem;
     height: 6rem;
-    border: 2px solid var(--color-lighter);
+    border: 2px solid var(--color-gray);
 }
 
 h4 {

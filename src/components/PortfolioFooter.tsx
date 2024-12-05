@@ -6,8 +6,10 @@ import dayIcon from  '../assets/day-icon.svg';
 import mailIcon from '../assets/mail-icon.svg';
 import linkedinIcon from '../assets/linkedin-icon.svg';
 import figmaIcon from '../assets/figma-icon.svg';
+import { App } from '../data/App';
 
 export const PortfolioFooter: React.FC = () => {
+    // const app = App.getHotInstance().subscribe('PortfolioFooter');
 
     return (
         <div className='PortfolioFooter'>
@@ -46,13 +48,14 @@ export const PortfolioFooter: React.FC = () => {
                     <div className="and-or">
                         <p className={`and`}>AND</p>
                         <p className={`or logic-selected`}>OR</p>
-                        <div className="and-or-selector" style={{ transform: `translateX(100%)` }} />
+                        <div className="and-or-selector" style={{ transform: `translateX(90%)` }} />
                     </div>
                     <div className="not">
                         <p className={`logic-selected`}>NOT</p>
                         <div className='not-selector' />
                     </div>
                 </div>
+                {/* <div className="color-mode" onClick={() => App.toggleColorMode()}> */}
                 <div className="color-mode">
                     <div className={`night logic-selected`}>
                         <img src={nightIcon} alt="night-mode" />
@@ -60,7 +63,7 @@ export const PortfolioFooter: React.FC = () => {
                     <div className={`day`}>
                         <img src={dayIcon} alt="day-mode" />
                     </div>
-                    <div className="color-mode-selector" style={{ transform: `translateX(0)`}} />
+                    <div className="color-mode-selector" style={{ transform: `translateX(0%)`}} />
                 </div>
             </div>
         </div>
