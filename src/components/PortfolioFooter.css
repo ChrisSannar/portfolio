@@ -173,6 +173,7 @@ a {
 
     .contact-info {
         display: none;
+        transition: 0.2s;
     }
 
     .contact-icons {
@@ -190,6 +191,7 @@ a {
         height: 3rem;
         border: var(--portfolio-border);
         border-radius: 100%;
+        transition: 0.2s;
     }
 
     .this {

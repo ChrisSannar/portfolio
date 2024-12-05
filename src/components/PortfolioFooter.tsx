@@ -6,10 +6,11 @@ import dayIcon from  '../assets/day-icon.svg';
 import mailIcon from '../assets/mail-icon.svg';
 import linkedinIcon from '../assets/linkedin-icon.svg';
 import figmaIcon from '../assets/figma-icon.svg';
-import { App } from '../data/App';
+import { App, ColorModeType } from '../data/App';
 
 export const PortfolioFooter: React.FC = () => {
     const app = App.getHotInstance().subscribe('PortfolioFooter');
+    const darkMode = app.ColorMode === ColorModeType.DARK;
 
     return (
         <div className='PortfolioFooter'>
@@ -62,7 +63,7 @@ export const PortfolioFooter: React.FC = () => {
                     <div className={`day`}>
                         <img src={dayIcon} alt="day-mode" />
                     </div>
-                    <div className="color-mode-selector" style={{ transform: `translateX(0%)`}} />
+                    <div className="color-mode-selector" style={{ transform: `translateX(${darkMode ? '0' : '150'}%)`}} />
                 </div>
             </div>
         </div>
