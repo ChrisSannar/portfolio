@@ -67,7 +67,7 @@ a {
     font-weight: 900;
     gap: 1rem;
     border: var(--portfolio-border);
-    background-color: light-dark(var(--color-lighter), var(--color-darker));
+    background-color: light-dark(var(--color-lighter), var(--color-darkest));
 }
 
 .and, .or, .day, .night {

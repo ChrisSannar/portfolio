@@ -35,5 +35,6 @@ body {
   width: 100%;
   height: 100%;
   margin: 0;
-  background-color: light-dark(var(--color-lighter), var(--color-darker));
+  background-color: light-dark(var(--color-lighter), var(--color-darkest));
+  transition: 0.2s;
 }
