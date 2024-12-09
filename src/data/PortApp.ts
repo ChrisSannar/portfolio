@@ -9,7 +9,7 @@ export class PortApp {
 
     static getAllApps(): PortApp[] {
         return [
-            new PortApp('ASDF'),
+            new PortApp('ASDFASDF ASDF ASDFASDFASDF'),
             new PortApp('ASDF2'),
             new PortApp('QWER'),
             new PortApp('QWER2'),

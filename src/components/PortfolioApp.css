@@ -4,6 +4,7 @@
     justify-content: center;
     gap: 1rem;
     transition: 0.2s;
+    max-width: 6rem;
 }
 
 .appImg {
@@ -16,4 +17,9 @@ h4 {
     text-align: center;
     margin: 0;
     font-weight: 400;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

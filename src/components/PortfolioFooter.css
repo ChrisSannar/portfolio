@@ -84,7 +84,7 @@ a {
     position: absolute;
     width: 2.5rem;
     height: 1.3rem;
-    z-index: 1;
+    z-index: 2;
     border: var(--portfolio-border);
     border-radius: 1px;
     transition: 0.2s;
@@ -97,11 +97,11 @@ a {
 
 .logic-selected {
     color: light-dark(var(--color-lighter), var(--color-darker));
-    z-index: 2;
+    z-index: 3;
 }
 
 .day, .night {
-    z-index: 2;
+    z-index: 3;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -109,7 +109,7 @@ a {
 }
 
 .color-mode {
-    gap: 1.4rem;
+    padding: 0.4rem 0.3rem;
 }
 
 .color-mode img {
