@@ -15,8 +15,11 @@ export const PortfolioAppList: React.FC = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const onPortfolioAppClick = (appId: string, index: number) => {
+    if (appIndexOpen === index) {
+      setAppIndexOpen(-1);
+      return;
+    }
     setAppIndexOpen(index);
-    console.log(`Displaying app with id: ${appId} at index: ${index}`);
   }
 
   const indexInRange = (index: number, appIndexOpen: number, itemsPerRow: number) => {
@@ -91,6 +94,9 @@ export const PortfolioAppList: React.FC = () => {
                 app={app} 
                 onClick={appId => onPortfolioAppClick(appId, index)}
               />
+              {index === appIndexOpen && (<div>
+                <p>Content: {app.Title}</p>
+              </div>)}
             </div>
           )}
         </div>

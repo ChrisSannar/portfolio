@@ -27,6 +27,10 @@
     pointer-events: auto;
 }
 
+.LeftLables::-webkit-scrollbar, .RightLables::-webkit-scrollbar {
+    display: none;
+}
+
 .LeftLables {
     align-items: flex-start;
 }
@@ -64,9 +68,7 @@
     z-index: 1;
 }
 /* 
-.AppList::-webkit-scrollbar {
-    display: none;
-} */
+ */
 
 .PortfolioApps {
     display: grid;
