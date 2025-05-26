@@ -72,6 +72,7 @@
 
 .PortfolioApps {
     display: grid;
+    position: relative;
     grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
     grid-gap: 4rem;
     width: 60%;
@@ -82,6 +83,15 @@
     flex-direction: column;
     align-items: center;
     overflow: visible;
+}
+
+.PortfolioAppContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    border: var(--portfolio-border);
+    transition: 0.2s;
 }
 
 @media (max-width: 1023px) {

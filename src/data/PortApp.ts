@@ -16,11 +16,11 @@ export class PortApp {
             new PortApp('ZXCV'),
             new PortApp('ZXCV2'),
             new PortApp('ZXCV3'),
-            new PortApp('ZXCV3'),
-            new PortApp('ZXCV3'),
-            new PortApp('ZXCV3'),
-            new PortApp('ZXCV3'),
-            new PortApp('ZXCV3'),
+            new PortApp('ZXCV4'),
+            new PortApp('ZXCV5'),
+            new PortApp('ZXCV6'),
+            new PortApp('ZXCV7'),
+            new PortApp('ZXCV8'),
         ];
     }
 }

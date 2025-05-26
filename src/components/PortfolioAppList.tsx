@@ -7,18 +7,25 @@ import { remToPx } from '../data/util';
 const PORTFOLIO_APP_HEIGHT_REM = 10;
 const PORTFOLIO_APP_WIDTH_REM = 6;
 const PORTFOLIO_APP_GRID_GAP_REM = 3;
+const PORTFOLIO_APP_CONTENT_HEIGHT_REM = 20;
+const STYLE_TRANSITION_TIME = 0.2;
 
 export const PortfolioAppList: React.FC = () => {
   const [apps] = React.useState(PortApp.getAllApps());
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
   const [itemsPerRow, setItemsPerRow] = React.useState(0);
-  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [, rerender] = React.useState(0);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const currentRef = React.useRef<HTMLDivElement | null>(null);
+  const openAppRef = React.useRef<HTMLDivElement | null>(null);
 
-  const onPortfolioAppClick = (appId: string, index: number) => {
+  const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
     if (appIndexOpen === index) {
       setAppIndexOpen(-1);
       return;
     }
+    currentRef.current = e.currentTarget as HTMLDivElement;
+    
     setAppIndexOpen(index);
   }
 
@@ -76,29 +83,59 @@ export const PortfolioAppList: React.FC = () => {
           className="PortfolioApps" 
           style={{ 
             gridGap: `${PORTFOLIO_APP_GRID_GAP_REM}rem`,
+            position: 'relative',
           }}
           ref={containerRef}
         >
-          {apps.map((app, index) => 
-            <div 
+          {apps.map((app, index) => {
+            const appOpen = appIndexOpen === index;
+            const currentRect = currentRef.current?.getBoundingClientRect();
+            const containerRect = containerRef.current?.getBoundingClientRect();
+            // const topPosition = currentRect && containerRect ? 
+            //   (currentRect.top + remToPx(PORTFOLIO_APP_HEIGHT_REM, document)) - containerRect.top + remToPx(1, document) : 0;
+            const topPosition = currentRef.current ? 
+              currentRef.current.offsetTop +  // The top of the app
+              remToPx(PORTFOLIO_APP_HEIGHT_REM, document)  // The height of the app
+              : 0;
+
+            if (appOpen) {
+              console.log(app.Title);
+              console.log(currentRef.current, containerRef.current, openAppRef.current);
+              console.log(currentRect?.top, containerRect?.top, currentRef.current?.scrollTop);
+            }
+            return <div 
               className="PortfolioAppWrapper" 
               key={app.id} 
               style={{
                 maxWidth: `${PORTFOLIO_APP_WIDTH_REM}rem`,
                 height: `${PORTFOLIO_APP_HEIGHT_REM}rem`,
-                marginBottom: indexInRange(index, appIndexOpen, itemsPerRow) ? `10rem` : `0`,
+                marginBottom: indexInRange(index, appIndexOpen, itemsPerRow) ? `${PORTFOLIO_APP_CONTENT_HEIGHT_REM}rem` : `0`,
               }}
+              ref={appOpen ? currentRef : null}
             >
               <PortfolioApp 
                 key={app.id} 
                 app={app} 
-                onClick={appId => onPortfolioAppClick(appId, index)}
+                onClick={e => onPortfolioAppClick(e, app.id, index)}
               />
-              {index === appIndexOpen && (<div>
-                <p>Content: {app.Title}</p>
-              </div>)}
+              {appOpen && 
+                (<div 
+                  className="PortfolioAppContent"
+                  style={{
+                    position: 'absolute',
+                    top: `${topPosition}px`,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    pointerEvents: 'none',
+                  }}
+                  ref={ref => openAppRef.current = ref ?? null}
+                >
+                  {app.Title}
+                </div>)
+              }
             </div>
-          )}
+          })}
         </div>
       </div>
       {labels}

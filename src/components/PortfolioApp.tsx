@@ -4,11 +4,11 @@ import { PortApp } from '../data/PortApp';
 
 interface IPortfolioAppProps {
     app : PortApp;
-    onClick?: (id: string) => void;
+    onClick?: (e: React.MouseEvent) => void;
 }
 export const PortfolioApp: React.FC<IPortfolioAppProps> = ({ app, onClick }) => {
     return (
-        <div className='PortfolioApp' onClick={() => onClick?.(app.id)}>
+        <div className='PortfolioApp' onClick={onClick}>
             <div className='appImg'>
 
             </div>
