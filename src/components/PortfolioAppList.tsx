@@ -7,8 +7,8 @@ import { remToPx } from '../data/util';
 const PORTFOLIO_APP_HEIGHT_REM = 10;
 const PORTFOLIO_APP_WIDTH_REM = 6;
 const PORTFOLIO_APP_GRID_GAP_REM = 3;
-const PORTFOLIO_APP_CONTENT_HEIGHT_REM = 20;
-const STYLE_TRANSITION_TIME = 0.2;
+const PORTFOLIO_APP_CONTENT_HEIGHT_REM = 24;
+// const STYLE_TRANSITION_TIME = 0.2;
 
 export const PortfolioAppList: React.FC = () => {
   const [apps] = React.useState(PortApp.getAllApps());
@@ -34,12 +34,12 @@ export const PortfolioAppList: React.FC = () => {
       return false;
     }
 
-    const rowStart = Math.floor(appIndexOpen / itemsPerRow) * itemsPerRow;
+    const rowStart = Math.floor(appIndexOpen / (itemsPerRow || 1)) * itemsPerRow;
     const rowEnd = rowStart + itemsPerRow;
     return index >= rowStart && index < rowEnd;
   }
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const calculateItemsPerRow = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.clientWidth + remToPx(PORTFOLIO_APP_GRID_GAP_REM, document);
@@ -56,6 +56,12 @@ export const PortfolioAppList: React.FC = () => {
       window.removeEventListener('resize', calculateItemsPerRow);
     };
   }, []);
+
+  React.useEffect(() => {
+    rerender(n => n + 1);
+    if (openAppRef?.current)
+      openAppRef.current = null;
+  }, [openAppRef?.current]);
 
   const labels = <div className="labels-container">
     <div className="LeftLables">
@@ -91,18 +97,11 @@ export const PortfolioAppList: React.FC = () => {
             const appOpen = appIndexOpen === index;
             const currentRect = currentRef.current?.getBoundingClientRect();
             const containerRect = containerRef.current?.getBoundingClientRect();
-            // const topPosition = currentRect && containerRect ? 
-            //   (currentRect.top + remToPx(PORTFOLIO_APP_HEIGHT_REM, document)) - containerRect.top + remToPx(1, document) : 0;
             const topPosition = currentRef.current ? 
               currentRef.current.offsetTop +  // The top of the app
               remToPx(PORTFOLIO_APP_HEIGHT_REM, document)  // The height of the app
               : 0;
 
-            if (appOpen) {
-              console.log(app.Title);
-              console.log(currentRef.current, containerRef.current, openAppRef.current);
-              console.log(currentRect?.top, containerRect?.top, currentRef.current?.scrollTop);
-            }
             return <div 
               className="PortfolioAppWrapper" 
               key={app.id} 
@@ -123,13 +122,15 @@ export const PortfolioAppList: React.FC = () => {
                   className="PortfolioAppContent"
                   style={{
                     position: 'absolute',
-                    top: `${topPosition}px`,
+                    top: `${topPosition + remToPx(0.5, document)}px`,
                     left: 0,
                     width: '100%',
                     height: '100%',
                     pointerEvents: 'none',
                   }}
-                  ref={ref => openAppRef.current = ref ?? null}
+                  ref={ref => {
+                    openAppRef.current = ref ?? null
+                  }}
                 >
                   {app.Title}
                 </div>)
