@@ -63,7 +63,7 @@ export const PortfolioFooter: React.FC = () => {
                     <div className={`day`}>
                         <img src={dayIcon} alt="day-mode" />
                     </div>
-                    <div className="color-mode-selector" style={{ transform: `translateX(${darkMode ? '0' : '150'}%)`}} />
+                    <div className="color-mode-selector" style={{ transform: `translateX(${darkMode ? '0' : '129'}%)`}} />
                 </div>
             </div>
         </div>
