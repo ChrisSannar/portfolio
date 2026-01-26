@@ -64,7 +64,7 @@ export const PortfolioAppList: React.FC = () => {
   }, [openAppRef?.current]);
 
   const labels = <div className="labels-container">
-    <div className="LeftLables">
+    <div className="LeftLabels">
       <div className='PortfolioLabel'>
         <h3>Lorem</h3>
       </div>
@@ -72,7 +72,7 @@ export const PortfolioAppList: React.FC = () => {
         <h3>Ipsum</h3>
       </div>
     </div>
-    <div className="RightLables">
+    <div className="RightLabels">
       <div className='PortfolioLabel'>
         <h3>Lorem Ipsum</h3>
       </div>
@@ -122,10 +122,11 @@ export const PortfolioAppList: React.FC = () => {
                   className="PortfolioAppContent"
                   style={{
                     position: 'absolute',
-                    top: `${topPosition + remToPx(0.5, document)}px`,
+                    top: `${topPosition + remToPx(1, document)}px`,
                     left: 0,
                     width: '100%',
                     height: '100%',
+                    maxHeight: `${PORTFOLIO_APP_CONTENT_HEIGHT_REM}rem`,
                     pointerEvents: 'none',
                   }}
                   ref={ref => {

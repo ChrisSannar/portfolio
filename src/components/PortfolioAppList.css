@@ -17,7 +17,7 @@
     pointer-events: none;
 }
 
-.LeftLables, .RightLables {
+.LeftLabels, .RightLabels {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -27,19 +27,19 @@
     pointer-events: auto;
 }
 
-.LeftLables::-webkit-scrollbar, .RightLables::-webkit-scrollbar {
+.LeftLabels::-webkit-scrollbar, .RightLabels::-webkit-scrollbar {
     display: none;
 }
 
-.LeftLables {
+.LeftLabels {
     align-items: flex-start;
 }
 
-.RightLables {
+.RightLabels {
     align-items: flex-end;
 }
 
-.RightLables h3 { text-align: right; }
+.RightLabels h3 { text-align: right; }
 
 .PortfolioLabel {
     display: flex;
@@ -76,6 +76,8 @@
     grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
     grid-gap: 4rem;
     width: 60%;
+    place-items: center;
+    margin: 0 auto;
 }
 
 .PortfolioAppWrapper {
@@ -116,7 +118,7 @@
         margin: auto;
     }
 
-    .LeftLables, .RightLables {
+    .LeftLabels, .RightLabels {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;

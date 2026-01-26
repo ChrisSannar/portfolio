@@ -38,3 +38,15 @@ body {
   background-color: light-dark(var(--color-lighter), var(--color-darkest));
   transition: 0.2s;
 }
+
+/* keep scrolling but hide scrollbars */
+html, body, .PortfolioAppList, .AppList {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.PortfolioAppList::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
