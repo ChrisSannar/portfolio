@@ -126,9 +126,41 @@ export const PortfolioAppList: React.FC = () => {
     };
   }, []);
 
+  const svgRef = React.useRef<SVGSVGElement | null>(null);
+
+  const drawLine = (fromEl: HTMLElement | null, toEl: HTMLElement | null) => {
+    if (!svgRef.current || fromEl === null || toEl === null) return;
+
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = toEl.getBoundingClientRect();
+    const containerRect = containerRef.current?.getBoundingClientRect();
+
+    if (!containerRect) return;
+
+    // Calculate positions relative to container
+    const x1 = fromRect.left - containerRect.left + fromRect.width / 2;
+    const y1 = fromRect.top - containerRect.top + fromRect.height;
+    const x2 = toRect.left - containerRect.left + toRect.width / 2;
+    const y2 = toRect.top - containerRect.top;
+
+    // Clear previous lines
+    svgRef.current.innerHTML = '';
+
+    // Draw new line
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1.toString());
+    line.setAttribute('y1', y1.toString());
+    line.setAttribute('x2', x2.toString());
+    line.setAttribute('y2', y2.toString());
+    line.setAttribute('stroke', '#ffffff');
+    line.setAttribute('stroke-width', '2');
+
+    svgRef.current.appendChild(line);
+  };
+
   const labels = <div className="labels-container">
     <div className="LeftLabels">
-      <div className='PortfolioLabel'>
+      <div className='PortfolioLabel' onClick={(ev) => drawLine(ev.currentTarget, currentRef.current)}>
         <h3>Lorem</h3>
       </div>
       <div className='PortfolioLabel'>
@@ -148,6 +180,18 @@ export const PortfolioAppList: React.FC = () => {
   return (
     <div className='PortfolioAppList'>
       <div className="AppList">
+        <svg
+          ref={svgRef}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: 10,
+          }}
+        />
         <div 
           className="PortfolioApps" 
           style={{ 
