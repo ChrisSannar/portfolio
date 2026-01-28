@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './PortfolioAppList.css';
 import { PortApp } from '../data/PortApp';
 import { PortfolioApp } from './PortfolioApp';
@@ -18,8 +18,11 @@ export const PortfolioAppList: React.FC = () => {
   const [itemsPerRow, setItemsPerRow] = React.useState(0);
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
+
+  const portfolioAppListRef = React.useRef<HTMLDivElement | null>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const currentRef = React.useRef<HTMLDivElement | null>(null);
+  const appRefsMap = React.useRef<Map<string, HTMLDivElement>>(new Map());
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -128,39 +131,56 @@ export const PortfolioAppList: React.FC = () => {
 
   const svgRef = React.useRef<SVGSVGElement | null>(null);
 
-  const drawLine = (fromEl: HTMLElement | null, toEl: HTMLElement | null) => {
+  const drawLine = (
+    fromEl: HTMLElement | null, 
+    toEl: HTMLElement | null,
+    otherElements: HTMLElement[] = [],
+    leftSide: boolean = true
+  ) => {
     if (!svgRef.current || fromEl === null || toEl === null) return;
 
     const fromRect = fromEl.getBoundingClientRect();
     const toRect = toEl.getBoundingClientRect();
-    const containerRect = containerRef.current?.getBoundingClientRect();
+    const portfolioAppLisRect = portfolioAppListRef.current?.getBoundingClientRect();
 
-    if (!containerRect) return;
+    if (!portfolioAppLisRect) return;
 
     // Calculate positions relative to container
-    const x1 = fromRect.left - containerRect.left + fromRect.width / 2;
-    const y1 = fromRect.top - containerRect.top + fromRect.height;
-    const x2 = toRect.left - containerRect.left + toRect.width / 2;
-    const y2 = toRect.top - containerRect.top;
+    const x1 = fromRect.right - portfolioAppLisRect.left;
+    const y1 = (fromRect.top + fromRect.height / 2) - portfolioAppLisRect.top;
+    const x2 = toRect.left - portfolioAppLisRect.left;
+    const y2 = (toRect.top + toRect.height / 2) - portfolioAppLisRect.top;
+    // const x1 = 0;
+    // const y1 = 0;
+    // const x2 = 110;
+    // const y2 = 110;
 
     // Clear previous lines
     svgRef.current.innerHTML = '';
 
     // Draw new line
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1.toString());
-    line.setAttribute('y1', y1.toString());
-    line.setAttribute('x2', x2.toString());
-    line.setAttribute('y2', y2.toString());
+    // line.setAttribute('x1', x1.toString());
+    // line.setAttribute('y1', y1.toString());
+    // line.setAttribute('x2', x2.toString());
+    // line.setAttribute('y2', y2.toString());
     line.setAttribute('stroke', '#ffffff');
     line.setAttribute('stroke-width', '2');
+    
+    const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    newPath.setAttribute('d', `M ${x1} ${y1} ${x2} ${y2}`);
+    newPath.setAttribute('stroke', '#ffffff');
+    newPath.setAttribute('fill', 'transparent');
+    newPath.setAttribute('stroke-width', '2');
 
-    svgRef.current.appendChild(line);
+    svgRef.current.appendChild(newPath);
+    
+    // svgRef.current.appendChild(line);
   };
 
   const labels = <div className="labels-container">
     <div className="LeftLabels">
-      <div className='PortfolioLabel' onClick={(ev) => drawLine(ev.currentTarget, currentRef.current)}>
+      <div className='PortfolioLabel' onMouseEnter={(ev) => drawLine(ev.currentTarget, appRefsMap.current.get(apps[0].id) || null)}>
         <h3>Lorem</h3>
       </div>
       <div className='PortfolioLabel'>
@@ -178,20 +198,20 @@ export const PortfolioAppList: React.FC = () => {
   </div>
 
   return (
-    <div className='PortfolioAppList'>
+    <div className='PortfolioAppList' ref={ref => portfolioAppListRef.current = ref}>
+      <svg
+        ref={svgRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 10,
+        }}
+      />
       <div className="AppList">
-        <svg
-          ref={svgRef}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            pointerEvents: 'none',
-            zIndex: 10,
-          }}
-        />
         <div 
           className="PortfolioApps" 
           style={{ 
@@ -215,7 +235,16 @@ export const PortfolioAppList: React.FC = () => {
                 height: `${PORTFOLIO_APP_HEIGHT_REM}rem`,
                 marginBottom: indexInRange(index, appIndexOpen, itemsPerRow) ? `${PORTFOLIO_APP_CONTENT_HEIGHT_REM}rem` : `0`,
               }}
-              ref={appOpen ? currentRef : null}
+              ref={ref => {
+                if (ref) {
+                  if (appOpen) {
+                    currentRef.current = ref;
+                  }
+                  appRefsMap.current.set(app.id, ref);
+                } else {
+                  appRefsMap.current.delete(app.id);
+                }
+              }}
             >
               <PortfolioApp 
                 key={app.id} 
