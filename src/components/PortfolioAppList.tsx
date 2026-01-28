@@ -12,6 +12,12 @@ const ANIMATION_DURATION_MS = 300;
 const CONTENT_RENDER_DELAY_MS = ANIMATION_DURATION_MS + 10;
 const CONTENT_FADE_DURATION_MS = 200;
 
+type LabelRef = { 
+  el: HTMLDivElement, 
+  side: "left" | "right", 
+  active?: boolean 
+}
+
 export const PortfolioAppList: React.FC = () => {
   const [apps] = React.useState(PortApp.getAllApps());
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
@@ -20,10 +26,10 @@ export const PortfolioAppList: React.FC = () => {
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
 
   const portfolioAppListRef = React.useRef<HTMLDivElement | null>(null);
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const portfolioAppsRef = React.useRef<HTMLDivElement | null>(null);
   const currentRef = React.useRef<HTMLDivElement | null>(null);
   const appRefsMap = React.useRef<Map<string, HTMLDivElement>>(new Map());
-  const lableRefsMap = React.useRef<Map<string, HTMLDivElement>>(new Map());
+  const lableRefsMap = React.useRef<Map<string, LabelRef>>(new Map());
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -112,8 +118,8 @@ export const PortfolioAppList: React.FC = () => {
   React.useLayoutEffect(() => {
     const windowResizeCalculations = () => {
       // Calculate items per row based on container width
-      if (containerRef.current) {
-        const containerWidth = containerRef.current.clientWidth + remToPx(PORTFOLIO_APP_GRID_GAP_REM, document);
+      if (portfolioAppsRef.current) {
+        const containerWidth = portfolioAppsRef.current.clientWidth + remToPx(PORTFOLIO_APP_GRID_GAP_REM, document);
         const itemWidth = remToPx(PORTFOLIO_APP_WIDTH_REM, document) + (remToPx(PORTFOLIO_APP_GRID_GAP_REM, document));
         const newItemsPerRow = Math.floor(containerWidth / itemWidth);
         setItemsPerRow(newItemsPerRow);
@@ -137,9 +143,17 @@ export const PortfolioAppList: React.FC = () => {
   const svgRef = React.useRef<SVGSVGElement | null>(null);
 
   const drawAllLines = () => {
+    // No lines for smaller sizes
+    if (window.innerWidth < 768) {
+      if (svgRef.current) {
+        svgRef.current.innerHTML = '';
+      }
+      return;
+    }
+
     const labelRef = lableRefsMap.current.get('label1');
-    if (labelRef) {
-      drawLine(labelRef, appRefsMap.current.get(apps[0].id) || null)
+    if (labelRef?.el) {
+      drawLine(labelRef.el, appRefsMap.current.get(apps[0].id) || null)
     }
   }
 
@@ -153,21 +167,24 @@ export const PortfolioAppList: React.FC = () => {
 
     const fromRect = fromEl.getBoundingClientRect();
     const toRect = toEl.getBoundingClientRect();
-    const portfolioAppLisRect = portfolioAppListRef.current?.getBoundingClientRect();
+    const outerPortfolioAppLisRect = portfolioAppListRef.current?.getBoundingClientRect();
+    const innerPortfolioAppsRect = portfolioAppsRef.current?.getBoundingClientRect();
 
-    if (!portfolioAppLisRect) return;
+    if (!outerPortfolioAppLisRect) return;
 
     // Calculate positions relative to container
-    const x1 = fromRect.right - portfolioAppLisRect.left;
-    const y1 = (fromRect.top + fromRect.height / 2) - portfolioAppLisRect.top;
-    const x2 = toRect.left - portfolioAppLisRect.left;
-    const y2 = (toRect.top + toRect.height / 2) - portfolioAppLisRect.top;
+    // The magic numbers at the end are specific paddings for aesthetics
+    const xStart = fromRect.right - outerPortfolioAppLisRect.left + 10;
+    const px1 = (innerPortfolioAppsRect?.left ?? 0) - 60;
+    const yStart = (fromRect.top + fromRect.height / 2) - outerPortfolioAppLisRect.top;
+    const xEnd = toRect.left - outerPortfolioAppLisRect.left;
+    const yEnd = (toRect.top + toRect.height / 2) - outerPortfolioAppLisRect.top;
 
     // Clear previous lines
     svgRef.current.innerHTML = '';
     
     const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    newPath.setAttribute('d', `M ${x1} ${y1} ${x2} ${y2}`);
+    newPath.setAttribute('d', `M ${xStart} ${yStart} L ${px1 - 10} ${yStart} L ${px1} ${yStart - 10} L ${px1} ${yEnd + 10} L ${px1 + 10} ${yEnd} L ${xEnd} ${yEnd}`);
     newPath.setAttribute('stroke', '#ffffff');
     newPath.setAttribute('fill', 'transparent');
     newPath.setAttribute('stroke-width', '2');
@@ -177,10 +194,10 @@ export const PortfolioAppList: React.FC = () => {
 
   const labels = <div className="labels-container">
     <div className="LeftLabels">
-      <div className='PortfolioLabel' ref={ref => lableRefsMap.current.set('label1', ref!)}>
+      <div className='PortfolioLabel' ref={ref => lableRefsMap.current.set('label1', { el: ref!, side: "left" })}>
         <h3>Lorem</h3>
       </div>
-      <div className='PortfolioLabel'>
+      <div className='PortfolioLabel' ref={ref => lableRefsMap.current.set('label2', { el: ref!, side: "left" })}>
         <h3>Ipsum</h3>
       </div>
     </div>
@@ -195,7 +212,10 @@ export const PortfolioAppList: React.FC = () => {
   </div>
 
   return (
-    <div className='PortfolioAppList' ref={ref => portfolioAppListRef.current = ref}>
+    <div 
+      className='PortfolioAppList' 
+      ref={ref => portfolioAppListRef.current = ref}
+    >
       <svg
         ref={svgRef}
         style={{
@@ -208,14 +228,17 @@ export const PortfolioAppList: React.FC = () => {
           zIndex: 10,
         }}
       />
-      <div className="AppList">
+      <div 
+        className="AppList"
+        onScroll={() => drawAllLines()}
+      >
         <div 
           className="PortfolioApps" 
           style={{ 
             gridGap: `${PORTFOLIO_APP_GRID_GAP_REM}rem`,
             position: 'relative',
           }}
-          ref={containerRef}
+          ref={portfolioAppsRef}
         >
           {apps.map((app, index) => {
             const appOpen = appIndexOpen === index;
