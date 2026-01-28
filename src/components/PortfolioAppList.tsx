@@ -23,6 +23,7 @@ export const PortfolioAppList: React.FC = () => {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const currentRef = React.useRef<HTMLDivElement | null>(null);
   const appRefsMap = React.useRef<Map<string, HTMLDivElement>>(new Map());
+  const lableRefsMap = React.useRef<Map<string, HTMLDivElement>>(new Map());
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -109,7 +110,8 @@ export const PortfolioAppList: React.FC = () => {
   }
 
   React.useLayoutEffect(() => {
-    const calculateItemsPerRow = () => {
+    const windowResizeCalculations = () => {
+      // Calculate items per row based on container width
       if (containerRef.current) {
         const containerWidth = containerRef.current.clientWidth + remToPx(PORTFOLIO_APP_GRID_GAP_REM, document);
         const itemWidth = remToPx(PORTFOLIO_APP_WIDTH_REM, document) + (remToPx(PORTFOLIO_APP_GRID_GAP_REM, document));
@@ -119,17 +121,27 @@ export const PortfolioAppList: React.FC = () => {
         setContentIndexToRender(-1);
         setContentFadedIn(false);
       }
+
+      // Redraw lines
+      drawAllLines();
     };
 
-    calculateItemsPerRow();
-    window.addEventListener('resize', calculateItemsPerRow);
+    windowResizeCalculations();
+    window.addEventListener('resize', windowResizeCalculations);
 
     return () => {
-      window.removeEventListener('resize', calculateItemsPerRow);
+      window.removeEventListener('resize', windowResizeCalculations);
     };
   }, []);
 
   const svgRef = React.useRef<SVGSVGElement | null>(null);
+
+  const drawAllLines = () => {
+    const labelRef = lableRefsMap.current.get('label1');
+    if (labelRef) {
+      drawLine(labelRef, appRefsMap.current.get(apps[0].id) || null)
+    }
+  }
 
   const drawLine = (
     fromEl: HTMLElement | null, 
@@ -150,22 +162,9 @@ export const PortfolioAppList: React.FC = () => {
     const y1 = (fromRect.top + fromRect.height / 2) - portfolioAppLisRect.top;
     const x2 = toRect.left - portfolioAppLisRect.left;
     const y2 = (toRect.top + toRect.height / 2) - portfolioAppLisRect.top;
-    // const x1 = 0;
-    // const y1 = 0;
-    // const x2 = 110;
-    // const y2 = 110;
 
     // Clear previous lines
     svgRef.current.innerHTML = '';
-
-    // Draw new line
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    // line.setAttribute('x1', x1.toString());
-    // line.setAttribute('y1', y1.toString());
-    // line.setAttribute('x2', x2.toString());
-    // line.setAttribute('y2', y2.toString());
-    line.setAttribute('stroke', '#ffffff');
-    line.setAttribute('stroke-width', '2');
     
     const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     newPath.setAttribute('d', `M ${x1} ${y1} ${x2} ${y2}`);
@@ -174,13 +173,11 @@ export const PortfolioAppList: React.FC = () => {
     newPath.setAttribute('stroke-width', '2');
 
     svgRef.current.appendChild(newPath);
-    
-    // svgRef.current.appendChild(line);
   };
 
   const labels = <div className="labels-container">
     <div className="LeftLabels">
-      <div className='PortfolioLabel' onMouseEnter={(ev) => drawLine(ev.currentTarget, appRefsMap.current.get(apps[0].id) || null)}>
+      <div className='PortfolioLabel' ref={ref => lableRefsMap.current.set('label1', ref!)}>
         <h3>Lorem</h3>
       </div>
       <div className='PortfolioLabel'>
