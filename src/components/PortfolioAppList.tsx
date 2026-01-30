@@ -12,7 +12,7 @@ const ANIMATION_DURATION_MS = 300;
 const CONTENT_RENDER_DELAY_MS = ANIMATION_DURATION_MS + 10;
 const CONTENT_FADE_DURATION_MS = 200;
 
-type LabelRef = { 
+type TechLabelRef = { 
   el: HTMLDivElement, 
   side: "left" | "right", 
   active?: boolean 
@@ -29,11 +29,12 @@ export const PortfolioAppList: React.FC = () => {
   const portfolioAppsRef = React.useRef<HTMLDivElement | null>(null);
   const currentRef = React.useRef<HTMLDivElement | null>(null);
   const appRefsMap = React.useRef<Map<string, HTMLDivElement>>(new Map());
-  const lableRefsMap = React.useRef<Map<string, LabelRef>>(new Map());
+  const techLabelRefsMap = React.useRef<Map<string, TechLabelRef>>(new Map());
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
+    
     // Closing the currently open app
     if (appIndexOpen === index) {
       // Fade out content first
@@ -55,7 +56,7 @@ export const PortfolioAppList: React.FC = () => {
     
     // Switching to a different app
     if (appIndexOpen !== -1) {
-      // Fade out current content first
+      // Fade out current content first and remove lines
       setContentFadedIn(false);
       
       if (fadeTimeoutRef.current) {
@@ -140,20 +141,44 @@ export const PortfolioAppList: React.FC = () => {
     };
   }, []);
 
+  const getConnectionsBetweenLabelsAndApps = () => {
+    
+  }
+
+  // ## Drawing Lines
   const svgRef = React.useRef<SVGSVGElement | null>(null);
+  React.useEffect(() => {
+    if (appIndexOpen === -1) {
+
+      // Timeout ensures content is "settled" before drawing lines
+      const time = setTimeout(() => {
+        drawAllLines();
+        clearTimeout(time);
+      }, CONTENT_RENDER_DELAY_MS + 10);
+    } else {
+      removeLines();
+    }
+  }, [appIndexOpen]);
+
+  const removeLines = () => {
+    if (svgRef.current) {
+      svgRef.current.innerHTML = '';
+    }
+  }
 
   const drawAllLines = () => {
-    // No lines for smaller sizes
+    // No lines for smaller sizes or when context window is open
     if (window.innerWidth < 768) {
-      if (svgRef.current) {
-        svgRef.current.innerHTML = '';
-      }
+      removeLines();
       return;
     }
 
-    const labelRef = lableRefsMap.current.get('label1');
-    if (labelRef?.el) {
-      drawLine(labelRef.el, appRefsMap.current.get(apps[0].id) || null)
+    const techLabelRef = techLabelRefsMap.current.get('label1');
+    if (techLabelRef?.el) {
+      drawLine(techLabelRef.el, appRefsMap.current.get(apps[0].id) || null)
+      drawLine(techLabelRef.el, appRefsMap.current.get(apps[1].id) || null)
+      drawLine(techLabelRef.el, appRefsMap.current.get(apps[4].id) || null)
+      drawLine(techLabelRef.el, appRefsMap.current.get(apps[5].id) || null)
     }
   }
 
@@ -192,20 +217,20 @@ export const PortfolioAppList: React.FC = () => {
     svgRef.current.appendChild(newPath);
   };
 
-  const labels = <div className="labels-container">
-    <div className="LeftLabels">
-      <div className='PortfolioLabel' ref={ref => lableRefsMap.current.set('label1', { el: ref!, side: "left" })}>
+  const createTechLabels = () => <div className="labels-container">
+    <div className="LeftTechLabels">
+      <div className='PortfolioTechLabel' ref={ref => techLabelRefsMap.current.set('label1', { el: ref!, side: "left" })}>
         <h3>Lorem</h3>
       </div>
-      <div className='PortfolioLabel' ref={ref => lableRefsMap.current.set('label2', { el: ref!, side: "left" })}>
+      <div className='PortfolioTechLabel' ref={ref => techLabelRefsMap.current.set('label2', { el: ref!, side: "left" })}>
         <h3>Ipsum</h3>
       </div>
     </div>
-    <div className="RightLabels">
-      <div className='PortfolioLabel'>
+    <div className="RightTechLabels">
+      <div className='PortfolioTechLabel' ref={ref => techLabelRefsMap.current.set('label3', { el: ref!, side: "right" })}>
         <h3>Lorem Ipsum</h3>
       </div>
-      <div className='PortfolioLabel'>
+      <div className='PortfolioTechLabel' ref={ref => techLabelRefsMap.current.set('label4', { el: ref!, side: "right" })}>
         <h3>Ipsum Lorem</h3>
       </div>
     </div>
@@ -279,7 +304,7 @@ export const PortfolioAppList: React.FC = () => {
                       position: 'absolute',
                       top: `${topPosition + remToPx(1, document)}px`,
                       left: 0,
-                      width: '100%',
+                      width: '99%', // at `100%` it clips off the page in some cases
                       height: '100%',
                       maxHeight: `${PORTFOLIO_APP_CONTENT_HEIGHT_REM}rem`,
                       pointerEvents: 'none',
@@ -295,7 +320,7 @@ export const PortfolioAppList: React.FC = () => {
           })}
         </div>
       </div>
-      {labels}
+      {createTechLabels()}
     </div>
   );
 };
