@@ -1,6 +1,6 @@
 import React from 'react';
 import './PortfolioAppList.css';
-import { PortApp } from '../data/PortApp';
+import { PortApp, PortSkill } from '../data/PortApp';
 import { PortfolioApp } from './PortfolioApp';
 import { remToPx } from '../data/util';
 
@@ -19,7 +19,7 @@ type TechLabelRef = {
 }
 
 export const PortfolioAppList: React.FC = () => {
-  const [apps] = React.useState(PortApp.getAllApps());
+  const [apps] = React.useState(PortApp.getAllApps(PortSkill.getAllSkills()));
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
   const [itemsPerRow, setItemsPerRow] = React.useState(0);
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
@@ -141,10 +141,6 @@ export const PortfolioAppList: React.FC = () => {
     };
   }, []);
 
-  const getConnectionsBetweenLabelsAndApps = () => {
-    
-  }
-
   // ## Drawing Lines
   const svgRef = React.useRef<SVGSVGElement | null>(null);
   React.useEffect(() => {
@@ -176,9 +172,9 @@ export const PortfolioAppList: React.FC = () => {
     const techLabelRef = techLabelRefsMap.current.get('label1');
     if (techLabelRef?.el) {
       drawLine(techLabelRef.el, appRefsMap.current.get(apps[0].id) || null)
-      drawLine(techLabelRef.el, appRefsMap.current.get(apps[1].id) || null)
-      drawLine(techLabelRef.el, appRefsMap.current.get(apps[4].id) || null)
-      drawLine(techLabelRef.el, appRefsMap.current.get(apps[5].id) || null)
+      // drawLine(techLabelRef.el, appRefsMap.current.get(apps[1].id) || null)
+      // drawLine(techLabelRef.el, appRefsMap.current.get(apps[4].id) || null)
+      // drawLine(techLabelRef.el, appRefsMap.current.get(apps[5].id) || null)
     }
   }
 
@@ -217,24 +213,49 @@ export const PortfolioAppList: React.FC = () => {
     svgRef.current.appendChild(newPath);
   };
 
-  const createTechLabels = () => <div className="labels-container">
-    <div className="LeftTechLabels">
-      <div className='PortfolioTechLabel' ref={ref => techLabelRefsMap.current.set('label1', { el: ref!, side: "left" })}>
-        <h3>Lorem</h3>
+  const skillsToAppIdMap: Map<string, Set<string>> = React.useMemo(() => {
+    const mappers: Map<string, Set<string>> = new Map();
+    
+    apps.forEach(app => {
+      app.Skills.forEach(skill => {
+        if (!mappers.has(skill.Title)) {
+          mappers.set(skill.Title, new Set());
+        }
+        mappers.get(skill.Title)?.add(app.Title);
+      })
+    });
+    return mappers;
+  }, [apps]);
+  const createTechLabels = () => {
+    const leftLabels = Array.from(skillsToAppIdMap.entries()).filter(([skill, appIds], index) => index % 2 === 0);
+    const rightLabels = Array.from(skillsToAppIdMap.entries()).filter(([skill, appIds], index) => index % 2 !== 0);
+    return (
+      <div className="labels-container">
+        <div className="LeftTechLabels">
+          {leftLabels.map(([skill, appIds], index) => (
+            <div
+              className='PortfolioTechLabel'
+              key={skill}
+              ref={ref => techLabelRefsMap.current.set(`label${index + 1}`, { el: ref!, side: "left" })}
+            >
+              <h3>{skill}</h3>
+            </div>
+          ))}
+        </div>
+        <div className="RightTechLabels">
+          {rightLabels.map(([skill, appIds], index) => (
+            <div
+              className='PortfolioTechLabel'
+              key={skill}
+              ref={ref => techLabelRefsMap.current.set(`label${index + 1 + leftLabels.length}`, { el: ref!, side: "right" })}
+            >
+              <h3>{skill}</h3>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className='PortfolioTechLabel' ref={ref => techLabelRefsMap.current.set('label2', { el: ref!, side: "left" })}>
-        <h3>Ipsum</h3>
-      </div>
-    </div>
-    <div className="RightTechLabels">
-      <div className='PortfolioTechLabel' ref={ref => techLabelRefsMap.current.set('label3', { el: ref!, side: "right" })}>
-        <h3>Lorem Ipsum</h3>
-      </div>
-      <div className='PortfolioTechLabel' ref={ref => techLabelRefsMap.current.set('label4', { el: ref!, side: "right" })}>
-        <h3>Ipsum Lorem</h3>
-      </div>
-    </div>
-  </div>
+    )
+  }
 
   return (
     <div 

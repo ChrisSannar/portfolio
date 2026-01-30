@@ -2,27 +2,27 @@
 
 A portfolio website for yours truly. With a sleek design and a simplistic style, it's everything I'll need (until I probably change it later). Houses some of the apps I've built as well as a few of my credentials.
 
-### Design
+## Design
 Single page app
  * Option to change between light and dark mode (load in dark)
+    - Light/Dark mode for lines
  * A list of all the apps/projects I’ve worked on
-    - Hovering over puts the app in an focused state
-    - Clicking on an “app” shows more info about it + puts in focused state
-    - Title, tech, desc, and a short gif of it functioning
-    - Credentials can be an “app” as well (CS Degree)
+    - Hovering over puts the app in an "focused" state (highlight lines)
+    - Clicking on an “app” shows more info about it
+    - Title, tech/skills, desc, and a short gif of it functioning
+    - Credentials can be an “app” as well (CS Degree, Work Experience)
  * Skills on the left/right side of the apps
-    - When a skill is hovered, a line is animated to the app/project related. The related project is focused.
-    - Each skill can be toggled to keep it active.
+    - When a tech/skill is hovered, a line "Focused" to the app/project related. The related project is "highlighted".
+    - Each tech/skill can be toggled to keep it active.
     - Have an AND/OR/NOT toggle for Selection
  * Contact info can be selected in a similar way: Hover over/click animates a line to show the info.
     - Show/clickable email, github, linkedin, Resume
- * Light/Dark mode toggle
  * A “How did I build this Portfolio?” option that when hovered lights up the selected technologies and when clicked takes you to the figma
  * Extras/Easter Eggs?
     - Konami Code
     - ctrl + ` : Opens terminal at the bottom
 
-### Tech
+## Tech
 KISS: Keep it stupidly simple
  * Front-End:
     - React/Typescript
@@ -32,7 +32,13 @@ KISS: Keep it stupidly simple
     - Consider sending calls to capture data of what people are clicking on
  * Deployed: Heroku? AWS? GCP?
 
-### Apps
+## Apps
+ * Education
+    - CSS Degree
+ * 2U
+    - React, Tutoring, etc.
+ * CompTIA
+    - Tech: React, Networking, etc.
  * Experience
     - Education
     - CompTIA
@@ -40,14 +46,14 @@ KISS: Keep it stupidly simple
     - Elite Roofing
  * I’ll need to update each of my projects…
     - Code Cardio
-    - Code Explainer
+    - Code Explainer?
     - Dwcb
  * Potential apps
     - Color Clicker
     - Male style fashion app
     - buildagame.dev
-    - compiler 
+    - compiler
     - This website (Show the design process)
 
-### Links
+## Links
  * https://www.figma.com/design/EZDHetesbURTQLlJsXgfSc/Portfolio-Website?node-id=0-1&t=XACGI4nkQ2WXfUZP-1
