@@ -170,7 +170,12 @@ export const PortfolioAppList: React.FC = () => {
 
   const removeLines = () => {
     if (lineContainerRef.current) {
-      lineContainerRef.current.innerHTML = '';
+      lineContainerRef.current.style.opacity = '0';
+      setTimeout(() => {
+        if (lineContainerRef.current) {
+          lineContainerRef.current.innerHTML = '';
+        }
+      }, 0);
     }
   }
 
@@ -186,20 +191,18 @@ export const PortfolioAppList: React.FC = () => {
       return { fromEl, toEl, leftSide: techLabelRefsMap.current?.get(skillId)?.side === "left"};
     });
 
-    // TEMPORARY: DRAW ONLY FIRST LINE
-    // if (lineContainerRef.current.childNodes.length >= 1) return;
-    // const line = allLines[2];
-    // const drawnLine = drawLine(line.fromEl, line.toEl, [], line.leftSide);
-    // if (drawnLine) {
-    //   lineContainerRef.current.appendChild(drawnLine);
-    // }
-
-    for (const line of allLines) {
-      const drawnLine = drawLine(line.fromEl, line.toEl, [], line.leftSide);
-      if (drawnLine) {
-        lineContainerRef.current.appendChild(drawnLine);
+    // Fade in the lines after appending
+    setTimeout(() => {
+      if (lineContainerRef.current && appIndexOpen === -1) {
+        lineContainerRef.current.style.opacity = '1';
+        for (const line of allLines) {
+          const drawnLine = drawLine(line.fromEl, line.toEl, [], line.leftSide);
+          if (drawnLine) {
+            lineContainerRef.current.appendChild(drawnLine);
+          }
+        }
       }
-    }
+    }, 0);
   }
 
   const drawLine = (
@@ -217,15 +220,9 @@ export const PortfolioAppList: React.FC = () => {
 
     if (!outerPortfolioAppListRect || !innerPortfolioAppsRect) return null;
 
-    // console.log('*'.repeat(10));
-
-    // console.log(fromEl.dataset.labelId, '->', toEl.dataset.appName);
-
     const getPathDirections = (): SVGPathDirection[] => {
       const directions: SVGPathDirection[] = [];
       const { appRowIndex, appColumnIndex } = getAppIndexCoords(toEl.dataset.appId || '');
-
-      // console.log('appRowIndex', appRowIndex, 'appColumnIndex', appColumnIndex);
 
       const pathFromTheLeft = () => {
         
@@ -402,7 +399,7 @@ export const PortfolioAppList: React.FC = () => {
       ref={ref => portfolioAppListRef.current = ref}
     >
       <div
-        className="line-container"
+        className="LineContainer"
         ref={lineContainerRef}
         style={{
           position: 'absolute',
@@ -412,6 +409,8 @@ export const PortfolioAppList: React.FC = () => {
           height: '100%',
           pointerEvents: 'none',
           zIndex: 10,
+          opacity: 1,
+          transition: `opacity 300ms ease-in-out`,
         }}
       />
       <div 
