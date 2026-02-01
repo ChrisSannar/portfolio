@@ -188,7 +188,7 @@ export const PortfolioAppList: React.FC = () => {
 
     // TEMPORARY: DRAW ONLY FIRST LINE
     // if (lineContainerRef.current.childNodes.length >= 1) return;
-    // const line = allLines[3];
+    // const line = allLines[2];
     // const drawnLine = drawLine(line.fromEl, line.toEl, [], line.leftSide);
     // if (drawnLine) {
     //   lineContainerRef.current.appendChild(drawnLine);
@@ -217,15 +217,15 @@ export const PortfolioAppList: React.FC = () => {
 
     if (!outerPortfolioAppListRect || !innerPortfolioAppsRect) return null;
 
-    console.log('*'.repeat(10));
+    // console.log('*'.repeat(10));
 
-    console.log(fromEl.dataset.labelId, '->', toEl.dataset.appName);
+    // console.log(fromEl.dataset.labelId, '->', toEl.dataset.appName);
 
     const getPathDirections = (): SVGPathDirection[] => {
       const directions: SVGPathDirection[] = [];
       const { appRowIndex, appColumnIndex } = getAppIndexCoords(toEl.dataset.appId || '');
 
-      console.log('appRowIndex', appRowIndex, 'appColumnIndex', appColumnIndex);
+      // console.log('appRowIndex', appRowIndex, 'appColumnIndex', appColumnIndex);
 
       const pathFromTheLeft = () => {
         
@@ -237,10 +237,26 @@ export const PortfolioAppList: React.FC = () => {
         // Move HORIZONTALLY to the left edge of the container
         xCurrent = (innerPortfolioAppsRect?.left ?? 0) - 30;
         directions.push({ xNext: xCurrent, yNext: yCurrent });
+
+        if (appColumnIndex > 0) {
+          // Move VERTICALLY to the gap between rows of the target app
+          if (appRowIndex >= 2) {
+            // If the app is in a lower row, go above it
+            yCurrent = (toRect.top - 28) - outerPortfolioAppListRect.top;
+          } else {
+            // Else go below it
+            yCurrent = (toRect.bottom + 20) - outerPortfolioAppListRect.top;
+          }
+          directions.push({ xNext: xCurrent, yNext: yCurrent });
+          // Move HORIZONTALLY to align with the column of the target
+          xCurrent = toRect.left - 20 - outerPortfolioAppListRect.left;
+          directions.push({ xNext: xCurrent, yNext: yCurrent });
+        }
         // Move VERTICALLY to align with the target
         yCurrent = (toRect.top + toRect.height / 2) - 20 - outerPortfolioAppListRect.top;
         directions.push({ xNext: xCurrent, yNext: yCurrent });
-        // Move HORIZONTALLY to the target
+        
+        // Move HORIZONTALLY to connect to the target
         xCurrent = toRect.left - outerPortfolioAppListRect.left;
         directions.push({ xNext: xCurrent, yNext: yCurrent });
 
@@ -255,11 +271,26 @@ export const PortfolioAppList: React.FC = () => {
         // Move HORIZONTALLY to the right edge of the container
         xCurrent = (innerPortfolioAppsRect?.right ?? 0) + 10 - outerPortfolioAppListRect.left;
         directions.push({ xNext: xCurrent, yNext: yCurrent });
+        
+        if (appColumnIndex !== itemsPerRow.current - 1) {
+          // Move VERTICALLY to the gap between rows of the target app
+          if (appRowIndex >= 2) {
+            // If the app is in a lower row, go above it
+            yCurrent = (toRect.top - 28) - outerPortfolioAppListRect.top;
+          } else {
+            // Else go below it
+            yCurrent = (toRect.bottom + 20) - outerPortfolioAppListRect.top;
+          }
+          directions.push({ xNext: xCurrent, yNext: yCurrent });
+          // Move HORIZONTALLY to align with the column of the target
+          xCurrent = toRect.right + 20 - outerPortfolioAppListRect.left;
+          directions.push({ xNext: xCurrent, yNext: yCurrent });
+        }
         // Move VERTICALLY to align with the target
         yCurrent = (toRect.top + toRect.height / 2) - 20 - outerPortfolioAppListRect.top;
         directions.push({ xNext: xCurrent, yNext: yCurrent });
         // Move HORIZONTALLY to the target
-        xCurrent = toRect.right - outerPortfolioAppListRect.left;
+        xCurrent = toRect.right - outerPortfolioAppListRect.left + 5;
         directions.push({ xNext: xCurrent, yNext: yCurrent });
 
         return directions;
