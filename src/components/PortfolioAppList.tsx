@@ -3,6 +3,7 @@ import './PortfolioAppList.css';
 import { PortApp, PortSkill } from '../data/PortApp';
 import { PortfolioApp } from './PortfolioApp';
 import { remToPx } from '../data/util';
+import { TupleType } from 'typescript';
 
 const PORTFOLIO_APP_HEIGHT_REM = 10;
 const PORTFOLIO_APP_WIDTH_REM = 6;
@@ -142,7 +143,8 @@ export const PortfolioAppList: React.FC = () => {
   }, []);
 
   // ## Drawing Lines
-  const svgRef = React.useRef<SVGSVGElement | null>(null);
+  // const svgRef = React.useRef<SVGSVGElement | null>(null);
+  const lineContainerRef = React.useRef<HTMLDivElement | null>(null);
   React.useEffect(() => {
     if (appIndexOpen === -1) {
 
@@ -157,25 +159,48 @@ export const PortfolioAppList: React.FC = () => {
   }, [appIndexOpen]);
 
   const removeLines = () => {
-    if (svgRef.current) {
-      svgRef.current.innerHTML = '';
+    if (lineContainerRef.current) {
+      lineContainerRef.current.innerHTML = '';
     }
   }
 
-  const drawAllLines = () => {
+  const drawAllLines = (): void => {
     // No lines for smaller sizes or when context window is open
-    if (window.innerWidth < 768) {
-      removeLines();
+    removeLines();
+    if (window.innerWidth < 768 || lineContainerRef.current === null) {
       return;
     }
+    const allLines = allConnections_IdToId.map(([appId, skillId]) => {
+      const fromEl = getLabelElFromId(skillId);
+      const toEl = getAppElFromId(appId);
+      return { fromEl, toEl, leftSide: techLabelRefsMap.current?.get(skillId)?.side === "left"};
+    });
 
-    const techLabelRef = techLabelRefsMap.current.get('label1');
-    if (techLabelRef?.el) {
-      drawLine(techLabelRef.el, appRefsMap.current.get(apps[0].id) || null)
-      // drawLine(techLabelRef.el, appRefsMap.current.get(apps[1].id) || null)
-      // drawLine(techLabelRef.el, appRefsMap.current.get(apps[4].id) || null)
-      // drawLine(techLabelRef.el, appRefsMap.current.get(apps[5].id) || null)
+    // TEMPORARY: DRAW ONLY FIRST LINE
+    // if (lineContainerRef.current.childNodes.length >= 1) return;
+    // const line = allLines[0];
+    // const drawnLine = drawLine(line.fromEl, line.toEl, [], line.leftSide);
+    // if (drawnLine) {
+    //   lineContainerRef.current.appendChild(drawnLine);
+    // }
+
+    for (const line of allLines) {
+      if (!line.leftSide) continue;
+      const drawnLine = drawLine(line.fromEl, line.toEl, [], line.leftSide);
+      if (drawnLine) {
+        lineContainerRef.current.appendChild(drawnLine);
+      }
     }
+
+
+    // const techLabelRef = techLabelRefsMap.current.get('label1');
+    // if (techLabelRef?.el) {
+    //   const line = drawLine(techLabelRef.el, appRefsMap.current.get(apps[0].id) || null)
+    //   // drawLine(techLabelRef.el, appRefsMap.current.get(apps[1].id) || null)
+    //   // drawLine(techLabelRef.el, appRefsMap.current.get(apps[4].id) || null)
+    //   // drawLine(techLabelRef.el, appRefsMap.current.get(apps[5].id) || null)
+      
+    // }
   }
 
   const drawLine = (
@@ -183,15 +208,15 @@ export const PortfolioAppList: React.FC = () => {
     toEl: HTMLElement | null,
     otherElements: HTMLElement[] = [],
     leftSide: boolean = true
-  ) => {
-    if (!svgRef.current || fromEl === null || toEl === null) return;
+  ): SVGSVGElement | null => {
+    if (fromEl === null || toEl === null) return null;
 
     const fromRect = fromEl.getBoundingClientRect();
     const toRect = toEl.getBoundingClientRect();
     const outerPortfolioAppLisRect = portfolioAppListRef.current?.getBoundingClientRect();
     const innerPortfolioAppsRect = portfolioAppsRef.current?.getBoundingClientRect();
 
-    if (!outerPortfolioAppLisRect) return;
+    if (!outerPortfolioAppLisRect) return null;
 
     // Calculate positions relative to container
     // The magic numbers at the end are specific paddings for aesthetics
@@ -201,18 +226,30 @@ export const PortfolioAppList: React.FC = () => {
     const xEnd = toRect.left - outerPortfolioAppLisRect.left;
     const yEnd = (toRect.top + toRect.height / 2) - outerPortfolioAppLisRect.top;
 
-    // Clear previous lines
-    svgRef.current.innerHTML = '';
-    
+    const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgEl.setAttribute('width', '100%');
+    svgEl.setAttribute('height', '100%');
+    svgEl.style.position = 'absolute';
+    svgEl.style.top = '0';
+    svgEl.style.left = '0';
+
     const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     newPath.setAttribute('d', `M ${xStart} ${yStart} L ${px1 - 10} ${yStart} L ${px1} ${yStart - 10} L ${px1} ${yEnd + 10} L ${px1 + 10} ${yEnd} L ${xEnd} ${yEnd}`);
+    // newPath.setAttribute('d', `M ${xStart} ${yStart} L ${xEnd} ${yEnd}`);
     newPath.setAttribute('stroke', '#ffffff');
     newPath.setAttribute('fill', 'transparent');
     newPath.setAttribute('stroke-width', '2');
 
-    svgRef.current.appendChild(newPath);
+    svgEl.appendChild(newPath);
+    return svgEl;
   };
 
+  const getAppElFromId = (id: string): HTMLElement | null => {
+    return appRefsMap.current.get(id) || null;
+  }
+  const getLabelElFromId = (id: string): HTMLElement | null => {
+    return techLabelRefsMap.current.get(id)?.el || null;
+  }
   const skillsToAppIdMap: Map<string, Set<string>> = React.useMemo(() => {
     const mappers: Map<string, Set<string>> = new Map();
     
@@ -226,28 +263,38 @@ export const PortfolioAppList: React.FC = () => {
     });
     return mappers;
   }, [apps]);
+  const allConnections_IdToId: [string, string][] = React.useMemo(() => {
+    const tuples: [string, string][] = [];
+
+    apps.forEach(app => {
+      app.Skills.forEach(skill => {
+        tuples.push([app.id, skill.Title]);
+      })
+    });
+    return tuples;
+  }, []);
   const createTechLabels = () => {
     const leftLabels = Array.from(skillsToAppIdMap.entries()).filter(([skill, appIds], index) => index % 2 === 0);
     const rightLabels = Array.from(skillsToAppIdMap.entries()).filter(([skill, appIds], index) => index % 2 !== 0);
     return (
       <div className="labels-container">
         <div className="LeftTechLabels">
-          {leftLabels.map(([skill, appIds], index) => (
+          {leftLabels.map(([skill, labelId], index) => (
             <div
               className='PortfolioTechLabel'
               key={skill}
-              ref={ref => techLabelRefsMap.current.set(`label${index + 1}`, { el: ref!, side: "left" })}
+              ref={ref => techLabelRefsMap.current.set(skill, { el: ref!, side: "left" })}
             >
               <h3>{skill}</h3>
             </div>
           ))}
         </div>
         <div className="RightTechLabels">
-          {rightLabels.map(([skill, appIds], index) => (
+          {rightLabels.map(([skill, labelId], index) => (
             <div
               className='PortfolioTechLabel'
               key={skill}
-              ref={ref => techLabelRefsMap.current.set(`label${index + 1 + leftLabels.length}`, { el: ref!, side: "right" })}
+              ref={ref => techLabelRefsMap.current.set(skill, { el: ref!, side: "right" })}
             >
               <h3>{skill}</h3>
             </div>
@@ -262,8 +309,9 @@ export const PortfolioAppList: React.FC = () => {
       className='PortfolioAppList' 
       ref={ref => portfolioAppListRef.current = ref}
     >
-      <svg
-        ref={svgRef}
+      <div
+        className="line-container"
+        ref={lineContainerRef}
         style={{
           position: 'absolute',
           top: 0,
@@ -274,6 +322,18 @@ export const PortfolioAppList: React.FC = () => {
           zIndex: 10,
         }}
       />
+      {/* <svg
+        // ref={svgRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 10,
+        }}
+      /> */}
       <div 
         className="AppList"
         onScroll={() => drawAllLines()}
