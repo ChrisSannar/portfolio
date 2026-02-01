@@ -3,7 +3,6 @@ import './PortfolioAppList.css';
 import { PortApp, PortSkill } from '../data/PortApp';
 import { PortfolioApp } from './PortfolioApp';
 import { remToPx } from '../data/util';
-import { TupleType } from 'typescript';
 
 const PORTFOLIO_APP_HEIGHT_REM = 10;
 const PORTFOLIO_APP_WIDTH_REM = 6;
@@ -19,10 +18,15 @@ type TechLabelRef = {
   active?: boolean 
 }
 
+type SVGPathDirection = { 
+  xNext: number, 
+  yNext: number,
+}
+
 export const PortfolioAppList: React.FC = () => {
   const [apps] = React.useState(PortApp.getAllApps(PortSkill.getAllSkills()));
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
-  const [itemsPerRow, setItemsPerRow] = React.useState(0);
+  const itemsPerRow = React.useRef<number>(-1);
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
 
@@ -124,7 +128,7 @@ export const PortfolioAppList: React.FC = () => {
         const containerWidth = portfolioAppsRef.current.clientWidth + remToPx(PORTFOLIO_APP_GRID_GAP_REM, document);
         const itemWidth = remToPx(PORTFOLIO_APP_WIDTH_REM, document) + (remToPx(PORTFOLIO_APP_GRID_GAP_REM, document));
         const newItemsPerRow = Math.floor(containerWidth / itemWidth);
-        setItemsPerRow(newItemsPerRow);
+        itemsPerRow.current = newItemsPerRow;
         setAppIndexOpen(-1);
         setContentIndexToRender(-1);
         setContentFadedIn(false);
@@ -143,7 +147,6 @@ export const PortfolioAppList: React.FC = () => {
   }, []);
 
   // ## Drawing Lines
-  // const svgRef = React.useRef<SVGSVGElement | null>(null);
   const lineContainerRef = React.useRef<HTMLDivElement | null>(null);
   React.useEffect(() => {
     if (appIndexOpen === -1) {
@@ -157,6 +160,13 @@ export const PortfolioAppList: React.FC = () => {
       removeLines();
     }
   }, [appIndexOpen]);
+
+  const getAppIndexCoords = (appId: string) => {
+    const appIndex = apps.findIndex(a => a.id === appId);
+    const appRowIndex = Math.floor(appIndex / (itemsPerRow.current || 1));
+    const appColumnIndex = appIndex % (itemsPerRow.current || 1);
+    return { appRowIndex, appColumnIndex };
+  }
 
   const removeLines = () => {
     if (lineContainerRef.current) {
@@ -178,29 +188,18 @@ export const PortfolioAppList: React.FC = () => {
 
     // TEMPORARY: DRAW ONLY FIRST LINE
     // if (lineContainerRef.current.childNodes.length >= 1) return;
-    // const line = allLines[0];
+    // const line = allLines[3];
     // const drawnLine = drawLine(line.fromEl, line.toEl, [], line.leftSide);
     // if (drawnLine) {
     //   lineContainerRef.current.appendChild(drawnLine);
     // }
 
     for (const line of allLines) {
-      if (!line.leftSide) continue;
       const drawnLine = drawLine(line.fromEl, line.toEl, [], line.leftSide);
       if (drawnLine) {
         lineContainerRef.current.appendChild(drawnLine);
       }
     }
-
-
-    // const techLabelRef = techLabelRefsMap.current.get('label1');
-    // if (techLabelRef?.el) {
-    //   const line = drawLine(techLabelRef.el, appRefsMap.current.get(apps[0].id) || null)
-    //   // drawLine(techLabelRef.el, appRefsMap.current.get(apps[1].id) || null)
-    //   // drawLine(techLabelRef.el, appRefsMap.current.get(apps[4].id) || null)
-    //   // drawLine(techLabelRef.el, appRefsMap.current.get(apps[5].id) || null)
-      
-    // }
   }
 
   const drawLine = (
@@ -213,18 +212,79 @@ export const PortfolioAppList: React.FC = () => {
 
     const fromRect = fromEl.getBoundingClientRect();
     const toRect = toEl.getBoundingClientRect();
-    const outerPortfolioAppLisRect = portfolioAppListRef.current?.getBoundingClientRect();
+    const outerPortfolioAppListRect = portfolioAppListRef.current?.getBoundingClientRect();
     const innerPortfolioAppsRect = portfolioAppsRef.current?.getBoundingClientRect();
 
-    if (!outerPortfolioAppLisRect) return null;
+    if (!outerPortfolioAppListRect || !innerPortfolioAppsRect) return null;
 
-    // Calculate positions relative to container
-    // The magic numbers at the end are specific paddings for aesthetics
-    const xStart = fromRect.right - outerPortfolioAppLisRect.left + 10;
-    const px1 = (innerPortfolioAppsRect?.left ?? 0) - 60;
-    const yStart = (fromRect.top + fromRect.height / 2) - outerPortfolioAppLisRect.top;
-    const xEnd = toRect.left - outerPortfolioAppLisRect.left;
-    const yEnd = (toRect.top + toRect.height / 2) - outerPortfolioAppLisRect.top;
+    console.log('*'.repeat(10));
+
+    console.log(fromEl.dataset.labelId, '->', toEl.dataset.appName);
+
+    const getPathDirections = (): SVGPathDirection[] => {
+      const directions: SVGPathDirection[] = [];
+      const { appRowIndex, appColumnIndex } = getAppIndexCoords(toEl.dataset.appId || '');
+
+      console.log('appRowIndex', appRowIndex, 'appColumnIndex', appColumnIndex);
+
+      const pathFromTheLeft = () => {
+        
+        let xCurrent = fromRect.right - outerPortfolioAppListRect.left + 10;
+        let yCurrent = (fromRect.top + fromRect.height / 2) - outerPortfolioAppListRect.top;
+
+        // Start from the right side in the middle of the label
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+        // Move HORIZONTALLY to the left edge of the container
+        xCurrent = (innerPortfolioAppsRect?.left ?? 0) - 30;
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+        // Move VERTICALLY to align with the target
+        yCurrent = (toRect.top + toRect.height / 2) - 20 - outerPortfolioAppListRect.top;
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+        // Move HORIZONTALLY to the target
+        xCurrent = toRect.left - outerPortfolioAppListRect.left;
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+
+        return directions;
+      }
+      const pathFromTheRight = () => {
+        let xCurrent = fromRect.left - outerPortfolioAppListRect.left - 10;
+        let yCurrent = (fromRect.top + fromRect.height / 2) - outerPortfolioAppListRect.top;
+        
+        // Start from the left side in the middle of the label
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+        // Move HORIZONTALLY to the right edge of the container
+        xCurrent = (innerPortfolioAppsRect?.right ?? 0) + 10 - outerPortfolioAppListRect.left;
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+        // Move VERTICALLY to align with the target
+        yCurrent = (toRect.top + toRect.height / 2) - 20 - outerPortfolioAppListRect.top;
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+        // Move HORIZONTALLY to the target
+        xCurrent = toRect.right - outerPortfolioAppListRect.left;
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+
+        return directions;
+
+      }
+
+      return leftSide ? pathFromTheLeft() : pathFromTheRight();
+    }
+
+    const convertPathDirectionsToSVGPath = (directions: SVGPathDirection[]): string => {
+      if (directions.length === 0) return '';
+      
+      var pathD = '';
+      for (let i = 0; i < directions.length; i++) {
+        if (i === 0) {
+          pathD = `M ${directions[i].xNext} ${directions[i].yNext} `;
+        }
+        else {
+          pathD += `L ${directions[i].xNext} ${directions[i].yNext} `;
+        }
+      }
+      return pathD;
+    }
+
+    const newPathString = convertPathDirectionsToSVGPath(getPathDirections());
 
     const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svgEl.setAttribute('width', '100%');
@@ -234,8 +294,7 @@ export const PortfolioAppList: React.FC = () => {
     svgEl.style.left = '0';
 
     const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    newPath.setAttribute('d', `M ${xStart} ${yStart} L ${px1 - 10} ${yStart} L ${px1} ${yStart - 10} L ${px1} ${yEnd + 10} L ${px1 + 10} ${yEnd} L ${xEnd} ${yEnd}`);
-    // newPath.setAttribute('d', `M ${xStart} ${yStart} L ${xEnd} ${yEnd}`);
+    newPath.setAttribute('d', newPathString);
     newPath.setAttribute('stroke', '#ffffff');
     newPath.setAttribute('fill', 'transparent');
     newPath.setAttribute('stroke-width', '2');
@@ -284,6 +343,7 @@ export const PortfolioAppList: React.FC = () => {
               className='PortfolioTechLabel'
               key={skill}
               ref={ref => techLabelRefsMap.current.set(skill, { el: ref!, side: "left" })}
+              data-label-id={skill}
             >
               <h3>{skill}</h3>
             </div>
@@ -295,6 +355,7 @@ export const PortfolioAppList: React.FC = () => {
               className='PortfolioTechLabel'
               key={skill}
               ref={ref => techLabelRefsMap.current.set(skill, { el: ref!, side: "right" })}
+              data-label-id={skill}
             >
               <h3>{skill}</h3>
             </div>
@@ -322,18 +383,6 @@ export const PortfolioAppList: React.FC = () => {
           zIndex: 10,
         }}
       />
-      {/* <svg
-        // ref={svgRef}
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-          zIndex: 10,
-        }}
-      /> */}
       <div 
         className="AppList"
         onScroll={() => drawAllLines()}
@@ -359,7 +408,7 @@ export const PortfolioAppList: React.FC = () => {
               style={{
                 maxWidth: `${PORTFOLIO_APP_WIDTH_REM}rem`,
                 height: `${PORTFOLIO_APP_HEIGHT_REM}rem`,
-                marginBottom: indexInRange(index, appIndexOpen, itemsPerRow) ? `${PORTFOLIO_APP_CONTENT_HEIGHT_REM}rem` : `0`,
+                marginBottom: indexInRange(index, appIndexOpen, itemsPerRow.current) ? `${PORTFOLIO_APP_CONTENT_HEIGHT_REM}rem` : `0`,
               }}
               ref={ref => {
                 if (ref) {
@@ -371,6 +420,8 @@ export const PortfolioAppList: React.FC = () => {
                   appRefsMap.current.delete(app.id);
                 }
               }}
+              data-app-id={app.id}
+              data-app-name={app.Title}
             >
               <PortfolioApp 
                 key={app.id} 
