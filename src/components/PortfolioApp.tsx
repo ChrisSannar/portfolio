@@ -15,7 +15,7 @@ export const PortfolioApp: React.FC<IPortfolioAppProps> = ({ app, onClick, class
             <div className='appImg'>
 
             </div>
-            <h4>
+            <h4 className={`unselectable`}>
                 {app.Title}
             </h4>
         </div>

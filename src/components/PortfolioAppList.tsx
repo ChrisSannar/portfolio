@@ -14,13 +14,11 @@ const CONTENT_FADE_DURATION_MS = 200;
 
 type TechLabelRef = { 
   el: HTMLDivElement, 
-  side: "left" | "right", 
-  active?: boolean 
+  side: "left" | "right"
 }
 
 type AppRef = {
   el: HTMLDivElement,
-  active?: boolean,
 }
 
 type SVGPathDirection = { 
@@ -35,6 +33,7 @@ export const PortfolioAppList: React.FC = () => {
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
   const [activeSkillIds, setActiveSkillIds] = React.useState<Set<string>>(new Set());
+  const [tempActiveSkillIds, setTempActiveSkillIds] = React.useState<Set<string>>(new Set());
   const [activeAppIds, setActiveAppIds] = React.useState<Set<string>>(new Set());
 
   const portfolioAppListRef = React.useRef<HTMLDivElement | null>(null);
@@ -46,7 +45,9 @@ export const PortfolioAppList: React.FC = () => {
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
-    
+    // Clear any app selections
+    deactivateApps(false);
+
     // Closing the currently open app
     if (appIndexOpen === index) {
       // Fade out content first
@@ -60,6 +61,7 @@ export const PortfolioAppList: React.FC = () => {
       fadeTimeoutRef.current = setTimeout(() => {
         setContentIndexToRender(-1);
         setAppIndexOpen(-1);
+        activateApp(appId);
         fadeTimeoutRef.current = null;
       }, CONTENT_FADE_DURATION_MS);
       
@@ -89,6 +91,7 @@ export const PortfolioAppList: React.FC = () => {
         
         // After space animation settles, fade in the content
         contentTimeoutRef.current = setTimeout(() => {
+          activateApp(appId, true);
           setContentFadedIn(true);
           contentTimeoutRef.current = null;
         }, CONTENT_RENDER_DELAY_MS);
@@ -114,6 +117,7 @@ export const PortfolioAppList: React.FC = () => {
     // After space animation settles, fade in the content
     contentTimeoutRef.current = setTimeout(() => {
       setContentFadedIn(true);
+      activateApp(appId, true);
       contentTimeoutRef.current = null;
     }, CONTENT_RENDER_DELAY_MS);
   }
@@ -155,7 +159,7 @@ export const PortfolioAppList: React.FC = () => {
 
   // ## Drawing Lines
   const lineContainerRef = React.useRef<HTMLDivElement | null>(null);
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     if (appIndexOpen === -1) {
 
       // Timeout ensures content is "settled" before drawing lines
@@ -167,6 +171,9 @@ export const PortfolioAppList: React.FC = () => {
       removeLines();
     }
   }, [appIndexOpen]);
+  React.useLayoutEffect(() => {
+    drawAllLines();
+  }, [activeSkillIds, tempActiveSkillIds])
 
   const getAppIndexCoords = (appId: string) => {
     const appIndex = apps.findIndex(a => a.id === appId);
@@ -186,7 +193,7 @@ export const PortfolioAppList: React.FC = () => {
     }
   }
 
-  const drawAllLines = (): void => {
+  const drawAllLines = (noRedraw: boolean = false): void => {
     // No lines for smaller sizes or when context window is open
     removeLines();
     if (window.innerWidth < 768 || lineContainerRef.current === null) {
@@ -199,7 +206,8 @@ export const PortfolioAppList: React.FC = () => {
         from, 
         to, 
         leftSide: from?.side === "left",
-        active: from?.active && to?.active,
+        active: activeSkillIds.has(skillId) || tempActiveSkillIds.has(skillId) &&
+          activeAppIds.has(appId)
       };
     });
 
@@ -207,8 +215,13 @@ export const PortfolioAppList: React.FC = () => {
     setTimeout(() => {
       if (lineContainerRef.current && appIndexOpen === -1) {
         lineContainerRef.current.style.opacity = '1';
-        for (const line of allLines) {
-          const drawnLine = drawLine(line.from?.el ?? null, line.to?.el ?? null, line.leftSide);
+        for (const { from, to, leftSide, active } of allLines) {
+          const drawnLine = drawLine(
+            from?.el ?? null, 
+            to?.el ?? null, 
+            leftSide, 
+            active
+          );
           if (drawnLine) {
             lineContainerRef.current.appendChild(drawnLine);
           }
@@ -220,7 +233,8 @@ export const PortfolioAppList: React.FC = () => {
   const drawLine = (
     fromEl: HTMLElement | null, 
     toEl: HTMLElement | null,
-    leftSide: boolean = true
+    leftSide: boolean = true,
+    active: boolean = false
   ): SVGSVGElement | null => {
     if (fromEl === null || toEl === null) return null;
 
@@ -322,7 +336,7 @@ export const PortfolioAppList: React.FC = () => {
       }
       return pathD;
     }
-
+  
     const newPathString = convertPathDirectionsToSVGPath(getPathDirections());
 
     const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -331,7 +345,8 @@ export const PortfolioAppList: React.FC = () => {
     svgEl.style.position = 'absolute';
     svgEl.style.top = '0';
     svgEl.style.left = '0';
-    svgEl.classList.value = 'inactive';
+    svgEl.style.zIndex = active ? '3' : '2';
+    svgEl.classList.value = `drawline ${active ? 'active' : 'inactive'}`;
 
     const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     newPath.setAttribute('d', newPathString);
@@ -356,7 +371,7 @@ export const PortfolioAppList: React.FC = () => {
         if (!mappers.has(skill.Title)) {
           mappers.set(skill.Title, new Set());
         }
-        mappers.get(skill.Title)?.add(app.Title);
+        mappers.get(skill.Title)?.add(app.id);
       })
     });
     return mappers;
@@ -382,19 +397,29 @@ export const PortfolioAppList: React.FC = () => {
       return newSet;
     });
   }
-  const activateApp = (appId: string) => {
+  const activateApp = (appId: string, newConnections?: boolean) => {
     setActiveAppIds(prev => {
       const newSet = new Set(prev);
       newSet.add(appId);
       return newSet;
     });
-  }
-  const deactivateApp = (appId: string) => {
-    setActiveAppIds(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(appId);
+    setTempActiveSkillIds(prev => {
+      const newSet = newConnections ? new Set<string>() : new Set(prev);
+      for (const skill of Array.from(skillsToAppIdMap.keys())) {
+        if (skillsToAppIdMap.get(skill)?.has(appId)) {
+          if (!newSet.has(skill)) {
+            newSet.add(skill);
+          }
+        }
+      }
       return newSet;
-    });
+    })
+  }
+  const deactivateApps = (removeConnections?: boolean) => {
+    setActiveAppIds(new Set());
+    if (removeConnections) {
+      setTempActiveSkillIds(new Set());
+    }
   }
 
   const createTechLabels = () => {
@@ -408,14 +433,14 @@ export const PortfolioAppList: React.FC = () => {
           {leftLabels.map(([skill]) => {
             return (
               <div
-                className={`PortfolioTechLabel ${activeSkillIds.has(skill) ? 'active' : 'inactive'}`}
+                className={`PortfolioTechLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
                 key={skill}
                 ref={ref => techLabelRefsMap.current.set(skill, 
-                    { el: ref!, side: "left", active: false })}
+                    { el: ref!, side: "left" })}
                 data-label-id={skill}
                 onClick={() => toggleSkillActive(skill)}
               >
-                <h3>{skill}</h3>
+                <h3 className={`unselectable`}>{skill}</h3>
               </div>
             )
           })}
@@ -424,14 +449,14 @@ export const PortfolioAppList: React.FC = () => {
           {rightLabels.map(([skill]) => {
             return (
               <div
-                className={`PortfolioTechLabel ${activeSkillIds.has(skill)  ? 'active' : 'inactive'}`}
+                className={`PortfolioTechLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
                 key={skill}
                 ref={ref => techLabelRefsMap.current.set(skill,
-                    { el: ref!, side: "right", active: false })}
+                    { el: ref!, side: "right" })}
                 data-label-id={skill}
                 onClick={() => toggleSkillActive(skill)}
               >
-                <h3>{skill}</h3>
+                <h3 className={`unselectable`}>{skill}</h3>
               </div>
             )
           })}
@@ -457,7 +482,7 @@ export const PortfolioAppList: React.FC = () => {
           pointerEvents: 'none',
           zIndex: 10,
           opacity: 1,
-          transition: `opacity 300ms ease-in-out`,
+          transition: `0.2s`,
         }}
       />
       <div 
@@ -492,13 +517,13 @@ export const PortfolioAppList: React.FC = () => {
                   if (appOpen) {
                     currentRef.current = ref;
                   }
-                  appRefsMap.current.set(app.id, {el: ref, active: false});
+                  appRefsMap.current.set(app.id, {el: ref});
                 } else {
                   appRefsMap.current.delete(app.id);
                 }
               }}
-              onMouseEnter={() => activateApp(app.id)}
-              onMouseLeave={() => deactivateApp(app.id)}
+              onMouseEnter={() => appIndexOpen === -1 ? activateApp(app.id) : null}
+              onMouseLeave={() => appIndexOpen === -1 ? deactivateApps(true) : null}
               data-app-id={app.id}
               data-app-name={app.Title}
             >
