@@ -57,6 +57,17 @@
     cursor: pointer;
 }
 
+.PortfolioTechLabel.active {
+    h3 {
+        color: light-dark(var(--color-darkest), var(--color-lightest));
+    }
+}
+.PortfolioTechLabel.inactive {
+    h3 {
+        color: light-dark(var(--color-light-gray), var(--color-dark-gray));
+    }
+}
+
 .AppList {
     position: absolute;
     display: flex;
@@ -70,8 +81,11 @@
 }
 
 .LineContainer {
-    svg > path {
+    svg.active > path {
         stroke: light-dark(var(--color-darkest), var(--color-lightest));
+    }
+    svg.inactive > path {
+        stroke: light-dark(var(--color-light-gray), var(--color-dark-gray));
     }
 }
 /* 
@@ -94,7 +108,6 @@
     overflow: visible;
     transition: margin-bottom 0.3s ease-in-out;
 }
-
 .PortfolioAppContent {
     display: flex;
     flex-direction: column;
