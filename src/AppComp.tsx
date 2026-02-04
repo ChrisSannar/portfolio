@@ -4,8 +4,9 @@ import { PortfolioAppList } from './components/PortfolioAppList';
 import { PortfolioFooter } from './components/PortfolioFooter';
 import { App, ColorModeType } from './data/App';
 
-function AppComp() {
+export function AppComp() {
   const app = App.getHotInstance().subscribe('App');
+  const appCompRef = React.useRef<HTMLDivElement | null>(null);
 
   const setDarkMode = () => {
     App.Instance.ColorMode = ColorModeType.DARK;
@@ -47,17 +48,22 @@ function AppComp() {
   }, []);
 
   return (
-    <div className="AppComp">
-      <div className="header">
-        <h1>Hi, I&apos;m Chris</h1>
-        <h3>Full Stack Software Engineer<br/>Networking Emphasis</h3>
+    <AppCompContext.Provider value={appCompRef.current}>
+      <div className="AppComp" ref={ref => appCompRef.current = ref}>
+        <div className="header">
+          <h1>Hi, I&apos;m Chris</h1>
+          <h3>Full Stack Software Engineer<br/>Networking Emphasis</h3>
+        </div>
+        <PortfolioAppList />
+        <div className="footer">
+          <PortfolioFooter />
+        </div>
       </div>
-      <PortfolioAppList />
-      <div className="footer">
-        <PortfolioFooter />
-      </div>
-    </div>
+    </AppCompContext.Provider>
   );
 }
 
-export default AppComp;
+const AppCompContext = React.createContext<HTMLDivElement | null>(null);
+export const useAppCompContext = () => React.useContext(AppCompContext); 
+
+// export default AppComp;

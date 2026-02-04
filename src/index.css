@@ -2,6 +2,7 @@
   --color-darkest: #212529;
   --color-darker: #343A40;
   --color-dark: #495057;
+  --color-dark-gray: #6C757D;
   --color-gray: #6C757D;
   --color-light-gray: #ADB5BD;
   --color-lighter-gray: #CED4DA;
@@ -49,4 +50,11 @@ body::-webkit-scrollbar,
 .PortfolioAppList::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+.unselectable {
+  -webkit-user-select: none; /* Safari, Chrome, Opera */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* Internet Explorer 10+ */
+  user-select: none;         /* Standard syntax */
 }

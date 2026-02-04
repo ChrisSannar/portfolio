@@ -17,7 +17,7 @@
     pointer-events: none;
 }
 
-.LeftLabels, .RightLabels {
+.LeftTechLabels, .RightTechLabels {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -27,33 +27,47 @@
     pointer-events: auto;
 }
 
-.LeftLabels::-webkit-scrollbar, .RightLabels::-webkit-scrollbar {
+.LeftTechLabels::-webkit-scrollbar, .RightTechLabels::-webkit-scrollbar {
     display: none;
 }
 
-.LeftLabels {
+.LeftTechLabels {
     align-items: flex-start;
 }
 
-.RightLabels {
+.RightTechLabels {
     align-items: flex-end;
 }
 
-.RightLabels h3 { text-align: right; }
+.RightTechLabels h3 { text-align: right; }
 
-.PortfolioLabel {
+.PortfolioTechLabel {
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: var(--portfolio-border-radius);
-    transition: all 0.2s ease;
+    transition: color 0.2s ease-in;
+    will-change: color;
 }
 
-.PortfolioLabel h3 {
+.PortfolioTechLabel h3 {
     margin: 0;
     text-align: center;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     font-weight: lighter;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.PortfolioTechLabel.active {
+    h3 {
+        color: light-dark(var(--color-darkest), var(--color-lightest));
+    }
+}
+.PortfolioTechLabel.inactive {
+    h3 {
+        color: light-dark(var(--color-light-gray), var(--color-dark-gray));
+    }
 }
 
 .AppList {
@@ -66,6 +80,19 @@
     width: 100%;
     max-height: 100%;
     z-index: 1;
+}
+
+.LineContainer {
+    svg, svg > path {
+        transition: stroke 0.2s ease-in;
+        will-change: stroke;
+    }
+    svg.active > path {
+        stroke: light-dark(var(--color-darkest), var(--color-lightest));
+    }
+    svg.inactive > path {
+        stroke: light-dark(var(--color-light-gray), var(--color-dark-gray));
+    }
 }
 /* 
  */
@@ -87,7 +114,6 @@
     overflow: visible;
     transition: margin-bottom 0.3s ease-in-out;
 }
-
 .PortfolioAppContent {
     display: flex;
     flex-direction: column;
@@ -119,7 +145,7 @@
         margin: auto;
     }
 
-    .LeftLabels, .RightLabels {
+    .LeftTechLabels, .RightTechLabels {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
@@ -127,13 +153,14 @@
         gap: 0.5rem;
     }
 
-    .PortfolioLabel {
+    .PortfolioTechLabel {
         border: var(--portfolio-border);
         padding: 0.4rem 1rem;
     }
 
-    .PortfolioLabel h3 {
+    .PortfolioTechLabel h3 {
         font-size: 1.2rem;
+        cursor: pointer;
     }
 
     .AppList {
@@ -146,7 +173,7 @@
 
     .PortfolioApps {
         justify-content: space-evenly;
-        width: 100%;
+        width: 99%; /* Clipping bug with 100% */
     }
 
 }
