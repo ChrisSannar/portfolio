@@ -88,6 +88,7 @@ a {
 .not {
     width: 2.5rem;
     justify-content: center;
+    cursor: pointer;
 }
 
 .and-or-selector, .not-selector, .color-mode-selector {
