@@ -3,6 +3,7 @@ import './PortfolioAppList.css';
 import { PortApp, PortSkill } from '../data/PortApp';
 import { PortfolioApp } from './PortfolioApp';
 import { remToPx } from '../data/util';
+import { App } from '../data/App';
 
 const PORTFOLIO_APP_HEIGHT_REM = 10;
 const PORTFOLIO_APP_WIDTH_REM = 6;
@@ -12,7 +13,7 @@ const ANIMATION_DURATION_MS = 300;
 const CONTENT_RENDER_DELAY_MS = ANIMATION_DURATION_MS + 10;
 const CONTENT_FADE_DURATION_MS = 200;
 
-type TechLabelRef = { 
+type SkillLabelRef = { 
   el: HTMLDivElement, 
   side: "left" | "right"
 }
@@ -29,24 +30,25 @@ type SVGPathDirection = {
 export const PortfolioAppList: React.FC = () => {
   const [apps] = React.useState(PortApp.getAllApps(PortSkill.getAllSkills()));
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
-  const itemsPerRow = React.useRef<number>(-1);
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
   const [activeSkillIds, setActiveSkillIds] = React.useState<Set<string>>(new Set());
   const [tempActiveSkillIds, setTempActiveSkillIds] = React.useState<Set<string>>(new Set());
   const [activeAppIds, setActiveAppIds] = React.useState<Set<string>>(new Set());
-
+  const [tempActiveAppIds, setTempActiveAppIds] = React.useState<Set<string>>(new Set());
+  
+  const itemsPerRow = React.useRef<number>(-1);
   const portfolioAppListRef = React.useRef<HTMLDivElement | null>(null);
   const portfolioAppsRef = React.useRef<HTMLDivElement | null>(null);
   const currentRef = React.useRef<HTMLDivElement | null>(null);
   const appRefsMap = React.useRef<Map<string, AppRef>>(new Map());
-  const techLabelRefsMap = React.useRef<Map<string, TechLabelRef>>(new Map());
+  const skillLabelRefsMap = React.useRef<Map<string, SkillLabelRef>>(new Map());
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
     // Clear any app selections
-    deactivateApps(false);
+    deactivateAllApps(false);
 
     // Closing the currently open app
     if (appIndexOpen === index) {
@@ -360,8 +362,8 @@ export const PortfolioAppList: React.FC = () => {
   const getAppFromId = (id: string): AppRef | null => {
     return appRefsMap.current.get(id) || null;
   }
-  const getLabelFromId = (id: string): TechLabelRef | null => {
-    return techLabelRefsMap.current.get(id) || null;
+  const getLabelFromId = (id: string): SkillLabelRef | null => {
+    return skillLabelRefsMap.current.get(id) || null;
   }
   const skillsToAppIdMap: Map<string, Set<string>> = React.useMemo(() => {
     const mappers: Map<string, Set<string>> = new Map();
@@ -386,6 +388,39 @@ export const PortfolioAppList: React.FC = () => {
     });
     return tuples;
   }, []);
+
+  const applyAndLogic = () => {
+    const activeAppIdsLocal = new Set<string>();
+    console.log('AND', activeAppIdsLocal);
+  }
+  const applyOrLogic = () => {
+    const activeAppIdsLocal = new Set<string>();
+    console.log('Skills', activeSkillIds);
+    for (const app of apps) {
+      const appSkills = app.Skills.map(s => s.Title);
+      for (const appSkill of appSkills) {
+        if (activeSkillIds.has(appSkill)) {
+          activeAppIdsLocal.add(app.id);
+        }
+      }
+    }
+    setActiveAppIds(activeAppIdsLocal);
+    console.log('OR');
+  }
+  const applyNotLogic = () => {
+    console.log('NOT');
+  }
+  React.useEffect(() => {
+    if (App.Instance.AndLogic) {
+      applyAndLogic();
+    } else {
+      applyOrLogic();
+    }
+    if (App.Instance.NotLogic) {
+      applyNotLogic();
+    }
+    // drawAllLines();
+  }, [App.Instance.NotLogic, App.Instance.AndLogic, activeSkillIds]);
   const toggleSkillActive = (skill: string) => {
     setActiveSkillIds(prev => {
       const newSet = new Set(prev);
@@ -415,27 +450,46 @@ export const PortfolioAppList: React.FC = () => {
       return newSet;
     })
   }
-  const deactivateApps = (removeConnections?: boolean) => {
+  const deactivateAllApps = (removeConnections?: boolean) => {
     setActiveAppIds(new Set());
     if (removeConnections) {
       setTempActiveSkillIds(new Set());
     }
   }
+  
+  // const handleAppMouseEnter = (appId: string): void => {
+  //   if (appIndexOpen === -1) {
+  //     setTempActiveAppIds(prev => {
+  //       const newSet = new Set(prev);
+  //       newSet.add(appId);
+  //       return newSet;
+  //     });
+  //   }
+  // }
+  // const handleAppMouseLeave = (appId: string): void => {
+  //   if (appIndexOpen === -1) {
+  //     setTempActiveAppIds(prev => {
+  //       const newSet = new Set(prev);
+  //       newSet.delete(appId);
+  //       return newSet;
+  //     });
+  //   }
+  // }
 
-  const createTechLabels = () => {
+  const createSkillLabels = () => {
     const leftLabels = Array.from(skillsToAppIdMap.entries())
       .filter(({}, index) => index % 2 === 0);
     const rightLabels = Array.from(skillsToAppIdMap.entries())
       .filter(({}, index) => index % 2 !== 0);
     return (
       <div className="labels-container">
-        <div className="LeftTechLabels">
+        <div className="LeftSkillLabels">
           {leftLabels.map(([skill]) => {
             return (
               <div
-                className={`PortfolioTechLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
+                className={`PortfolioSkillLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
                 key={skill}
-                ref={ref => techLabelRefsMap.current.set(skill, 
+                ref={ref => skillLabelRefsMap.current.set(skill, 
                     { el: ref!, side: "left" })}
                 data-label-id={skill}
                 onClick={() => toggleSkillActive(skill)}
@@ -445,13 +499,13 @@ export const PortfolioAppList: React.FC = () => {
             )
           })}
         </div>
-        <div className="RightTechLabels">
+        <div className="RightSkillLabels">
           {rightLabels.map(([skill]) => {
             return (
               <div
-                className={`PortfolioTechLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
+                className={`PortfolioSkillLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
                 key={skill}
-                ref={ref => techLabelRefsMap.current.set(skill,
+                ref={ref => skillLabelRefsMap.current.set(skill,
                     { el: ref!, side: "right" })}
                 data-label-id={skill}
                 onClick={() => toggleSkillActive(skill)}
@@ -523,7 +577,7 @@ export const PortfolioAppList: React.FC = () => {
                 }
               }}
               onMouseEnter={() => appIndexOpen === -1 ? activateApp(app.id) : null}
-              onMouseLeave={() => appIndexOpen === -1 ? deactivateApps(true) : null}
+              onMouseLeave={() => appIndexOpen === -1 ? deactivateAllApps(true) : null}
               data-app-id={app.id}
               data-app-name={app.Title}
             >
@@ -557,7 +611,7 @@ export const PortfolioAppList: React.FC = () => {
           })}
         </div>
       </div>
-      {createTechLabels()}
+      {createSkillLabels()}
     </div>
   );
 };
