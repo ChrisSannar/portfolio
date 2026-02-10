@@ -222,8 +222,19 @@ export const PortfolioAppList: React.FC = () => {
     }, 0);
   }, [appIndexOpen, activeSkillIds, tempActiveSkillIds, activeAppIds]);
 
+  const appIndexMap = React.useMemo(() => {
+    const map = new Map<string, number>();
+    apps.forEach((app, index) => {
+      map.set(app.id, index);
+    });
+    return map;
+  }, [apps]);
+
   const getAppIndexCoords = (appId: string) => {
-    const appIndex = apps.findIndex(a => a.id === appId);
+    const appIndex = appIndexMap.get(appId);
+    if (appIndex === undefined) {
+      return { appRowIndex: 0, appColumnIndex: 0 };
+    }
     const appRowIndex = Math.floor(appIndex / (itemsPerRow.current || 1));
     const appColumnIndex = appIndex % (itemsPerRow.current || 1);
     return { appRowIndex, appColumnIndex };
