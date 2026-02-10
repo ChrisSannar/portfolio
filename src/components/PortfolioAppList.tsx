@@ -511,27 +511,12 @@ export const PortfolioAppList: React.FC = () => {
       setTempActiveSkillIds(new Set());
     }
   }
-  
-  // const handleAppMouseEnter = (appId: string): void => {
-  //   if (appIndexOpen === -1) {
-  //     setTempActiveAppIds(prev => {
-  //       const newSet = new Set(prev);
-  //       newSet.add(appId);
-  //       return newSet;
-  //     });
-  //   }
-  // }
-  // const handleAppMouseLeave = (appId: string): void => {
-  //   if (appIndexOpen === -1) {
-  //     setTempActiveAppIds(prev => {
-  //       const newSet = new Set(prev);
-  //       newSet.delete(appId);
-  //       return newSet;
-  //     });
-  //   }
-  // }
 
   const createSkillLabels = () => {
+    const onLabelClick = (skill: string) => {
+      if (appIndexOpen !== -1) return;
+      toggleSkillActive(skill);
+    }
     const leftLabels = Array.from(skillsToAppIdMap.entries())
       .filter(({}, index) => index % 2 === 0);
     const rightLabels = Array.from(skillsToAppIdMap.entries())
@@ -547,7 +532,7 @@ export const PortfolioAppList: React.FC = () => {
                 ref={ref => skillLabelRefsMap.current.set(skill, 
                     { el: ref!, side: "left" })}
                 data-label-id={skill}
-                onClick={() => toggleSkillActive(skill)}
+                onClick={() => onLabelClick(skill)}
               >
                 <h3 className={`unselectable`}>{skill}</h3>
               </div>
@@ -563,7 +548,7 @@ export const PortfolioAppList: React.FC = () => {
                 ref={ref => skillLabelRefsMap.current.set(skill,
                     { el: ref!, side: "right" })}
                 data-label-id={skill}
-                onClick={() => toggleSkillActive(skill)}
+                onClick={() => onLabelClick(skill)}
               >
                 <h3 className={`unselectable`}>{skill}</h3>
               </div>
