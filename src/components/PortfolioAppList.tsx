@@ -32,6 +32,7 @@ export const PortfolioAppList: React.FC = () => {
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
+  const [contentFadeDelayMs, setContentFadeDelayMs] = React.useState<number>(0);
   const [activeSkillIds, setActiveSkillIds] = React.useState<Set<string>>(new Set());
   const [tempActiveSkillIds, setTempActiveSkillIds] = React.useState<Set<string>>(new Set());
   const [activeAppIds, setActiveAppIds] = React.useState<Set<string>>(new Set());
@@ -43,11 +44,11 @@ export const PortfolioAppList: React.FC = () => {
   const currentRef = React.useRef<HTMLDivElement | null>(null);
   const appRefsMap = React.useRef<Map<string, AppRef>>(new Map());
   const skillLabelRefsMap = React.useRef<Map<string, SkillLabelRef>>(new Map());
-  const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-  const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const resizeRafRef = React.useRef<number | null>(null);
   const drawLinesTimeoutRef = React.useRef<number | null>(null);
   const lastLinesKeyRef = React.useRef<string>('');
+  const pendingOpenRef = React.useRef<{ appId: string, index: number, targetEl: HTMLDivElement | null } | null>(null);
+  const pendingCloseRef = React.useRef<{ appId: string } | null>(null);
 
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
     // Clear any app selections
@@ -55,55 +56,19 @@ export const PortfolioAppList: React.FC = () => {
 
     // Closing the currently open app
     if (appIndexOpen === index) {
-      // Fade out content first
+      pendingOpenRef.current = null;
+      pendingCloseRef.current = { appId };
+      setContentFadeDelayMs(0);
       setContentFadedIn(false);
-      
-      if (fadeTimeoutRef.current) {
-        clearTimeout(fadeTimeoutRef.current);
-      }
-      
-      // After fade completes, remove content and collapse space
-      fadeTimeoutRef.current = setTimeout(() => {
-        setContentIndexToRender(-1);
-        setAppIndexOpen(-1);
-        activateApp(appId);
-        fadeTimeoutRef.current = null;
-      }, CONTENT_FADE_DURATION_MS);
-      
       return;
     }
     
     // Switching to a different app
     if (appIndexOpen !== -1) {
-      // Fade out current content first and remove lines
+      pendingCloseRef.current = null;
+      pendingOpenRef.current = { appId, index, targetEl: e.currentTarget as HTMLDivElement };
+      setContentFadeDelayMs(0);
       setContentFadedIn(false);
-      
-      if (fadeTimeoutRef.current) {
-        clearTimeout(fadeTimeoutRef.current);
-      }
-      
-      fadeTimeoutRef.current = setTimeout(() => {
-        // Then switch to new app
-        currentRef.current = e.currentTarget as HTMLDivElement;
-        setAppIndexOpen(index);
-        // Render new content immediately with opacity 0
-        setContentIndexToRender(index);
-        
-        // Clear any pending content render timeout
-        if (contentTimeoutRef.current) {
-          clearTimeout(contentTimeoutRef.current);
-        }
-        
-        // After space animation settles, fade in the content
-        contentTimeoutRef.current = setTimeout(() => {
-          activateApp(appId, true);
-          setContentFadedIn(true);
-          contentTimeoutRef.current = null;
-        }, CONTENT_RENDER_DELAY_MS);
-        
-        fadeTimeoutRef.current = null;
-      }, CONTENT_FADE_DURATION_MS);
-      
       return;
     }
     
@@ -112,19 +77,33 @@ export const PortfolioAppList: React.FC = () => {
     setAppIndexOpen(index);
     // Render content immediately with opacity 0
     setContentIndexToRender(index);
-    setContentFadedIn(false);
-    
-    // Clear any pending timeout from previous click
-    if (contentTimeoutRef.current) {
-      clearTimeout(contentTimeoutRef.current);
-    }
-    
-    // After space animation settles, fade in the content
-    contentTimeoutRef.current = setTimeout(() => {
+    setContentFadeDelayMs(CONTENT_RENDER_DELAY_MS);
+    setContentFadedIn(true);
+    activateApp(appId, true);
+  }
+  const handleContentTransitionEnd = (e: React.TransitionEvent<HTMLDivElement>) => {
+    if (e.propertyName !== 'opacity') return;
+    if (contentFadedIn) return;
+
+    if (pendingOpenRef.current) {
+      const pending = pendingOpenRef.current;
+      pendingOpenRef.current = null;
+      currentRef.current = pending.targetEl;
+      setAppIndexOpen(pending.index);
+      setContentIndexToRender(pending.index);
+      setContentFadeDelayMs(CONTENT_RENDER_DELAY_MS);
       setContentFadedIn(true);
-      activateApp(appId, true);
-      contentTimeoutRef.current = null;
-    }, CONTENT_RENDER_DELAY_MS);
+      activateApp(pending.appId, true);
+      return;
+    }
+
+    if (pendingCloseRef.current) {
+      const pending = pendingCloseRef.current;
+      pendingCloseRef.current = null;
+      setContentIndexToRender(-1);
+      setAppIndexOpen(-1);
+      activateApp(pending.appId);
+    }
   }
 
   const indexInRange = (index: number, appIndexOpen: number, itemsPerRow: number) => {
@@ -653,6 +632,7 @@ export const PortfolioAppList: React.FC = () => {
                 (() => {
                   return <div 
                     className="PortfolioAppContent"
+                    onTransitionEnd={handleContentTransitionEnd}
                     style={{
                       position: 'absolute',
                       top: `${topPosition + remToPx(1, document)}px`,
@@ -663,6 +643,7 @@ export const PortfolioAppList: React.FC = () => {
                       pointerEvents: 'none',
                       opacity: contentFadedIn ? 1 : 0,
                       transition: `opacity ${CONTENT_FADE_DURATION_MS}ms ease-in-out`,
+                      transitionDelay: contentFadedIn ? `${contentFadeDelayMs}ms` : '0ms',
                     }}
                   >
                     {app.Title}
