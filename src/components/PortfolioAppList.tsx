@@ -45,6 +45,7 @@ export const PortfolioAppList: React.FC = () => {
   const skillLabelRefsMap = React.useRef<Map<string, SkillLabelRef>>(new Map());
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const resizeRafRef = React.useRef<number | null>(null);
 
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
     // Clear any app selections
@@ -151,11 +152,26 @@ export const PortfolioAppList: React.FC = () => {
       drawAllLines();
     };
 
+    // Adding a `requestAnimationFrame` to improve animation performance
+    const onResize = () => {
+      if (resizeRafRef.current !== null) {
+        return;
+      }
+      resizeRafRef.current = window.requestAnimationFrame(() => {
+        resizeRafRef.current = null;
+        windowResizeCalculations();
+      });
+    };
+
     windowResizeCalculations();
-    window.addEventListener('resize', windowResizeCalculations);
+    window.addEventListener('resize', onResize);
 
     return () => {
-      window.removeEventListener('resize', windowResizeCalculations);
+      window.removeEventListener('resize', onResize);
+      if (resizeRafRef.current !== null) {
+        window.cancelAnimationFrame(resizeRafRef.current);
+        resizeRafRef.current = null;
+      }
     };
   }, []);
 
@@ -215,132 +231,138 @@ export const PortfolioAppList: React.FC = () => {
 
     // Fade in the lines after appending
     setTimeout(() => {
-      if (lineContainerRef.current && appIndexOpen === -1) {
-        lineContainerRef.current.style.opacity = '1';
-        for (const { from, to, leftSide, active } of allLines) {
-          const drawnLine = drawLine(
-            from?.el ?? null, 
-            to?.el ?? null, 
-            leftSide, 
-            active
-          );
-          if (drawnLine) {
-            lineContainerRef.current.appendChild(drawnLine);
-          }
+      const lineContainer = lineContainerRef.current;
+      if (!lineContainer || appIndexOpen !== -1) return;
+
+      const outerPortfolioAppListRect = portfolioAppListRef.current?.getBoundingClientRect();
+      const innerPortfolioAppsRect = portfolioAppsRef.current?.getBoundingClientRect();
+      if (!outerPortfolioAppListRect || !innerPortfolioAppsRect) return;
+
+      // Read phase: measure and compute paths
+      const lineData: { pathD: string, active: boolean }[] = [];
+      for (const { from, to, leftSide, active } of allLines) {
+        const fromEl = from?.el ?? null;
+        const toEl = to?.el ?? null;
+        const appId = toEl?.dataset.appId || '';
+        if (!fromEl || !toEl || !appId) continue;
+
+        const fromRect = fromEl.getBoundingClientRect();
+        const toRect = toEl.getBoundingClientRect();
+        const pathD = buildPathDirections(
+          fromRect,
+          toRect,
+          outerPortfolioAppListRect,
+          innerPortfolioAppsRect,
+          leftSide,
+          appId
+        );
+        if (pathD) {
+          lineData.push({ pathD, active });
         }
       }
+
+      // Write phase: append SVGs
+      lineContainer.style.opacity = '1';
+      const fragment = document.createDocumentFragment();
+      for (const { pathD, active } of lineData) {
+        const drawnLine = drawLineFromPath(pathD, active);
+        fragment.appendChild(drawnLine);
+      }
+      lineContainer.appendChild(fragment);
     }, 0);
   }
 
-  const drawLine = (
-    fromEl: HTMLElement | null, 
-    toEl: HTMLElement | null,
-    leftSide: boolean = true,
-    active: boolean = false
-  ): SVGSVGElement | null => {
-    if (fromEl === null || toEl === null) return null;
+  const buildPathDirections = (
+    fromRect: DOMRect,
+    toRect: DOMRect,
+    outerPortfolioAppListRect: DOMRect,
+    innerPortfolioAppsRect: DOMRect,
+    leftSide: boolean,
+    appId: string
+  ): string => {
+    const directions: SVGPathDirection[] = [];
+    const { appRowIndex, appColumnIndex } = getAppIndexCoords(appId);
 
-    const fromRect = fromEl.getBoundingClientRect();
-    const toRect = toEl.getBoundingClientRect();
-    const outerPortfolioAppListRect = portfolioAppListRef.current?.getBoundingClientRect();
-    const innerPortfolioAppsRect = portfolioAppsRef.current?.getBoundingClientRect();
+    const pathFromTheLeft = () => {
+      let xCurrent = fromRect.right - outerPortfolioAppListRect.left + 10;
+      let yCurrent = (fromRect.top + fromRect.height / 2) - outerPortfolioAppListRect.top;
 
-    if (!outerPortfolioAppListRect || !innerPortfolioAppsRect) return null;
+      // Start from the right side in the middle of the label
+      directions.push({ xNext: xCurrent, yNext: yCurrent });
+      // Move HORIZONTALLY to the left edge of the container
+      xCurrent = innerPortfolioAppsRect.left - 30;
+      directions.push({ xNext: xCurrent, yNext: yCurrent });
 
-    const getPathDirections = (): SVGPathDirection[] => {
-      const directions: SVGPathDirection[] = [];
-      const { appRowIndex, appColumnIndex } = getAppIndexCoords(toEl.dataset.appId || '');
-
-      const pathFromTheLeft = () => {
-        
-        let xCurrent = fromRect.right - outerPortfolioAppListRect.left + 10;
-        let yCurrent = (fromRect.top + fromRect.height / 2) - outerPortfolioAppListRect.top;
-
-        // Start from the right side in the middle of the label
-        directions.push({ xNext: xCurrent, yNext: yCurrent });
-        // Move HORIZONTALLY to the left edge of the container
-        xCurrent = (innerPortfolioAppsRect?.left ?? 0) - 30;
-        directions.push({ xNext: xCurrent, yNext: yCurrent });
-
-        if (appColumnIndex > 0) {
-          // Move VERTICALLY to the gap between rows of the target app
-          if (appRowIndex >= 2) {
-            // If the app is in a lower row, go above it
-            yCurrent = (toRect.top - 28) - outerPortfolioAppListRect.top;
-          } else {
-            // Else go below it
-            yCurrent = (toRect.bottom + 20) - outerPortfolioAppListRect.top;
-          }
-          directions.push({ xNext: xCurrent, yNext: yCurrent });
-          // Move HORIZONTALLY to align with the column of the target
-          xCurrent = toRect.left - 20 - outerPortfolioAppListRect.left;
-          directions.push({ xNext: xCurrent, yNext: yCurrent });
+      if (appColumnIndex > 0) {
+        // Move VERTICALLY to the gap between rows of the target app
+        if (appRowIndex >= 2) {
+          // If the app is in a lower row, go above it
+          yCurrent = (toRect.top - 28) - outerPortfolioAppListRect.top;
+        } else {
+          // Else go below it
+          yCurrent = (toRect.bottom + 20) - outerPortfolioAppListRect.top;
         }
-        // Move VERTICALLY to align with the target
-        yCurrent = (toRect.top + toRect.height / 2) - 20 - outerPortfolioAppListRect.top;
         directions.push({ xNext: xCurrent, yNext: yCurrent });
-        
-        // Move HORIZONTALLY to connect to the target
-        xCurrent = toRect.left - outerPortfolioAppListRect.left;
+        // Move HORIZONTALLY to align with the column of the target
+        xCurrent = toRect.left - 20 - outerPortfolioAppListRect.left;
         directions.push({ xNext: xCurrent, yNext: yCurrent });
-
-        return directions;
       }
-      const pathFromTheRight = () => {
-        let xCurrent = fromRect.left - outerPortfolioAppListRect.left - 10;
-        let yCurrent = (fromRect.top + fromRect.height / 2) - outerPortfolioAppListRect.top;
-        
-        // Start from the left side in the middle of the label
-        directions.push({ xNext: xCurrent, yNext: yCurrent });
-        // Move HORIZONTALLY to the right edge of the container
-        xCurrent = (innerPortfolioAppsRect?.right ?? 0) + 10 - outerPortfolioAppListRect.left;
-        directions.push({ xNext: xCurrent, yNext: yCurrent });
-        
-        if (appColumnIndex !== itemsPerRow.current - 1) {
-          // Move VERTICALLY to the gap between rows of the target app
-          if (appRowIndex >= 2) {
-            // If the app is in a lower row, go above it
-            yCurrent = (toRect.top - 28) - outerPortfolioAppListRect.top;
-          } else {
-            // Else go below it
-            yCurrent = (toRect.bottom + 20) - outerPortfolioAppListRect.top;
-          }
-          directions.push({ xNext: xCurrent, yNext: yCurrent });
-          // Move HORIZONTALLY to align with the column of the target
-          xCurrent = toRect.right + 20 - outerPortfolioAppListRect.left;
-          directions.push({ xNext: xCurrent, yNext: yCurrent });
-        }
-        // Move VERTICALLY to align with the target
-        yCurrent = (toRect.top + toRect.height / 2) - 20 - outerPortfolioAppListRect.top;
-        directions.push({ xNext: xCurrent, yNext: yCurrent });
-        // Move HORIZONTALLY to the target
-        xCurrent = toRect.right - outerPortfolioAppListRect.left + 5;
-        directions.push({ xNext: xCurrent, yNext: yCurrent });
-
-        return directions;
-
-      }
-
-      return leftSide ? pathFromTheLeft() : pathFromTheRight();
-    }
-
-    const convertPathDirectionsToSVGPath = (directions: SVGPathDirection[]): string => {
-      if (directions.length === 0) return '';
+      // Move VERTICALLY to align with the target
+      yCurrent = (toRect.top + toRect.height / 2) - 20 - outerPortfolioAppListRect.top;
+      directions.push({ xNext: xCurrent, yNext: yCurrent });
       
-      var pathD = '';
-      for (let i = 0; i < directions.length; i++) {
-        if (i === 0) {
-          pathD = `M ${directions[i].xNext} ${directions[i].yNext} `;
-        }
-        else {
-          pathD += `L ${directions[i].xNext} ${directions[i].yNext} `;
-        }
-      }
-      return pathD;
+      // Move HORIZONTALLY to connect to the target
+      xCurrent = toRect.left - outerPortfolioAppListRect.left;
+      directions.push({ xNext: xCurrent, yNext: yCurrent });
     }
-  
-    const newPathString = convertPathDirectionsToSVGPath(getPathDirections());
 
+    const pathFromTheRight = () => {
+      let xCurrent = fromRect.left - outerPortfolioAppListRect.left - 10;
+      let yCurrent = (fromRect.top + fromRect.height / 2) - outerPortfolioAppListRect.top;
+      
+      // Start from the left side in the middle of the label
+      directions.push({ xNext: xCurrent, yNext: yCurrent });
+      // Move HORIZONTALLY to the right edge of the container
+      xCurrent = innerPortfolioAppsRect.right + 10 - outerPortfolioAppListRect.left;
+      directions.push({ xNext: xCurrent, yNext: yCurrent });
+      
+      if (appColumnIndex !== itemsPerRow.current - 1) {
+        // Move VERTICALLY to the gap between rows of the target app
+        if (appRowIndex >= 2) {
+          // If the app is in a lower row, go above it
+          yCurrent = (toRect.top - 28) - outerPortfolioAppListRect.top;
+        } else {
+          // Else go below it
+          yCurrent = (toRect.bottom + 20) - outerPortfolioAppListRect.top;
+        }
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+        // Move HORIZONTALLY to align with the column of the target
+        xCurrent = toRect.right + 20 - outerPortfolioAppListRect.left;
+        directions.push({ xNext: xCurrent, yNext: yCurrent });
+      }
+      // Move VERTICALLY to align with the target
+      yCurrent = (toRect.top + toRect.height / 2) - 20 - outerPortfolioAppListRect.top;
+      directions.push({ xNext: xCurrent, yNext: yCurrent });
+      // Move HORIZONTALLY to the target
+      xCurrent = toRect.right - outerPortfolioAppListRect.left + 5;
+      directions.push({ xNext: xCurrent, yNext: yCurrent });
+    }
+
+    leftSide ? pathFromTheLeft() : pathFromTheRight();
+    if (directions.length === 0) return '';
+
+    let pathD = '';
+    for (let i = 0; i < directions.length; i++) {
+      if (i === 0) {
+        pathD = `M ${directions[i].xNext} ${directions[i].yNext} `;
+      } else {
+        pathD += `L ${directions[i].xNext} ${directions[i].yNext} `;
+      }
+    }
+    return pathD;
+  }
+
+  const drawLineFromPath = (pathD: string, active: boolean): SVGSVGElement => {
     const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svgEl.setAttribute('width', '100%');
     svgEl.setAttribute('height', '100%');
@@ -351,7 +373,7 @@ export const PortfolioAppList: React.FC = () => {
     svgEl.classList.value = `drawline ${active ? 'active' : 'inactive'}`;
 
     const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    newPath.setAttribute('d', newPathString);
+    newPath.setAttribute('d', pathD);
     newPath.setAttribute('fill', 'transparent');
     newPath.setAttribute('stroke-width', '2'); 
 
