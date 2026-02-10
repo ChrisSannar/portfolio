@@ -46,6 +46,8 @@ export const PortfolioAppList: React.FC = () => {
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const resizeRafRef = React.useRef<number | null>(null);
+  const drawLinesTimeoutRef = React.useRef<number | null>(null);
+  const lastLinesKeyRef = React.useRef<string>('');
 
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
     // Clear any app selections
@@ -190,8 +192,27 @@ export const PortfolioAppList: React.FC = () => {
     }
   }, [appIndexOpen]);
   React.useLayoutEffect(() => {
-    drawAllLines();
-  }, [activeSkillIds, tempActiveSkillIds])
+    if (appIndexOpen !== -1) return;
+
+    const makeSetKey = (set: Set<string>) =>
+      Array.from(set).sort().join('|');
+    const key = [
+      makeSetKey(activeSkillIds),
+      makeSetKey(tempActiveSkillIds),
+      makeSetKey(activeAppIds),
+    ].join('::');
+
+    if (key === lastLinesKeyRef.current) return;
+
+    if (drawLinesTimeoutRef.current !== null) {
+      window.clearTimeout(drawLinesTimeoutRef.current);
+    }
+    drawLinesTimeoutRef.current = window.setTimeout(() => {
+      drawLinesTimeoutRef.current = null;
+      lastLinesKeyRef.current = key;
+      drawAllLines();
+    }, 0);
+  }, [appIndexOpen, activeSkillIds, tempActiveSkillIds, activeAppIds]);
 
   const getAppIndexCoords = (appId: string) => {
     const appIndex = apps.findIndex(a => a.id === appId);
