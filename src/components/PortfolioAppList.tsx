@@ -167,9 +167,17 @@ export const PortfolioAppList: React.FC = () => {
 
     windowResizeCalculations();
     window.addEventListener('resize', onResize);
+    let resizeObserver: ResizeObserver | null = null;
+    if (portfolioAppsRef.current && 'ResizeObserver' in window) {
+      resizeObserver = new ResizeObserver(onResize);
+      resizeObserver.observe(portfolioAppsRef.current);
+    }
 
     return () => {
       window.removeEventListener('resize', onResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       if (resizeRafRef.current !== null) {
         window.cancelAnimationFrame(resizeRafRef.current);
         resizeRafRef.current = null;
