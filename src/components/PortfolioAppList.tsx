@@ -32,6 +32,7 @@ export const PortfolioAppList: React.FC = () => {
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
+  // Delay for fading in content so layout expansion can finish first.
   const [contentFadeDelayMs, setContentFadeDelayMs] = React.useState<number>(0);
   const [activeSkillIds, setActiveSkillIds] = React.useState<Set<string>>(new Set());
   const [tempActiveSkillIds, setTempActiveSkillIds] = React.useState<Set<string>>(new Set());
@@ -44,9 +45,13 @@ export const PortfolioAppList: React.FC = () => {
   const currentRef = React.useRef<HTMLDivElement | null>(null);
   const appRefsMap = React.useRef<Map<string, AppRef>>(new Map());
   const skillLabelRefsMap = React.useRef<Map<string, SkillLabelRef>>(new Map());
+  // Throttle resize work to one per animation frame.
   const resizeRafRef = React.useRef<number | null>(null);
+  // Debounce line redraws when hover/active state changes rapidly.
   const drawLinesTimeoutRef = React.useRef<number | null>(null);
+  // Cache last key to skip redundant line redraws.
   const lastLinesKeyRef = React.useRef<string>('');
+  // Track pending open/close transitions to avoid timer-based sequencing.
   const pendingOpenRef = React.useRef<{ appId: string, index: number, targetEl: HTMLDivElement | null } | null>(null);
   const pendingCloseRef = React.useRef<{ appId: string } | null>(null);
 
@@ -56,6 +61,7 @@ export const PortfolioAppList: React.FC = () => {
 
     // Closing the currently open app
     if (appIndexOpen === index) {
+      // Queue close and let the fade-out transition drive the rest.
       pendingOpenRef.current = null;
       pendingCloseRef.current = { appId };
       setContentFadeDelayMs(0);
@@ -65,6 +71,7 @@ export const PortfolioAppList: React.FC = () => {
     
     // Switching to a different app
     if (appIndexOpen !== -1) {
+      // Queue a switch; finish fade-out, then open the next app.
       pendingCloseRef.current = null;
       pendingOpenRef.current = { appId, index, targetEl: e.currentTarget as HTMLDivElement };
       setContentFadeDelayMs(0);
@@ -77,6 +84,7 @@ export const PortfolioAppList: React.FC = () => {
     setAppIndexOpen(index);
     // Render content immediately with opacity 0
     setContentIndexToRender(index);
+    // Delay fade-in so the expanded space is in place.
     setContentFadeDelayMs(CONTENT_RENDER_DELAY_MS);
     setContentFadedIn(true);
     activateApp(appId, true);
@@ -86,6 +94,7 @@ export const PortfolioAppList: React.FC = () => {
     if (contentFadedIn) return;
 
     if (pendingOpenRef.current) {
+      // Finish switching to the new app after fade-out completes.
       const pending = pendingOpenRef.current;
       pendingOpenRef.current = null;
       currentRef.current = pending.targetEl;
@@ -98,6 +107,7 @@ export const PortfolioAppList: React.FC = () => {
     }
 
     if (pendingCloseRef.current) {
+      // Finish close after fade-out completes.
       const pending = pendingCloseRef.current;
       pendingCloseRef.current = null;
       setContentIndexToRender(-1);
@@ -148,6 +158,7 @@ export const PortfolioAppList: React.FC = () => {
     window.addEventListener('resize', onResize);
     let resizeObserver: ResizeObserver | null = null;
     if (portfolioAppsRef.current && 'ResizeObserver' in window) {
+      // Observe container size changes that aren't tied to window resize.
       resizeObserver = new ResizeObserver(onResize);
       resizeObserver.observe(portfolioAppsRef.current);
     }
@@ -189,11 +200,13 @@ export const PortfolioAppList: React.FC = () => {
       makeSetKey(activeAppIds),
     ].join('::');
 
+    // Skip redraws if inputs didn't change.
     if (key === lastLinesKeyRef.current) return;
 
     if (drawLinesTimeoutRef.current !== null) {
       window.clearTimeout(drawLinesTimeoutRef.current);
     }
+    // Debounce line rendering to reduce churn during hover changes.
     drawLinesTimeoutRef.current = window.setTimeout(() => {
       drawLinesTimeoutRef.current = null;
       lastLinesKeyRef.current = key;
@@ -202,6 +215,7 @@ export const PortfolioAppList: React.FC = () => {
   }, [appIndexOpen, activeSkillIds, tempActiveSkillIds, activeAppIds]);
 
   const appIndexMap = React.useMemo(() => {
+    // Cache app indices to avoid repeated findIndex in path calculations.
     const map = new Map<string, number>();
     apps.forEach((app, index) => {
       map.set(app.id, index);
