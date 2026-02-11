@@ -27,7 +27,10 @@ type SVGPathDirection = {
   yNext: number,
 }
 
-export const PortfolioAppList: React.FC = () => {
+export interface IPortfolioAppList {
+  
+}
+export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
   const [apps] = React.useState(PortApp.getAllApps(PortSkill.getAllSkills()));
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
@@ -402,7 +405,7 @@ export const PortfolioAppList: React.FC = () => {
           break;
         }
       }
-      
+
       if (allSkillsActive) {
         activeAppIdsLocal.add(app.id);
       }

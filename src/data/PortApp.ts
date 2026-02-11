@@ -66,14 +66,10 @@ export class PortSkill {
 
     static getAllSkills(): PortSkill[] {
         return [
-            new PortSkill('JavaScript', [
-            ]),
-            new PortSkill('TypeScript', [
-            ]),
-            new PortSkill('React', [
-            ]),
-            new PortSkill('CSS', [
-            ]),
+            new PortSkill('JavaScript', []),
+            new PortSkill('TypeScript', []),
+            new PortSkill('React', []),
+            new PortSkill('CSS', []),
             new PortSkill('Node.js', []),
             new PortSkill('Express', []),
             new PortSkill('MongoDB', []),
@@ -82,4 +78,10 @@ export class PortSkill {
             new PortSkill('Vue.js', []),
         ];
     }
+}
+
+export class HowDidIMakeThis {
+    constructor(
+        public readonly Skills: PortSkill[] = []
+    ) {}
 }
