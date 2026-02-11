@@ -53,6 +53,7 @@ export const PortfolioAppList: React.FC = () => {
     if (appIndexOpen === index) {
       // Fade out content first
       setContentFadedIn(false);
+      setFocusedAppId(null);
       
       if (fadeTimeoutRef.current) {
         clearTimeout(fadeTimeoutRef.current);
@@ -62,7 +63,6 @@ export const PortfolioAppList: React.FC = () => {
       fadeTimeoutRef.current = setTimeout(() => {
         setContentIndexToRender(-1);
         setAppIndexOpen(-1);
-        setFocusedAppId(null);
         fadeTimeoutRef.current = null;
       }, CONTENT_FADE_DURATION_MS);
       
@@ -92,7 +92,6 @@ export const PortfolioAppList: React.FC = () => {
         
         // After space animation settles, fade in the content
         contentTimeoutRef.current = setTimeout(() => {
-          setFocusedAppId(appId);
           setContentFadedIn(true);
           contentTimeoutRef.current = null;
         }, CONTENT_RENDER_DELAY_MS);
@@ -106,6 +105,7 @@ export const PortfolioAppList: React.FC = () => {
     // Opening the first app
     currentAppRef.current = e.currentTarget as HTMLDivElement;
     setAppIndexOpen(index);
+    setFocusedAppId(appId);
     // Render content immediately with opacity 0
     setContentIndexToRender(index);
     setContentFadedIn(false);
@@ -206,8 +206,9 @@ export const PortfolioAppList: React.FC = () => {
         from, 
         to, 
         leftSide: from?.side === "left",
-        active: activeSkillIds.has(skillId) || tempActiveSkillIds.has(skillId) &&
-          activeAppIds.has(appId)
+        active: tempActiveAppIds.has(appId) || 
+          focusedAppId === appId ||
+          activeSkillIds.has(skillId)
       };
     });
 
@@ -474,19 +475,24 @@ export const PortfolioAppList: React.FC = () => {
       .filter(({}, index) => index % 2 === 0);
     const rightLabels = Array.from(skillsToAppIdMap.entries())
       .filter(({}, index) => index % 2 !== 0);
+    
     return (
       <div className="labels-container">
         <div className="LeftSkillLabels">
           {leftLabels.map(([skill]) => {
+            let isActive = focusedAppId === null ?
+              activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) : 
+              tempActiveSkillIds.has(skill);
+
             return (
               <div
-                className={`PortfolioSkillLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
-                key={skill}
-                ref={ref => skillLabelRefsMap.current.set(skill, 
-                    { el: ref!, side: "left" })}
+              className={`PortfolioSkillLabel ${isActive ? 'active' : 'inactive'}`}
+              key={skill}
+              ref={ref => skillLabelRefsMap.current.set(skill, 
+                { el: ref!, side: "left" })}
                 data-label-id={skill}
                 onClick={() => onLabelClick(skill)}
-              >
+                >
                 <h3 className={`unselectable`}>{skill}</h3>
               </div>
             )
@@ -494,9 +500,13 @@ export const PortfolioAppList: React.FC = () => {
         </div>
         <div className="RightSkillLabels">
           {rightLabels.map(([skill]) => {
+            let isActive = focusedAppId === null ?
+              activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) : 
+              tempActiveSkillIds.has(skill);
+
             return (
               <div
-                className={`PortfolioSkillLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
+                className={`PortfolioSkillLabel ${isActive ? 'active' : 'inactive'}`}
                 key={skill}
                 ref={ref => skillLabelRefsMap.current.set(skill,
                     { el: ref!, side: "right" })}
@@ -557,6 +567,7 @@ export const PortfolioAppList: React.FC = () => {
                 tempActiveAppIds.has(app.id) ||  
                 focusedAppId === app.id ||
                 appOpen;
+
             } else {
               isAppActive = focusedAppId === app.id ? true : false;
             }
