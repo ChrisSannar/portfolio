@@ -390,11 +390,27 @@ export const PortfolioAppList: React.FC = () => {
 
   const applyAndLogic = () => {
     const activeAppIdsLocal = new Set<string>();
-    console.log('AND', activeAppIdsLocal);
+    for (const app of apps) {
+      if (app.Skills.length === 0) {
+        continue;
+      }
+
+      let allSkillsActive = true;
+      for (const skill of app.Skills) {
+        if (!activeSkillIds.has(skill.Title)) {
+          allSkillsActive = false;
+          break;
+        }
+      }
+      
+      if (allSkillsActive) {
+        activeAppIdsLocal.add(app.id);
+      }
+    }
+    setActiveAppIds(activeAppIdsLocal);
   }
   const applyOrLogic = () => {
     const activeAppIdsLocal = new Set<string>();
-    console.log('Skills', activeSkillIds);
     for (const app of apps) {
       const appSkills = app.Skills.map(s => s.Title);
       for (const appSkill of appSkills) {
@@ -404,7 +420,6 @@ export const PortfolioAppList: React.FC = () => {
       }
     }
     setActiveAppIds(activeAppIdsLocal);
-    console.log('OR');
   }
   const applyNotLogic = () => {
     console.log('NOT');
