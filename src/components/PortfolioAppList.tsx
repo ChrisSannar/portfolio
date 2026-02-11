@@ -34,21 +34,20 @@ export const PortfolioAppList: React.FC = () => {
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
   const [activeSkillIds, setActiveSkillIds] = React.useState<Set<string>>(new Set());
   const [tempActiveSkillIds, setTempActiveSkillIds] = React.useState<Set<string>>(new Set());
+  const [focusedAppId, setFocusedAppId] = React.useState<string | null>(null);
   const [activeAppIds, setActiveAppIds] = React.useState<Set<string>>(new Set());
   const [tempActiveAppIds, setTempActiveAppIds] = React.useState<Set<string>>(new Set());
   
   const itemsPerRow = React.useRef<number>(-1);
   const portfolioAppListRef = React.useRef<HTMLDivElement | null>(null);
   const portfolioAppsRef = React.useRef<HTMLDivElement | null>(null);
-  const currentRef = React.useRef<HTMLDivElement | null>(null);
+  const currentAppRef = React.useRef<HTMLDivElement | null>(null);
   const appRefsMap = React.useRef<Map<string, AppRef>>(new Map());
   const skillLabelRefsMap = React.useRef<Map<string, SkillLabelRef>>(new Map());
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
-    // Clear any app selections
-    deactivateAllApps(false);
 
     // Closing the currently open app
     if (appIndexOpen === index) {
@@ -63,7 +62,7 @@ export const PortfolioAppList: React.FC = () => {
       fadeTimeoutRef.current = setTimeout(() => {
         setContentIndexToRender(-1);
         setAppIndexOpen(-1);
-        activateApp(appId);
+        setFocusedAppId(null);
         fadeTimeoutRef.current = null;
       }, CONTENT_FADE_DURATION_MS);
       
@@ -81,7 +80,7 @@ export const PortfolioAppList: React.FC = () => {
       
       fadeTimeoutRef.current = setTimeout(() => {
         // Then switch to new app
-        currentRef.current = e.currentTarget as HTMLDivElement;
+        currentAppRef.current = e.currentTarget as HTMLDivElement;
         setAppIndexOpen(index);
         // Render new content immediately with opacity 0
         setContentIndexToRender(index);
@@ -93,7 +92,7 @@ export const PortfolioAppList: React.FC = () => {
         
         // After space animation settles, fade in the content
         contentTimeoutRef.current = setTimeout(() => {
-          activateApp(appId, true);
+          setFocusedAppId(appId);
           setContentFadedIn(true);
           contentTimeoutRef.current = null;
         }, CONTENT_RENDER_DELAY_MS);
@@ -105,7 +104,7 @@ export const PortfolioAppList: React.FC = () => {
     }
     
     // Opening the first app
-    currentRef.current = e.currentTarget as HTMLDivElement;
+    currentAppRef.current = e.currentTarget as HTMLDivElement;
     setAppIndexOpen(index);
     // Render content immediately with opacity 0
     setContentIndexToRender(index);
@@ -119,7 +118,6 @@ export const PortfolioAppList: React.FC = () => {
     // After space animation settles, fade in the content
     contentTimeoutRef.current = setTimeout(() => {
       setContentFadedIn(true);
-      activateApp(appId, true);
       contentTimeoutRef.current = null;
     }, CONTENT_RENDER_DELAY_MS);
   }
@@ -421,6 +419,7 @@ export const PortfolioAppList: React.FC = () => {
     }
     // drawAllLines();
   }, [App.Instance.NotLogic, App.Instance.AndLogic, activeSkillIds]);
+
   const toggleSkillActive = (skill: string) => {
     setActiveSkillIds(prev => {
       const newSet = new Set(prev);
@@ -432,12 +431,10 @@ export const PortfolioAppList: React.FC = () => {
       return newSet;
     });
   }
-  const activateApp = (appId: string, newConnections?: boolean) => {
-    setActiveAppIds(prev => {
-      const newSet = new Set(prev);
-      newSet.add(appId);
-      return newSet;
-    });
+  const removeTempSkillConnections = () => {
+    setTempActiveSkillIds(new Set());
+  }
+  const connectTempSkillsToApp = (appId: string, newConnections?: boolean) => {
     setTempActiveSkillIds(prev => {
       const newSet = newConnections ? new Set<string>() : new Set(prev);
       for (const skill of Array.from(skillsToAppIdMap.keys())) {
@@ -450,11 +447,22 @@ export const PortfolioAppList: React.FC = () => {
       return newSet;
     })
   }
-  const deactivateAllApps = (removeConnections?: boolean) => {
-    setActiveAppIds(new Set());
-    if (removeConnections) {
-      setTempActiveSkillIds(new Set());
-    }
+
+  const addTempAppId = (appId: string) => {
+    setTempActiveAppIds(prev => {
+      const newSet = new Set(prev);
+      newSet.add(appId);
+      return newSet;
+    });
+    connectTempSkillsToApp(appId);
+  }
+  const removeTempAppId = (appId: string) => {
+    setTempActiveAppIds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(appId);
+      return newSet;
+    });
+    removeTempSkillConnections();
   }
 
   const createSkillLabels = () => {
@@ -538,10 +546,20 @@ export const PortfolioAppList: React.FC = () => {
         >
           {apps.map((app, index) => {
             const appOpen = appIndexOpen === index;
-            const topPosition = currentRef.current ? 
-              currentRef.current.offsetTop +  // The top of the app
+            const topPosition = currentAppRef.current ? 
+              currentAppRef.current.offsetTop +  // The top of the app
               remToPx(PORTFOLIO_APP_HEIGHT_REM, document)  // The height of the app
               : 0;
+
+            let isAppActive 
+            if (focusedAppId === null) {
+              isAppActive = activeAppIds.has(app.id) || 
+                tempActiveAppIds.has(app.id) ||  
+                focusedAppId === app.id ||
+                appOpen;
+            } else {
+              isAppActive = focusedAppId === app.id ? true : false;
+            }
 
             return <div 
               className={`PortfolioAppWrapper`}
@@ -554,22 +572,22 @@ export const PortfolioAppList: React.FC = () => {
               ref={ref => {
                 if (ref) {
                   if (appOpen) {
-                    currentRef.current = ref;
+                    currentAppRef.current = ref;
                   }
                   appRefsMap.current.set(app.id, {el: ref});
                 } else {
                   appRefsMap.current.delete(app.id);
                 }
               }}
-              onMouseEnter={() => appIndexOpen === -1 ? activateApp(app.id) : null}
-              onMouseLeave={() => appIndexOpen === -1 ? deactivateAllApps(true) : null}
+              onMouseEnter={() => appIndexOpen === -1 ? addTempAppId(app.id) : null}
+              onMouseLeave={() => appIndexOpen === -1 ? removeTempAppId(app.id) : null}
               data-app-id={app.id}
               data-app-name={app.Title}
             >
               <PortfolioApp 
                 key={app.id} 
                 app={app}
-                className={activeAppIds.has(app.id) || appOpen ? 'active' : 'inactive'}
+                className={isAppActive ? 'active' : 'inactive'}
                 onClick={e => onPortfolioAppClick(e, app.id, index)}
               />
               {contentIndexToRender === index && 
