@@ -1,3 +1,4 @@
+import { hotProperty, IHotProperty } from './hotProperty';
 import { generateId } from './util';
 
 export class PortApp {
@@ -15,6 +16,7 @@ export class PortApp {
     }
 
     static getAllApps(skills: PortSkill[]): PortApp[] {
+        // TODO: ***TEMP*** Remove after implementing real data
         const getRandomSkills = (allSkills: PortSkill[], count: number) => {
             const shuffled = [...allSkills].sort(() => 0.5 - Math.random());
             return shuffled.slice(0, count);
@@ -80,8 +82,15 @@ export class PortSkill {
     }
 }
 
+export const HDIMT_TEXT_HOVER = "HDIMT_TEXT_HOVER"; 
 export class HowDidIMakeThis {
-    constructor(
-        public readonly Skills: PortSkill[] = []
-    ) {}
+    
+    public static getSkills(): PortSkill[] {
+        return [...PortSkill.getAllSkills()];
+    }
+
+    public static onTextHover(): IHotProperty<boolean> {
+        
+        return hotProperty<boolean>(false, HDIMT_TEXT_HOVER);
+    }
 }

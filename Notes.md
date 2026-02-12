@@ -1,7 +1,7 @@
 # Notes
 
 ## Next
- - When hovering over "How did I make this?", Activate corresponding skills
+ - Get "NOT" to work
  - Format Content windows to have content
  - Populate with real data
 

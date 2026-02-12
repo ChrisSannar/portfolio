@@ -151,6 +151,10 @@ a {
         transform: translate(-50%, -25%);
     }
 
+    .HDIMT:hover {
+        color: light-dark(var(--color-darkest), var(--color-lightest));
+    }
+
     .logic {
         flex-direction: column-reverse;
         align-items: flex-end;

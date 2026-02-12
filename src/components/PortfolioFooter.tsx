@@ -7,12 +7,17 @@ import mailIcon from '../assets/mail-icon.svg';
 import linkedinIcon from '../assets/linkedin-icon.svg';
 import figmaIcon from '../assets/figma-icon.svg';
 import { App, ColorModeType } from '../data/App';
+import { HowDidIMakeThis } from '../data/PortApp';
 
 export const PortfolioFooter: React.FC = () => {
     const app = App.getHotInstance().subscribe('PortfolioFooter');
     const notLogic = app.NotLogic;
     const andLogic = app.AndLogic;
     const darkMode = app.ColorMode === ColorModeType.DARK;
+
+    const toggleTextHover = () => {
+        HowDidIMakeThis.onTextHover().setFunc(val => !val);
+    }
 
     return (
         <div className='PortfolioFooter'>
@@ -41,7 +46,11 @@ export const PortfolioFooter: React.FC = () => {
                 </div>
             </div>
             <div className="center">
-                <h4 className={`unselectable`}>How did I make this?</h4>
+                <h4 
+                    className={`HDIMT unselectable`}
+                    onMouseEnter={() => toggleTextHover()}
+                    onMouseLeave={() => toggleTextHover()}
+                >How did I make this?</h4>
             </div>
             <div className="right unselectable">
                 <div className="this">

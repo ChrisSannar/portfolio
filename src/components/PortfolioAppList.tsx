@@ -1,6 +1,6 @@
 import React from 'react';
 import './PortfolioAppList.css';
-import { PortApp, PortSkill } from '../data/PortApp';
+import { HowDidIMakeThis, PortApp, PortSkill } from '../data/PortApp';
 import { PortfolioApp } from './PortfolioApp';
 import { remToPx } from '../data/util';
 import { App } from '../data/App';
@@ -27,9 +27,7 @@ type SVGPathDirection = {
   yNext: number,
 }
 
-export interface IPortfolioAppList {
-  
-}
+export interface IPortfolioAppList {}
 export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
   const [apps] = React.useState(PortApp.getAllApps(PortSkill.getAllSkills()));
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
@@ -50,6 +48,24 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
+  const HDIMTSkills: PortSkill[] = HowDidIMakeThis.getSkills();
+  const HDIMT_onTextHover = HowDidIMakeThis.onTextHover();
+  HDIMT_onTextHover.subscribe("PortfolioAppList")
+
+  React.useEffect(() => {
+    const onHover: boolean = HDIMT_onTextHover.getValue();
+    if (onHover) {
+      setTempActiveSkillIds(prev => {
+        const newSkills = new Set<string>();
+        HDIMTSkills.forEach(skill => newSkills.add(skill.Title))
+        return newSkills
+      });
+    } else {
+      removeTempSkillConnections();
+    }
+
+  }, [HDIMT_onTextHover.getValue()]);
+  
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
 
     // Closing the currently open app
