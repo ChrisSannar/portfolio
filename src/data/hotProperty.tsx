@@ -9,8 +9,7 @@ interface IHotPropertyListener {
 let listeners: Array<IHotPropertyListener> = [];
 
 export function setGlobalState<T>(newState: T, key?: string) {
-    const globalState = stateInstances.get(key);
-    if (globalState) {
+    if (stateInstances.has(key)) {
         stateInstances.set(key, newState as T);
         listeners.forEach((listener) => {
             if (listener?.key === key) {
@@ -32,7 +31,7 @@ export interface IHotProperty<T> {
 
 export function hotProperty<T>(initialState: T, key: string): IHotProperty<T> {
     let globalState = stateInstances.get(key);
-    if (!globalState) {
+    if (!stateInstances.has(key)) {
         globalState = initialState;
         stateInstances.set(key, globalState as T);
     }
@@ -70,7 +69,8 @@ export function hotProperty<T>(initialState: T, key: string): IHotProperty<T> {
         },
         set: (newState: T) => setGlobalState(newState, key),
         setFunc: function (func: (value: T) => T) {
-            setGlobalState(func(globalState), key);
+            const currentValue = stateInstances.get(key) as T;
+            setGlobalState(func(currentValue), key);
         },
     };
 }
