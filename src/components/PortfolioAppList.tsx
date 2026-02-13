@@ -408,7 +408,7 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
   }, []);
 
   const applyAndLogic = (notLogic: boolean) => {
-    const activeAppIdsLocal = new Set<string>();
+    const localActiveAppIds = new Set<string>();
     for (const app of apps) {
       if (app.Skills.length === 0) {
         continue;
@@ -418,43 +418,46 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
       if (app.Skills.every(appSkill => 
           Array.from(activeSkillIds).includes(appSkill.Title))) {
             if (!notLogic) {
-              activeAppIdsLocal.add(app.id);
+              localActiveAppIds.add(app.id);
             }
       } else if (notLogic) {
-        activeAppIdsLocal.add(app.id);
+        localActiveAppIds.add(app.id);
       }
     }
-    setActiveAppIds(activeAppIdsLocal);
+    setActiveAppIds(localActiveAppIds);
   }
   const applyOrLogic = (notLogic: boolean) => {
-    const activeAppIdsLocal = new Set<string>();
-    // const antiActiveAppIdsLocal = new Set<string>();
+    const localActiveAppIds = new Set<string>();
+    const antiActiveAppIdsLocal = new Set<string>();
     for (const app of apps) {
+      if (notLogic && app.Skills.length === 0) {
+        localActiveAppIds.add(app.id);
+      }
+
       const appSkills = app.Skills.map(s => s.Title);
       for (const appSkill of appSkills) {
-        // if (activeSkillIds.has(appSkill)) {
-        //   activeAppIdsLocal.add(app.id);
-        // }
-        if (activeSkillIds.has(appSkill)) {
-          activeAppIdsLocal.add(app.id);
+        if (!notLogic) {
+          if (activeSkillIds.has(appSkill)) {
+            localActiveAppIds.add(app.id);  
+          }
+        } else {
+          if (activeSkillIds.has(appSkill)) {
+            localActiveAppIds.delete(app.id);
+            antiActiveAppIdsLocal.add(app.id);
+          } else if (!antiActiveAppIdsLocal.has(app.id)) {
+            localActiveAppIds.add(app.id);
+          }
         }
       }
     }
-    setActiveAppIds(activeAppIdsLocal);
+    setActiveAppIds(localActiveAppIds);
   }
-  // const applyNotLogic = () => {
-    
-  // }
   React.useEffect(() => {
     if (App.Instance.AndLogic) {
       applyAndLogic(App.Instance.NotLogic);
     } else {
       applyOrLogic(App.Instance.NotLogic);
     }
-    // if (App.Instance.NotLogic) {
-    //   applyNotLogic();
-    // }
-    // drawAllLines();
   }, [App.Instance.NotLogic, App.Instance.AndLogic, activeSkillIds]);
 
   const toggleSkillActive = (skill: string) => {
