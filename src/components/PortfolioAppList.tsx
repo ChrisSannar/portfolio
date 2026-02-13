@@ -407,32 +407,34 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
     return tuples;
   }, []);
 
-  const applyAndLogic = () => {
+  const applyAndLogic = (notLogic: boolean) => {
     const activeAppIdsLocal = new Set<string>();
     for (const app of apps) {
       if (app.Skills.length === 0) {
         continue;
       }
 
-      let allSkillsActive = true;
-      for (const skill of app.Skills) {
-        if (!activeSkillIds.has(skill.Title)) {
-          allSkillsActive = false;
-          break;
-        }
-      }
-
-      if (allSkillsActive) {
+      // Only if the apps skills are the same as active skills, add it
+      if (app.Skills.every(appSkill => 
+          Array.from(activeSkillIds).includes(appSkill.Title))) {
+            if (!notLogic) {
+              activeAppIdsLocal.add(app.id);
+            }
+      } else if (notLogic) {
         activeAppIdsLocal.add(app.id);
       }
     }
     setActiveAppIds(activeAppIdsLocal);
   }
-  const applyOrLogic = () => {
+  const applyOrLogic = (notLogic: boolean) => {
     const activeAppIdsLocal = new Set<string>();
+    // const antiActiveAppIdsLocal = new Set<string>();
     for (const app of apps) {
       const appSkills = app.Skills.map(s => s.Title);
       for (const appSkill of appSkills) {
+        // if (activeSkillIds.has(appSkill)) {
+        //   activeAppIdsLocal.add(app.id);
+        // }
         if (activeSkillIds.has(appSkill)) {
           activeAppIdsLocal.add(app.id);
         }
@@ -440,18 +442,18 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
     }
     setActiveAppIds(activeAppIdsLocal);
   }
-  const applyNotLogic = () => {
-    console.log('NOT');
-  }
+  // const applyNotLogic = () => {
+    
+  // }
   React.useEffect(() => {
     if (App.Instance.AndLogic) {
-      applyAndLogic();
+      applyAndLogic(App.Instance.NotLogic);
     } else {
-      applyOrLogic();
+      applyOrLogic(App.Instance.NotLogic);
     }
-    if (App.Instance.NotLogic) {
-      applyNotLogic();
-    }
+    // if (App.Instance.NotLogic) {
+    //   applyNotLogic();
+    // }
     // drawAllLines();
   }, [App.Instance.NotLogic, App.Instance.AndLogic, activeSkillIds]);
 
