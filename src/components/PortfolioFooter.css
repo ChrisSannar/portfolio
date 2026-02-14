@@ -88,6 +88,7 @@ a {
 .not {
     width: 2.5rem;
     justify-content: center;
+    cursor: pointer;
 }
 
 .and-or-selector, .not-selector, .color-mode-selector {
@@ -148,6 +149,10 @@ a {
     .center {
         bottom: 1.5rem;
         transform: translate(-50%, -25%);
+    }
+
+    .HDIMT:hover {
+        color: light-dark(var(--color-darkest), var(--color-lightest));
     }
 
     .logic {

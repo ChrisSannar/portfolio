@@ -7,11 +7,27 @@ export enum ColorModeType {
 
 export class App {
     public ColorMode: ColorModeType = ColorModeType.DARK;
+    public NotLogic: boolean = false;
+    public AndLogic: boolean = false;
 
     static toggleColorMode() {
         const currentMode = App.Instance.ColorMode;
         App.getHotInstance().setFunc((app) => {
             app.ColorMode = currentMode === ColorModeType.LIGHT ? ColorModeType.DARK : ColorModeType.LIGHT;
+            return app;
+        });
+    }
+
+    static toggleNotLogic() {
+        App.getHotInstance().setFunc((app) => {
+            app.NotLogic = !app.NotLogic;
+            return app;
+        });
+    }
+
+    static toggleAndLogic() {
+        App.getHotInstance().setFunc((app) => {
+            app.AndLogic = !app.AndLogic;
             return app;
         });
     }

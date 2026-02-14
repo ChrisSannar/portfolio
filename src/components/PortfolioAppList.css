@@ -17,7 +17,7 @@
     pointer-events: none;
 }
 
-.LeftTechLabels, .RightTechLabels {
+.LeftSkillLabels, .RightSkillLabels {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -27,21 +27,21 @@
     pointer-events: auto;
 }
 
-.LeftTechLabels::-webkit-scrollbar, .RightTechLabels::-webkit-scrollbar {
+.LeftSkillLabels::-webkit-scrollbar, .RightSkillLabels::-webkit-scrollbar {
     display: none;
 }
 
-.LeftTechLabels {
+.LeftSkillLabels {
     align-items: flex-start;
 }
 
-.RightTechLabels {
+.RightSkillLabels {
     align-items: flex-end;
 }
 
-.RightTechLabels h3 { text-align: right; }
+.RightSkillLabels h3 { text-align: right; }
 
-.PortfolioTechLabel {
+.PortfolioSkillLabel {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,7 +50,7 @@
     will-change: color;
 }
 
-.PortfolioTechLabel h3 {
+.PortfolioSkillLabel h3 {
     margin: 0;
     text-align: center;
     font-size: 1.4rem;
@@ -59,12 +59,12 @@
     transition: 0.2s;
 }
 
-.PortfolioTechLabel.active {
+.PortfolioSkillLabel.active {
     h3 {
         color: light-dark(var(--color-darkest), var(--color-lightest));
     }
 }
-.PortfolioTechLabel.inactive {
+.PortfolioSkillLabel.inactive {
     h3 {
         color: light-dark(var(--color-light-gray), var(--color-dark-gray));
     }
@@ -125,6 +125,7 @@
 
 @media (max-width: 1023px) {
     .labels-container h3 { max-width: 128px; }
+    .PortfolioAppList { margin-bottom: 8rem; }
 }
 
 /* Mobile Styles */
@@ -145,7 +146,7 @@
         margin: auto;
     }
 
-    .LeftTechLabels, .RightTechLabels {
+    .LeftSkillLabels, .RightSkillLabels {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
@@ -153,12 +154,12 @@
         gap: 0.5rem;
     }
 
-    .PortfolioTechLabel {
+    .PortfolioSkillLabel {
         border: var(--portfolio-border);
         padding: 0.4rem 1rem;
     }
 
-    .PortfolioTechLabel h3 {
+    .PortfolioSkillLabel h3 {
         font-size: 1.2rem;
         cursor: pointer;
     }

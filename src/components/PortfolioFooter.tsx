@@ -7,15 +7,22 @@ import mailIcon from '../assets/mail-icon.svg';
 import linkedinIcon from '../assets/linkedin-icon.svg';
 import figmaIcon from '../assets/figma-icon.svg';
 import { App, ColorModeType } from '../data/App';
+import { HowDidIMakeThis } from '../data/PortApp';
 
 export const PortfolioFooter: React.FC = () => {
     const app = App.getHotInstance().subscribe('PortfolioFooter');
+    const notLogic = app.NotLogic;
+    const andLogic = app.AndLogic;
     const darkMode = app.ColorMode === ColorModeType.DARK;
+
+    const toggleTextHover = () => {
+        HowDidIMakeThis.onTextHover().setFunc(val => !val);
+    }
 
     return (
         <div className='PortfolioFooter'>
             <div className='left'>
-                <h3>Contact</h3>
+                <h3 className={`unselectable`}>Contact</h3>
                 <div className="contact-info">
                     <p><a href="mailto:chris.sannar.dev@gmail.com">chris.sannar.dev@gmail.com</a></p>
                     <p><a href="https://www.linkedin.com/in/christopher-sannar-8753ab9a/" target="_blank">LinkedIn</a></p>
@@ -39,21 +46,25 @@ export const PortfolioFooter: React.FC = () => {
                 </div>
             </div>
             <div className="center">
-                <h4>How did I make this?</h4>
+                <h4 
+                    className={`HDIMT unselectable`}
+                    onMouseEnter={() => toggleTextHover()}
+                    onMouseLeave={() => toggleTextHover()}
+                >How did I make this?</h4>
             </div>
-            <div className="right">
+            <div className="right unselectable">
                 <div className="this">
                     <p>This?</p>
                 </div>
                 <div className="logic">
-                    <div className="and-or">
-                        <p className={`and`}>AND</p>
-                        <p className={`or logic-selected`}>OR</p>
-                        <div className="and-or-selector" style={{ transform: `translateX(90%)` }} />
+                    <div className="and-or" onClick={() => App.toggleAndLogic()}>
+                        <p className={`and ${andLogic ? 'logic-selected' : ''}`}>AND</p>
+                        <p className={`or ${andLogic ? '' : 'logic-selected'}`}>OR</p>
+                        <div className="and-or-selector" style={{ transform: `translateX(${andLogic ? '-10%' : '90%'})` }} />
                     </div>
-                    <div className="not">
-                        <p className={`logic-selected`}>NOT</p>
-                        <div className='not-selector' />
+                    <div className="not" onClick={() => App.toggleNotLogic()}>
+                        <p className={notLogic ? `logic-selected` : ''}>NOT</p>
+                        <div className='not-selector' style={{ opacity: notLogic ? '1' : '0'}} />
                     </div>
                 </div>
                 <div className="color-mode" onClick={() => App.toggleColorMode()}>

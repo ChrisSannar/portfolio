@@ -1,8 +1,9 @@
 import React from 'react';
 import './PortfolioAppList.css';
-import { PortApp, PortSkill } from '../data/PortApp';
+import { HowDidIMakeThis, PortApp, PortSkill } from '../data/PortApp';
 import { PortfolioApp } from './PortfolioApp';
 import { remToPx } from '../data/util';
+import { App } from '../data/App';
 
 const PORTFOLIO_APP_HEIGHT_REM = 10;
 const PORTFOLIO_APP_WIDTH_REM = 6;
@@ -12,7 +13,7 @@ const ANIMATION_DURATION_MS = 300;
 const CONTENT_RENDER_DELAY_MS = ANIMATION_DURATION_MS + 10;
 const CONTENT_FADE_DURATION_MS = 200;
 
-type TechLabelRef = { 
+type SkillLabelRef = { 
   el: HTMLDivElement, 
   side: "left" | "right"
 }
@@ -26,32 +27,52 @@ type SVGPathDirection = {
   yNext: number,
 }
 
-export const PortfolioAppList: React.FC = () => {
+export interface IPortfolioAppList {}
+export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
   const [apps] = React.useState(PortApp.getAllApps(PortSkill.getAllSkills()));
   const [appIndexOpen, setAppIndexOpen] = React.useState<number>(-1);
-  const itemsPerRow = React.useRef<number>(-1);
   const [contentIndexToRender, setContentIndexToRender] = React.useState<number>(-1);
   const [contentFadedIn, setContentFadedIn] = React.useState<boolean>(false);
   const [activeSkillIds, setActiveSkillIds] = React.useState<Set<string>>(new Set());
   const [tempActiveSkillIds, setTempActiveSkillIds] = React.useState<Set<string>>(new Set());
+  const [focusedAppId, setFocusedAppId] = React.useState<string | null>(null);
   const [activeAppIds, setActiveAppIds] = React.useState<Set<string>>(new Set());
-
+  const [tempActiveAppIds, setTempActiveAppIds] = React.useState<Set<string>>(new Set());
+  
+  const itemsPerRow = React.useRef<number>(-1);
   const portfolioAppListRef = React.useRef<HTMLDivElement | null>(null);
   const portfolioAppsRef = React.useRef<HTMLDivElement | null>(null);
-  const currentRef = React.useRef<HTMLDivElement | null>(null);
+  const currentAppRef = React.useRef<HTMLDivElement | null>(null);
   const appRefsMap = React.useRef<Map<string, AppRef>>(new Map());
-  const techLabelRefsMap = React.useRef<Map<string, TechLabelRef>>(new Map());
+  const skillLabelRefsMap = React.useRef<Map<string, SkillLabelRef>>(new Map());
   const contentTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const fadeTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
+  const HDIMTSkills: PortSkill[] = HowDidIMakeThis.getSkills();
+  const HDIMT_onTextHover = HowDidIMakeThis.onTextHover();
+  HDIMT_onTextHover.subscribe("PortfolioAppList")
+
+  React.useEffect(() => {
+    const onHover: boolean = HDIMT_onTextHover.getValue();
+    if (onHover) {
+      setTempActiveSkillIds(prev => {
+        const newSkills = new Set<string>();
+        HDIMTSkills.forEach(skill => newSkills.add(skill.Title))
+        return newSkills
+      });
+    } else {
+      removeTempSkillConnections();
+    }
+
+  }, [HDIMT_onTextHover.getValue()]);
+  
   const onPortfolioAppClick = (e: React.MouseEvent, appId: string, index: number) => {
-    // Clear any app selections
-    deactivateApps(false);
 
     // Closing the currently open app
     if (appIndexOpen === index) {
       // Fade out content first
       setContentFadedIn(false);
+      setFocusedAppId(null);
       
       if (fadeTimeoutRef.current) {
         clearTimeout(fadeTimeoutRef.current);
@@ -61,7 +82,6 @@ export const PortfolioAppList: React.FC = () => {
       fadeTimeoutRef.current = setTimeout(() => {
         setContentIndexToRender(-1);
         setAppIndexOpen(-1);
-        activateApp(appId);
         fadeTimeoutRef.current = null;
       }, CONTENT_FADE_DURATION_MS);
       
@@ -79,7 +99,7 @@ export const PortfolioAppList: React.FC = () => {
       
       fadeTimeoutRef.current = setTimeout(() => {
         // Then switch to new app
-        currentRef.current = e.currentTarget as HTMLDivElement;
+        currentAppRef.current = e.currentTarget as HTMLDivElement;
         setAppIndexOpen(index);
         // Render new content immediately with opacity 0
         setContentIndexToRender(index);
@@ -91,7 +111,6 @@ export const PortfolioAppList: React.FC = () => {
         
         // After space animation settles, fade in the content
         contentTimeoutRef.current = setTimeout(() => {
-          activateApp(appId, true);
           setContentFadedIn(true);
           contentTimeoutRef.current = null;
         }, CONTENT_RENDER_DELAY_MS);
@@ -103,8 +122,9 @@ export const PortfolioAppList: React.FC = () => {
     }
     
     // Opening the first app
-    currentRef.current = e.currentTarget as HTMLDivElement;
+    currentAppRef.current = e.currentTarget as HTMLDivElement;
     setAppIndexOpen(index);
+    setFocusedAppId(appId);
     // Render content immediately with opacity 0
     setContentIndexToRender(index);
     setContentFadedIn(false);
@@ -117,7 +137,6 @@ export const PortfolioAppList: React.FC = () => {
     // After space animation settles, fade in the content
     contentTimeoutRef.current = setTimeout(() => {
       setContentFadedIn(true);
-      activateApp(appId, true);
       contentTimeoutRef.current = null;
     }, CONTENT_RENDER_DELAY_MS);
   }
@@ -206,8 +225,9 @@ export const PortfolioAppList: React.FC = () => {
         from, 
         to, 
         leftSide: from?.side === "left",
-        active: activeSkillIds.has(skillId) || tempActiveSkillIds.has(skillId) &&
-          activeAppIds.has(appId)
+        active: tempActiveAppIds.has(appId) || 
+          focusedAppId === appId ||
+          activeSkillIds.has(skillId)
       };
     });
 
@@ -360,8 +380,8 @@ export const PortfolioAppList: React.FC = () => {
   const getAppFromId = (id: string): AppRef | null => {
     return appRefsMap.current.get(id) || null;
   }
-  const getLabelFromId = (id: string): TechLabelRef | null => {
-    return techLabelRefsMap.current.get(id) || null;
+  const getLabelFromId = (id: string): SkillLabelRef | null => {
+    return skillLabelRefsMap.current.get(id) || null;
   }
   const skillsToAppIdMap: Map<string, Set<string>> = React.useMemo(() => {
     const mappers: Map<string, Set<string>> = new Map();
@@ -386,6 +406,60 @@ export const PortfolioAppList: React.FC = () => {
     });
     return tuples;
   }, []);
+
+  const applyAndLogic = (notLogic: boolean) => {
+    const localActiveAppIds = new Set<string>();
+    for (const app of apps) {
+      if (app.Skills.length === 0) {
+        continue;
+      }
+
+      // Only if the apps skills are the same as active skills, add it
+      if (app.Skills.every(appSkill => 
+          Array.from(activeSkillIds).includes(appSkill.Title))) {
+            if (!notLogic) {
+              localActiveAppIds.add(app.id);
+            }
+      } else if (notLogic) {
+        localActiveAppIds.add(app.id);
+      }
+    }
+    setActiveAppIds(localActiveAppIds);
+  }
+  const applyOrLogic = (notLogic: boolean) => {
+    const localActiveAppIds = new Set<string>();
+    const antiActiveAppIdsLocal = new Set<string>();
+    for (const app of apps) {
+      if (notLogic && app.Skills.length === 0) {
+        localActiveAppIds.add(app.id);
+      }
+
+      const appSkills = app.Skills.map(s => s.Title);
+      for (const appSkill of appSkills) {
+        if (!notLogic) {
+          if (activeSkillIds.has(appSkill)) {
+            localActiveAppIds.add(app.id);  
+          }
+        } else {
+          if (activeSkillIds.has(appSkill)) {
+            localActiveAppIds.delete(app.id);
+            antiActiveAppIdsLocal.add(app.id);
+          } else if (!antiActiveAppIdsLocal.has(app.id)) {
+            localActiveAppIds.add(app.id);
+          }
+        }
+      }
+    }
+    setActiveAppIds(localActiveAppIds);
+  }
+  React.useEffect(() => {
+    if (App.Instance.AndLogic) {
+      applyAndLogic(App.Instance.NotLogic);
+    } else {
+      applyOrLogic(App.Instance.NotLogic);
+    }
+  }, [App.Instance.NotLogic, App.Instance.AndLogic, activeSkillIds]);
+
   const toggleSkillActive = (skill: string) => {
     setActiveSkillIds(prev => {
       const newSet = new Set(prev);
@@ -397,12 +471,10 @@ export const PortfolioAppList: React.FC = () => {
       return newSet;
     });
   }
-  const activateApp = (appId: string, newConnections?: boolean) => {
-    setActiveAppIds(prev => {
-      const newSet = new Set(prev);
-      newSet.add(appId);
-      return newSet;
-    });
+  const removeTempSkillConnections = () => {
+    setTempActiveSkillIds(new Set());
+  }
+  const connectTempSkillsToApp = (appId: string, newConnections?: boolean) => {
     setTempActiveSkillIds(prev => {
       const newSet = newConnections ? new Set<string>() : new Set(prev);
       for (const skill of Array.from(skillsToAppIdMap.keys())) {
@@ -415,46 +487,70 @@ export const PortfolioAppList: React.FC = () => {
       return newSet;
     })
   }
-  const deactivateApps = (removeConnections?: boolean) => {
-    setActiveAppIds(new Set());
-    if (removeConnections) {
-      setTempActiveSkillIds(new Set());
-    }
+
+  const addTempAppId = (appId: string) => {
+    setTempActiveAppIds(prev => {
+      const newSet = new Set(prev);
+      newSet.add(appId);
+      return newSet;
+    });
+    connectTempSkillsToApp(appId);
+  }
+  const removeTempAppId = (appId: string) => {
+    setTempActiveAppIds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(appId);
+      return newSet;
+    });
+    removeTempSkillConnections();
   }
 
-  const createTechLabels = () => {
+  const createSkillLabels = () => {
+    const onLabelClick = (skill: string) => {
+      if (appIndexOpen !== -1) return;
+      toggleSkillActive(skill);
+    }
     const leftLabels = Array.from(skillsToAppIdMap.entries())
       .filter(({}, index) => index % 2 === 0);
     const rightLabels = Array.from(skillsToAppIdMap.entries())
       .filter(({}, index) => index % 2 !== 0);
+    
     return (
       <div className="labels-container">
-        <div className="LeftTechLabels">
+        <div className="LeftSkillLabels">
           {leftLabels.map(([skill]) => {
+            let isActive = focusedAppId === null ?
+              activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) : 
+              tempActiveSkillIds.has(skill);
+
             return (
               <div
-                className={`PortfolioTechLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
-                key={skill}
-                ref={ref => techLabelRefsMap.current.set(skill, 
-                    { el: ref!, side: "left" })}
+              className={`PortfolioSkillLabel ${isActive ? 'active' : 'inactive'}`}
+              key={skill}
+              ref={ref => skillLabelRefsMap.current.set(skill, 
+                { el: ref!, side: "left" })}
                 data-label-id={skill}
-                onClick={() => toggleSkillActive(skill)}
-              >
+                onClick={() => onLabelClick(skill)}
+                >
                 <h3 className={`unselectable`}>{skill}</h3>
               </div>
             )
           })}
         </div>
-        <div className="RightTechLabels">
+        <div className="RightSkillLabels">
           {rightLabels.map(([skill]) => {
+            let isActive = focusedAppId === null ?
+              activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) : 
+              tempActiveSkillIds.has(skill);
+
             return (
               <div
-                className={`PortfolioTechLabel ${activeSkillIds.has(skill) || tempActiveSkillIds.has(skill) ? 'active' : 'inactive'}`}
+                className={`PortfolioSkillLabel ${isActive ? 'active' : 'inactive'}`}
                 key={skill}
-                ref={ref => techLabelRefsMap.current.set(skill,
+                ref={ref => skillLabelRefsMap.current.set(skill,
                     { el: ref!, side: "right" })}
                 data-label-id={skill}
-                onClick={() => toggleSkillActive(skill)}
+                onClick={() => onLabelClick(skill)}
               >
                 <h3 className={`unselectable`}>{skill}</h3>
               </div>
@@ -499,10 +595,21 @@ export const PortfolioAppList: React.FC = () => {
         >
           {apps.map((app, index) => {
             const appOpen = appIndexOpen === index;
-            const topPosition = currentRef.current ? 
-              currentRef.current.offsetTop +  // The top of the app
+            const topPosition = currentAppRef.current ? 
+              currentAppRef.current.offsetTop +  // The top of the app
               remToPx(PORTFOLIO_APP_HEIGHT_REM, document)  // The height of the app
               : 0;
+
+            let isAppActive 
+            if (focusedAppId === null) {
+              isAppActive = activeAppIds.has(app.id) || 
+                tempActiveAppIds.has(app.id) ||  
+                focusedAppId === app.id ||
+                appOpen;
+
+            } else {
+              isAppActive = focusedAppId === app.id ? true : false;
+            }
 
             return <div 
               className={`PortfolioAppWrapper`}
@@ -515,22 +622,22 @@ export const PortfolioAppList: React.FC = () => {
               ref={ref => {
                 if (ref) {
                   if (appOpen) {
-                    currentRef.current = ref;
+                    currentAppRef.current = ref;
                   }
                   appRefsMap.current.set(app.id, {el: ref});
                 } else {
                   appRefsMap.current.delete(app.id);
                 }
               }}
-              onMouseEnter={() => appIndexOpen === -1 ? activateApp(app.id) : null}
-              onMouseLeave={() => appIndexOpen === -1 ? deactivateApps(true) : null}
+              onMouseEnter={() => appIndexOpen === -1 ? addTempAppId(app.id) : null}
+              onMouseLeave={() => appIndexOpen === -1 ? removeTempAppId(app.id) : null}
               data-app-id={app.id}
               data-app-name={app.Title}
             >
               <PortfolioApp 
                 key={app.id} 
                 app={app}
-                className={activeAppIds.has(app.id) || appOpen ? 'active' : 'inactive'}
+                className={isAppActive ? 'active' : 'inactive'}
                 onClick={e => onPortfolioAppClick(e, app.id, index)}
               />
               {contentIndexToRender === index && 
@@ -557,7 +664,7 @@ export const PortfolioAppList: React.FC = () => {
           })}
         </div>
       </div>
-      {createTechLabels()}
+      {createSkillLabels()}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { hotProperty, IHotProperty } from './hotProperty';
 import { generateId } from './util';
 
 export class PortApp {
@@ -15,6 +16,7 @@ export class PortApp {
     }
 
     static getAllApps(skills: PortSkill[]): PortApp[] {
+        // TODO: ***TEMP*** Remove after implementing real data
         const getRandomSkills = (allSkills: PortSkill[], count: number) => {
             const shuffled = [...allSkills].sort(() => 0.5 - Math.random());
             return shuffled.slice(0, count);
@@ -66,14 +68,10 @@ export class PortSkill {
 
     static getAllSkills(): PortSkill[] {
         return [
-            new PortSkill('JavaScript', [
-            ]),
-            new PortSkill('TypeScript', [
-            ]),
-            new PortSkill('React', [
-            ]),
-            new PortSkill('CSS', [
-            ]),
+            new PortSkill('JavaScript', []),
+            new PortSkill('TypeScript', []),
+            new PortSkill('React', []),
+            new PortSkill('CSS', []),
             new PortSkill('Node.js', []),
             new PortSkill('Express', []),
             new PortSkill('MongoDB', []),
@@ -81,5 +79,18 @@ export class PortSkill {
             new PortSkill('HTML', []),
             new PortSkill('Vue.js', []),
         ];
+    }
+}
+
+export const HDIMT_TEXT_HOVER = "HDIMT_TEXT_HOVER"; 
+export class HowDidIMakeThis {
+    
+    public static getSkills(): PortSkill[] {
+        return [...PortSkill.getAllSkills()];
+    }
+
+    public static onTextHover(): IHotProperty<boolean> {
+        
+        return hotProperty<boolean>(false, HDIMT_TEXT_HOVER);
     }
 }
