@@ -10,7 +10,9 @@ export class PortApp {
         public readonly Description: string = '',
         public readonly ImageUrl: string = '',
         public readonly AppUrl: string = '',
-        public readonly RepoUrl: string = ''
+        public readonly RepoUrl: string = '',
+        public readonly Timeline: string = '',
+        public readonly Body: string = '',
     ) {
         this.id = generateId();
     }
@@ -23,6 +25,16 @@ export class PortApp {
         };
 
         return [
+            new PortApp(
+                'UVU',
+                getRandomSkills(skills, 2),
+                'Bachelors of Computer Science from Utah Valley University',
+                '',
+                '',
+                '',
+                '(May 2019)',
+                `Intermediate to advanced computer science concepts, including algorithms, data structures, and software development, with a strong focus on networking principles, protocols, and implementation.`,
+            ),
             new PortApp(
                 'ASDFASDF ASDF ASDFASDFASDF', 
                 getRandomSkills(skills, 3),

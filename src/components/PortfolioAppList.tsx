@@ -8,7 +8,7 @@ import { App } from '../data/App';
 const PORTFOLIO_APP_HEIGHT_REM = 10;
 const PORTFOLIO_APP_WIDTH_REM = 6;
 const PORTFOLIO_APP_GRID_GAP_REM = 3;
-const PORTFOLIO_APP_CONTENT_HEIGHT_REM = 24;
+const PORTFOLIO_APP_CONTENT_HEIGHT_REM = 20;
 const ANIMATION_DURATION_MS = 300;
 const CONTENT_RENDER_DELAY_MS = ANIMATION_DURATION_MS + 10;
 const CONTENT_FADE_DURATION_MS = 200;
@@ -50,7 +50,15 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
 
   const HDIMTSkills: PortSkill[] = HowDidIMakeThis.getSkills();
   const HDIMT_onTextHover = HowDidIMakeThis.onTextHover();
-  HDIMT_onTextHover.subscribe("PortfolioAppList")
+  HDIMT_onTextHover.subscribe("PortfolioAppList");
+
+  // *** TEMP
+  React.useEffect(() => {
+    setTimeout(() => {
+      onPortfolioAppClick({} as React.MouseEvent, apps[0].id, 0);
+    }, 500)
+  }, []);
+  // ***
 
   React.useEffect(() => {
     const onHover: boolean = HDIMT_onTextHover.getValue();
@@ -656,7 +664,21 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
                       transition: `opacity ${CONTENT_FADE_DURATION_MS}ms ease-in-out`,
                     }}
                   >
-                    {app.Title}
+                    <div className="PortfolioAppContentBody">
+                      <div className='BodyTitle'>
+                        <h4>{app.Title}</h4>
+                        {app.Timeline ? <span className='Timeline'><i>{app.Timeline}</i></span> : null}
+                      </div>
+                      <p className='Description'><i>{app.Description}</i></p>
+                      <div className="SkillList">
+                        <span className='SkillListTitle'>
+                          <b>Skills:</b>
+                        </span>
+                        <span className='SkillListBody'>{app.Skills.map((skill, idx) => <span>{skill.Title}{idx === app.Skills.length - 1 ? '' : `, `}</span>)}</span>
+                      </div>
+                      <p className="Body">{app.Body}</p>
+                    </div>
+                    <img src={app.ImageUrl} alt={`${app.Title}_temp-image`} />
                   </div>
                 })()
               }

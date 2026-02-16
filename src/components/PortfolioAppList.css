@@ -116,11 +116,45 @@
 }
 .PortfolioAppContent {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     gap: 0.5rem;
     border: var(--portfolio-border);
+    padding: 1.5rem 0.5rem;
     transition: 0.2s;
+}
+.PortfolioAppContentBody {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1rem;
+    gap: 0.5rem;
+
+    .BodyTitle {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        
+        h4 {
+            text-align: left;
+            font-weight: bolder;
+            font-size: 1.6rem;
+        }
+    
+        .Timeline {
+        }
+    }
+
+    .SkillList {
+        display: flex;
+        gap: 0.5rem;
+        .SkillListTitle {
+            
+        }
+        .SkillListBody {
+    
+        }
+    }
+    .Description {
+
+    }
 }
 
 @media (max-width: 1023px) {
