@@ -175,6 +175,12 @@
     .PortfolioAppList {
         margin: 1rem 2rem;
         gap: 1.5rem;
+        justify-content: flex-end;
+        flex-direction: column-reverse;
+    }
+
+    .LineContainer {
+        display: none;
     }
 
     .labels-container {
@@ -184,7 +190,7 @@
         margin: 0 0.5rem;
         gap: 0.5rem;
         max-width: 380px;
-        margin: auto;
+        margin: 0 auto;
     }
 
     .LeftSkillLabels, .RightSkillLabels {
@@ -207,7 +213,7 @@
 
     .AppList {
         position: initial;
-        flex-direction: column;
+        flex-direction: column-reverse;
         /* align-items: center; */
         max-width: 100%;
         gap: 1.5rem;

@@ -41,11 +41,6 @@ color: light-dark(var(--color-light-gray), var(--color-dark-gray)); */
     height: 6rem;
     border: 2px solid var(--color-gray);
     transition: 0.2s;
-
-    .appImg {
-        currentColor: blue;
-        fill: blue;
-    }
 }
 
 h4 {

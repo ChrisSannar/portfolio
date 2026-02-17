@@ -146,6 +146,15 @@ a {
         gap: 0.75rem;
     }
 
+    .this-text {
+        cursor: pointer;
+        color: light-dark(var(--color-gray), var(--color-gray));
+        transition: 0.2s;
+    }
+    .active {
+        color: light-dark(var(--color-darkest), var(--color-lightest));
+    }
+
     .center {
         bottom: 1.5rem;
         transform: translate(-50%, -25%);

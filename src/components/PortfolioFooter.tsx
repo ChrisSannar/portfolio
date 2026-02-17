@@ -10,6 +10,7 @@ import { App, ColorModeType } from '../data/App';
 import { HowDidIMakeThis } from '../data/PortApp';
 
 export const PortfolioFooter: React.FC = () => {
+    const [thisActive, setThisActive] = React.useState(false);
     const app = App.getHotInstance().subscribe('PortfolioFooter');
     const notLogic = app.NotLogic;
     const andLogic = app.AndLogic;
@@ -18,6 +19,10 @@ export const PortfolioFooter: React.FC = () => {
     const toggleTextHover = () => {
         HowDidIMakeThis.onTextHover().setFunc(val => !val);
     }
+
+    React.useEffect(() => {
+        HowDidIMakeThis.onTextHover().setFunc(val => thisActive);
+    }, [thisActive])
 
     return (
         <div className='PortfolioFooter'>
@@ -54,7 +59,10 @@ export const PortfolioFooter: React.FC = () => {
             </div>
             <div className="right unselectable">
                 <div className="this">
-                    <p>This?</p>
+                    <p
+                        className={`this-text ${thisActive ? 'active' : ''}`} 
+                        onClick={() => setThisActive(prev => !prev)}
+                    >This?</p>
                 </div>
                 <div className="logic">
                     <div className="and-or" onClick={() => App.toggleAndLogic()}>

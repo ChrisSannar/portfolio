@@ -34,7 +34,7 @@ export class PortApp {
                 'UVU',  
                 '(May 2019)',
                 'Bachelors of Computer Science: Networking Emphasis from Utah Valley University',
-                skills.filter(s => ['TypeScript', 'Java', 'C++', 'WebDev', 'Networking'].includes(s.Title)),
+                PortSkill.getSkillsByTitles(['TypeScript', 'Java', 'C++', 'WebDev', 'Networking']),
                 `Intermediate to advanced computer science concepts, including algorithms, data structures, and software development, with a strong focus on networking principles, protocols, and implementation.`,
                 {
                     appIcon: uvuIcon,
@@ -87,6 +87,10 @@ export class PortSkill {
         public readonly AppTitles: string[] = []
     ) {}
 
+    static getSkillsByTitles(titles: string[]): PortSkill[] {
+        return this.getAllSkills().filter(s => titles.includes(s.Title));
+    }
+
     static getAllSkills(): PortSkill[] {
         return [
             new PortSkill('TypeScript', null, []),
@@ -94,11 +98,10 @@ export class PortSkill {
             new PortSkill('C++', null, []),
             new PortSkill('WebDev', 'Web Development', []),
             new PortSkill('Networking', null, []),
-            // new PortSkill('Node.js', []),
-            // new PortSkill('Express', []),
+            new PortSkill('React', null, []),
+            new PortSkill('AI/LLM', null, []),
             // new PortSkill('MongoDB', []),
             // new PortSkill('PostgreSQL', []),
-            // new PortSkill('HTML', []),
             // new PortSkill('Vue.js', []),
         ];
     }
@@ -108,7 +111,7 @@ export const HDIMT_TEXT_HOVER = "HDIMT_TEXT_HOVER";
 export class HowDidIMakeThis {
     
     public static getSkills(): PortSkill[] {
-        return [...PortSkill.getAllSkills()];
+        return PortSkill.getSkillsByTitles(['TypeScript', 'WebDev', 'Networking', 'React']);
     }
 
     public static onTextHover(): IHotProperty<boolean> {

@@ -1,8 +1,8 @@
 # Notes
 
 ## Next
- - Format Content windows to have content
  - Populate with real data
+ - Have some pre selected skills on load
 
 ## Potential Features
  - Implement a search?

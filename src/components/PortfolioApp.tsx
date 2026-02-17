@@ -19,7 +19,7 @@ export const PortfolioApp: React.FC<IPortfolioAppProps> = ({ app, onClick, class
                 <img 
                     src={`${darkMode ? app.Images.appIconDark : app.Images.appIcon}`}
                     alt={`${app.Title} icon`} 
-                    className='appImg'
+                    className='appImg unselectable'
                 />
             </div>
             <h4 className={`unselectable`}>

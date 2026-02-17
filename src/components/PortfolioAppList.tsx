@@ -57,8 +57,8 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
     if (onHover) {
       setTempActiveSkillIds(prev => {
         const newSkills = new Set<string>();
-        HDIMTSkills.forEach(skill => newSkills.add(skill.Title))
-        return newSkills
+        HDIMTSkills.forEach(skill => newSkills.add(skill.Title));
+        return newSkills;
       });
     } else {
       removeTempSkillConnections();
@@ -394,6 +394,7 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
         mappers.get(skill.Title)?.add(app.id);
       })
     });
+
     return mappers;
   }, [apps]);
   const allConnections_IdToId: [string, string][] = React.useMemo(() => {
@@ -648,7 +649,7 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
                       position: 'absolute',
                       top: `${topPosition + remToPx(1, document)}px`,
                       left: 0,
-                      width: '99%', // at `100%` it clips off the page in some cases
+                      width: '95%', // at `100%` it clips off the page in some cases
                       height: '100%',
                       maxHeight: `${PORTFOLIO_APP_CONTENT_HEIGHT_REM}rem`,
                       pointerEvents: 'none',
@@ -670,7 +671,11 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
                       </div>
                       <p className="Body">{app.Body}</p>
                     </div>
-                    <img className="PortfolioAppContentImage" src={app.Images.bodyImage} alt={`${app.Title}_temp-image`} />
+                    <img 
+                      className="PortfolioAppContentImage unselectable" 
+                      src={app.Images.bodyImage} 
+                      alt={`${app.Title}_temp-image`} 
+                    />
                   </div>
                 })()
               }
