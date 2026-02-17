@@ -13,7 +13,7 @@ const ANIMATION_DURATION_MS = 300;
 const CONTENT_RENDER_DELAY_MS = ANIMATION_DURATION_MS + 10;
 const CONTENT_FADE_DURATION_MS = 200;
 
-type SkillLabelRef = { 
+type SkillLabelRef = {
   el: HTMLDivElement, 
   side: "left" | "right"
 }
@@ -51,14 +51,6 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
   const HDIMTSkills: PortSkill[] = HowDidIMakeThis.getSkills();
   const HDIMT_onTextHover = HowDidIMakeThis.onTextHover();
   HDIMT_onTextHover.subscribe("PortfolioAppList");
-
-  // *** TEMP
-  React.useEffect(() => {
-    setTimeout(() => {
-      onPortfolioAppClick({} as React.MouseEvent, apps[0].id, 0);
-    }, 500)
-  }, []);
-  // ***
 
   React.useEffect(() => {
     const onHover: boolean = HDIMT_onTextHover.getValue();
@@ -674,11 +666,11 @@ export const PortfolioAppList: React.FC<IPortfolioAppList> = () => {
                         <span className='SkillListTitle'>
                           <b>Skills:</b>
                         </span>
-                        <span className='SkillListBody'>{app.Skills.map((skill, idx) => <span>{skill.Title}{idx === app.Skills.length - 1 ? '' : `, `}</span>)}</span>
+                        <span className='SkillListBody'>{app.Skills.map((skill, idx) => <span>{skill.FullName ?? skill.Title}{idx === app.Skills.length - 1 ? '' : `, `}</span>)}</span>
                       </div>
                       <p className="Body">{app.Body}</p>
                     </div>
-                    <img src={app.ImageUrl} alt={`${app.Title}_temp-image`} />
+                    <img className="PortfolioAppContentImage" src={app.Images.bodyImage} alt={`${app.Title}_temp-image`} />
                   </div>
                 })()
               }

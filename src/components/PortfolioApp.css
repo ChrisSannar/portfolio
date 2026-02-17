@@ -9,7 +9,7 @@
 }
 
 .PortfolioApp.active {
-    .appImg {
+    .appIcon {
         border: 2px solid light-dark(var(--color-darkest), var(--color-lightest));
     }
 
@@ -18,7 +18,7 @@
     }
 }
 .PortfolioApp.inactive {
-    .appImg {
+    .appIcon {
         border: 2px solid light-dark(var(--color-light-gray), var(--color-dark-gray));
     }
 
@@ -33,11 +33,19 @@ color: light-dark(var(--color-darkest), var(--color-lightest));
 color: light-dark(var(--color-light-gray), var(--color-dark-gray)); */
 
 
-.appImg {
+.appIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 6rem;
     height: 6rem;
     border: 2px solid var(--color-gray);
     transition: 0.2s;
+
+    .appImg {
+        currentColor: blue;
+        fill: blue;
+    }
 }
 
 h4 {

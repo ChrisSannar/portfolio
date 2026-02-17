@@ -156,6 +156,13 @@
 
     }
 }
+.PortfolioAppContentImage {
+    height: auto;
+    object-fit: contain;
+    align-self: baseline;
+    flex: 0 0 30%;
+    max-width: 30%;
+}
 
 @media (max-width: 1023px) {
     .labels-container h3 { max-width: 128px; }
