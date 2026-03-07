@@ -3,6 +3,7 @@ import './AppComp.css';
 import { PortfolioAppList } from './components/PortfolioAppList';
 import { PortfolioFooter } from './components/PortfolioFooter';
 import { App, ColorModeType } from './data/App';
+import { Resume } from './components/resume/Resume';
 
 export function AppComp() {
   const app = App.getHotInstance().subscribe('App');
@@ -54,10 +55,17 @@ export function AppComp() {
           <h1>Hi, I&apos;m Chris</h1>
           <h3>Full Stack Software Engineer<br/>Networking Emphasis</h3>
         </div>
-        <PortfolioAppList />
-        <div className="footer">
-          <PortfolioFooter />
-        </div>
+        {
+          app.ResumeMode ?
+            <Resume /> :
+            <>
+              <PortfolioAppList />
+              <div className="footer">
+                <PortfolioFooter />
+              </div>
+            </>
+        }
+        
       </div>
     </AppCompContext.Provider>
   );
