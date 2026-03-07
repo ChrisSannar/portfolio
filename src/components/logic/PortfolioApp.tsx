@@ -1,7 +1,7 @@
 import React from 'react';
 import './PortfolioApp.css';
-import { PortApp } from '../data/PortApp';
-import { App, ColorModeType } from '../data/App';
+import { PortApp } from '../../data/PortApp';
+import { App, ColorModeType } from '../../data/App';
 
 interface IPortfolioAppProps extends React.HTMLAttributes<HTMLDivElement> {
     app : PortApp;

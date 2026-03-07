@@ -7,49 +7,80 @@ interface IResume {
 
 export const Resume: React.FC<IResume> = () => {
     return <div className="Resume">
-        <h1>Resume</h1>
-        {/* Add "call to action": Contact, etc. */}
-        <About />
-        <Skills />
-        <Experience />
-        <Education />
-        <Contact />
+        <div className="resume-content">
+            {/* Add "call to action": Contact, etc. */}
+            <About />
+            <Skills />
+            <Experience />
+            <Education />
+        </div>
     </div>
 }
 
 const About: React.FC = () => {
+    const [viewContent, setViewContent] = React.useState(true);
     return <div className="About">
-        <h2>About</h2>
-        {/* 
-            Next points:
-             - I've been coding for over a decade now
-             - Have 5 years of professional experience
-             - Emphasize on web development and networking
-             - I'm particularly good at teaching and want to build platforms to encourage education in computer science
-        */}
+        <div className="title" onClick={() => setViewContent(view => !view)}>
+            <h2>About</h2>
+        </div>
+        {viewContent &&
+            <div className="content">
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil, reprehenderit? Labore reprehenderit, libero blanditiis aliquid natus veniam cum magni excepturi deleniti quaerat, maiores nobis dolor ut, omnis dolorum fugit nesciunt?</p>
+                {/* 
+                    Next points:
+                     - I've been coding for over a decade now
+                     - Have 5 years of professional experience
+                     - Emphasize on web development and networking
+                     - I've worked on dozens of project with AI/LLMs: Know how to leverage the technology, but still understand the fundamentals
+                     - I'm particularly good at teaching and want to build platforms to encourage education in computer science
+                */}
+            </div>
+        }
     </div>
 }
 
 const Skills: React.FC = () => {
+    const [viewContent, setViewContent] = React.useState(true);
     return <div className="Skills">
-        <h2>Skills</h2>
+        <div className="title" onClick={() => setViewContent(view => !view)}>
+            <h2>Skills</h2>
+        </div>
+        {viewContent && 
+            <div className="content">
+                <p>Content</p>
+
+            </div>
+        }
     </div>
 }
 
 const Experience: React.FC = () => {
+    const [viewContent, setViewContent] = React.useState(true);
     return <div className="Experience">
-        <h2>Experience</h2>
+        <div className="title" onClick={() => setViewContent(view => !view)}>
+            <h2>Experience</h2>
+        </div>
+        {viewContent && 
+            <div className="content">
+                <p>Content</p>
+
+            </div>
+        }
     </div>
 }
 
 const Education: React.FC = () => {
+    const [viewContent, setViewContent] = React.useState(true);
     return <div className="Education">
-        <h2>Education</h2>
+        <div className="title" onClick={() => setViewContent(view => !view)}>
+            <h2>Education</h2>
+        </div>
+        {viewContent && 
+            <div className="content">
+                <p>Content</p>
+
+            </div>
+        }
     </div>
 }
 
-const Contact: React.FC = () => {
-    return <div className="Contact">
-        <h2>Contact</h2>
-    </div>
-}

@@ -1,9 +1,9 @@
 import React from 'react';
 import './PortfolioAppList.css';
-import { HowDidIMakeThis, PortApp, PortSkill } from '../data/PortApp';
+import { HowDidIMakeThis, PortApp, PortSkill } from '../../data/PortApp';
 import { PortfolioApp } from './PortfolioApp';
-import { remToPx } from '../data/util';
-import { App } from '../data/App';
+import { remToPx } from '../../data/util';
+import { App } from '../../data/App';
 
 const PORTFOLIO_APP_HEIGHT_REM = 10;
 const PORTFOLIO_APP_WIDTH_REM = 6;

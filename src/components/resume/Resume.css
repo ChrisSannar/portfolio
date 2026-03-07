@@ -1,9 +1,32 @@
 .Resume {
     display: flex;
     flex-direction: column;
-    padding: 1rem 1.5rem;
-    margin: 2rem;
+    align-items: center;
+    margin: 1rem 1.5rem;
 
     /* TEMP */
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc;
+    padding: 1rem 1.5rem; */
+
+    .resume-content {
+        /* display: flex;
+        flex-direction: column;
+        justify-content: center; */
+        display: flex;
+        flex-direction: column;
+
+        width: 60%;
+    }
+
+    .title {
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 768px) {
+    .Resume {
+        .resume-content {
+            width: 90%;
+        }
+    }
 }

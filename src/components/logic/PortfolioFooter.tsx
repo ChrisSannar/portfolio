@@ -1,13 +1,13 @@
 import React from 'react';
 
 import './PortfolioFooter.css';
-import nightIcon from '../assets/night-icon.svg';
-import dayIcon from  '../assets/day-icon.svg';
-import mailIcon from '../assets/mail-icon.svg';
-import linkedinIcon from '../assets/linkedin-icon.svg';
-import figmaIcon from '../assets/figma-icon.svg';
-import { App, ColorModeType } from '../data/App';
-import { HowDidIMakeThis } from '../data/PortApp';
+import nightIcon from '../../assets/night-icon.svg';
+import dayIcon from  '../../assets/day-icon.svg';
+import mailIcon from '../../assets/mail-icon.svg';
+import linkedinIcon from '../../assets/linkedin-icon.svg';
+import figmaIcon from '../../assets/figma-icon.svg';
+import { App, ColorModeType } from '../../data/App';
+import { HowDidIMakeThis } from '../../data/PortApp';
 
 export const PortfolioFooter: React.FC = () => {
     const [thisActive, setThisActive] = React.useState(false);

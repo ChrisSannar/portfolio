@@ -1,7 +1,7 @@
 import React from 'react';
 import './AppComp.css';
-import { PortfolioAppList } from './components/PortfolioAppList';
-import { PortfolioFooter } from './components/PortfolioFooter';
+import { PortfolioAppList } from './components/logic/PortfolioAppList';
+import { PortfolioFooter } from './components/logic/PortfolioFooter';
 import { App, ColorModeType } from './data/App';
 import { Resume } from './components/resume/Resume';
 
