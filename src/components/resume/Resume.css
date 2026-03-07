@@ -1,0 +1,9 @@
+.Resume {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+    margin: 2rem;
+
+    /* TEMP */
+    border: 1px solid #ccc;
+}
