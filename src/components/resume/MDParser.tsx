@@ -8,21 +8,31 @@ interface IMDParser {
 }
 
 export const parsedTokenToComponent = (token: ParsedToken) => {
+    if (token.content instanceof Array) {
+        return <ULParsed content={token.content} />;
+    }
     switch (token.type) {
         case 'h2':
-            return <H2Parsed key={token.content} content={token.content} />;
+            return <H2Parsed content={token.content} />;
         case 'p':
-            return <PParsed key={token.content} content={token.content} />;
+            return <PParsed content={token.content} />;
+        case 'li': 
+            return token.content;
         default:
             return null;
     }
 }
 
-export const H2Parsed: React.FC<{ content: string }> = ({ content }) => {
+const H2Parsed: React.FC<{ content: string }> = ({ content }) => {
     return <h2>{content}</h2>
 }
-export const PParsed: React.FC<{ content: string }> = ({ content }) => {
+const PParsed: React.FC<{ content: string }> = ({ content }) => {
     return <p>{content}</p>
+}
+const ULParsed: React.FC<{ content: ParsedToken[] }> = ({ content }) => {
+    return <ul>
+        {content.map((childToken, index) => <li key={index}>{parsedTokenToComponent(childToken)}</li>)}
+    </ul>
 }
 
 export const MDParser: React.FC<IMDParser> = ({
