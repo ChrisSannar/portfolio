@@ -1,11 +1,19 @@
 # Notes
 
-## Next
+## MVP
+ - Get markdown content to parse to the page and render my resume
+ - Create a "Contact" button
+   * How do we implement this? Icons at the bottom: Mail, GitHub, LinkedIn
+   * Modal?
+
+## Previous Ideas:
+
+### Next
  - Populate with real data
  - Have some pre selected skills on load
  - Fix all React Warnings
 
-## Potential Features
+### Potential Features
  - One-click resume + one-click message
  - `ssh chrissannar.com`
  - Create a terminal input? On the "Resume" view?

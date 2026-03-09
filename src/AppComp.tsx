@@ -1,9 +1,9 @@
 import React from 'react';
-import { isMobile } from 'react-device-detect';
+// import { isMobile } from 'react-device-detect';
 
 import './AppComp.css';
-import { PortfolioAppList } from './components/logic/PortfolioAppList';
-import { PortfolioFooter } from './components/logic/PortfolioFooter';
+// import { PortfolioAppList } from './components/logic/PortfolioAppList';
+// import { PortfolioFooter } from './components/logic/PortfolioFooter';
 import { Resume } from './components/resume/Resume';
 
 import { App, ColorModeType } from './data/App';
@@ -60,9 +60,11 @@ export function AppComp() {
       >
         <div className="header">
           <h1>Hi, I&apos;m Chris</h1>
-          <h3>Full Stack Software Engineer<br/>I Build Apps that Teach</h3>
+          <h3>Full Stack Software Engineer</h3>
+          <h3>AI/LLM - WebDev - Networking</h3>
         </div>
-        {
+        <Resume />
+        {/* {
           app.ResumeMode ?
             <Resume /> :
             <>
