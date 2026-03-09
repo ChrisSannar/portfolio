@@ -1,11 +1,29 @@
 import * as React from 'react';
 import './Resume.css';
 
+import markdownIt from 'markdown-it-ts';
+
+// import resumeContent from '../../assets/Resume.md';
+
 interface IResume {
 
 }
 
 export const Resume: React.FC<IResume> = () => {
+    
+    React.useEffect(() => {
+        fetch('/assets/Resume.md')
+            .then(response => response.text())
+            .then(resumeContent => {
+                const md = markdownIt()
+                const tokens = md.parse(resumeContent);
+                console.log(tokens);
+            })
+            .catch(error => {
+                console.error('Error fetching resume content:', error);
+            });
+    }, [])
+
     return <div className="Resume">
         <div className="resume-content">
             {/* Add "call to action": Contact, etc. */}
@@ -17,6 +35,15 @@ export const Resume: React.FC<IResume> = () => {
     </div>
 }
 
+const ABOUT_TEXT: string = 
+    `With over a decade of coding experience and five years working professionally, ` +
+    `I specialize in web development, networking, and building educational applications.` 
+const ABOUT_TEXT_2: string =
+    `Having many years of experience working before, and after, the popularization of LLM models, ` + 
+    `I know how to leverage AI in development yet still have a strong understanding of the fundamentals.`
+const ABOUT_TEXT_3: string =
+    `I have a passion for teaching, love making content to help others learn computer science.`
+
 const About: React.FC = () => {
     const [viewContent, setViewContent] = React.useState(true);
     return <div className="About">
@@ -25,15 +52,17 @@ const About: React.FC = () => {
         </div>
         {viewContent &&
             <div className="content">
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil, reprehenderit? Labore reprehenderit, libero blanditiis aliquid natus veniam cum magni excepturi deleniti quaerat, maiores nobis dolor ut, omnis dolorum fugit nesciunt?</p>
-                {/* 
-                    Next points:
-                     - I've been coding for over a decade now
-                     - Have 5 years of professional experience
-                     - Emphasize on web development and networking
-                     - I've worked on dozens of project with AI/LLMs: Know how to leverage the technology, but still understand the fundamentals
-                     - I'm particularly good at teaching and want to build platforms to encourage education in computer science
-                */}
+                <p>
+                    {ABOUT_TEXT}
+                </p>
+                <br />
+                <p>
+                    {ABOUT_TEXT_2}
+                </p>
+                <br />
+                <p>
+                    {ABOUT_TEXT_3}
+                </p>    
             </div>
         }
     </div>

@@ -1,9 +1,12 @@
 import React from 'react';
+import { isMobile } from 'react-device-detect';
+
 import './AppComp.css';
 import { PortfolioAppList } from './components/logic/PortfolioAppList';
 import { PortfolioFooter } from './components/logic/PortfolioFooter';
-import { App, ColorModeType } from './data/App';
 import { Resume } from './components/resume/Resume';
+
+import { App, ColorModeType } from './data/App';
 
 export function AppComp() {
   const app = App.getHotInstance().subscribe('App');
@@ -50,10 +53,14 @@ export function AppComp() {
 
   return (
     <AppCompContext.Provider value={appCompRef.current}>
-      <div className="AppComp" ref={ref => appCompRef.current = ref}>
+      <div 
+        className="AppComp" 
+        ref={ref => appCompRef.current = ref}
+        style={{ height: app.ResumeMode ? "auto" : "100%"}}  
+      >
         <div className="header">
           <h1>Hi, I&apos;m Chris</h1>
-          <h3>Full Stack Software Engineer<br/>Networking Emphasis</h3>
+          <h3>Full Stack Software Engineer<br/>I Build Apps that Teach</h3>
         </div>
         {
           app.ResumeMode ?
@@ -65,7 +72,10 @@ export function AppComp() {
               </div>
             </>
         }
-        
+        {/* {
+          !isMobile &&
+          <div className="CommandInput">command</div>
+        } */}
       </div>
     </AppCompContext.Provider>
   );
