@@ -1,13 +1,14 @@
 import * as React from 'react';
 import './Resume.css';
 
-import markdownIt, { Token } from 'markdown-it-ts';
+import markdownIt from 'markdown-it-ts';
+import { Token } from 'markdown-it';
 
 import { MDParser } from './MDParser';
 
 import mailIcon from '../../assets/mail-icon.svg';
 import linkedinIcon from '../../assets/linkedin-icon.svg';
-import figmaIcon from '../../assets/figma-icon.svg';
+import resumeMDFile from '../../assets/Resume.md';
 
 interface IResume {
 
@@ -17,7 +18,7 @@ export const Resume: React.FC<IResume> = () => {
     const [parsedTokens, setParsedTokens] = React.useState<Token[]>([]);
     
     React.useEffect(() => {
-        fetch('/assets/Resume.md')
+        fetch(resumeMDFile)
             .then(response => response.text())
             .then(resumeContent => {
                 const md = markdownIt()
