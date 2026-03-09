@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Token } from 'markdown-it';
 
-import { multiplexer, ParsedToken } from './tokenParser';
+import { ModifyType, multiplexer, ParsedToken } from './tokenParser';
 
 interface IMDParser {
     tokens: Token[];
@@ -9,13 +9,18 @@ interface IMDParser {
 
 export const parsedTokenToComponent = (token: ParsedToken) => {
     if (token.content instanceof Array) {
-        return <ULParsed content={token.content} />;
+        if (token.type === 'ul') {
+            return <ULParsed content={token.content} />;
+        }
+        return <MultiPParsed content={token.content}/>;
     }
     switch (token.type) {
         case 'h2':
             return <H2Parsed content={token.content} />;
+        case 'h3': 
+            return <H3Parsed content={token.content} />;
         case 'p':
-            return <PParsed content={token.content} />;
+            return <PParsed content={token.content} mod={token.modify}/>;
         case 'li': 
             return token.content;
         default:
@@ -26,8 +31,26 @@ export const parsedTokenToComponent = (token: ParsedToken) => {
 const H2Parsed: React.FC<{ content: string }> = ({ content }) => {
     return <h2>{content}</h2>
 }
-const PParsed: React.FC<{ content: string }> = ({ content }) => {
+const H3Parsed: React.FC<{ content: string }> = ({ content }) => {
+    return <h3>{content}</h3>
+}
+const PParsed: React.FC<{ content: string, mod: ModifyType }> = ({ content, mod }) => {
+    if (mod === 'em') {
+        return <p><em>{content}</em></p>
+    } else if (mod === 'strong') {
+        return <p><strong>{content}</strong></p>
+    }
     return <p>{content}</p>
+}
+const MultiPParsed: React.FC<{ content: ParsedToken[] }> = ({ content }) => {
+    return <>
+        {content.map((childToken, index) => 
+            <PParsed 
+                key={index} 
+                mod={childToken.modify}
+                content={childToken.content as string} 
+            />)}
+    </>
 }
 const ULParsed: React.FC<{ content: ParsedToken[] }> = ({ content }) => {
     return <ul>

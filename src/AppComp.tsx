@@ -1,9 +1,6 @@
 import React from 'react';
-// import { isMobile } from 'react-device-detect';
 
 import './AppComp.css';
-// import { PortfolioAppList } from './components/logic/PortfolioAppList';
-// import { PortfolioFooter } from './components/logic/PortfolioFooter';
 import { Resume } from './components/resume/Resume';
 
 import { App, ColorModeType } from './data/App';
@@ -64,20 +61,6 @@ export function AppComp() {
           <h3>AI/LLM - WebDev - Networking</h3>
         </div>
         <Resume />
-        {/* {
-          app.ResumeMode ?
-            <Resume /> :
-            <>
-              <PortfolioAppList />
-              <div className="footer">
-                <PortfolioFooter />
-              </div>
-            </>
-        }
-        {/* {
-          !isMobile &&
-          <div className="CommandInput">command</div>
-        } */}
       </div>
     </AppCompContext.Provider>
   );

@@ -18,6 +18,16 @@ I have a passion for teaching, love making content to help others learn computer
  - MongoDB
  - MySQL
  - PostgreSQL
+ - Golang
  - C++
  - Java
  - Python
+
+## Experience
+
+### CompTIA/Testout
+
+Full-Stack Software Engineer
+*Mar 2021 - Jan 2025*
+
+Simulated real world applications like Windows, Linux, and computer networks. Designed Complicated Software to be robust yet flexible; most of the code was designed to mimic real systems to a degree.
