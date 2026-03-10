@@ -1,0 +1,9 @@
+.MDParser {
+
+    .MDSection {
+
+        .sectionHeader {
+            cursor: pointer;
+        }
+    }
+}

@@ -9,6 +9,7 @@ export interface ParsedToken {
     listEnd?: boolean;
 }
 export interface ParsedTokenSection {
+    sectionHeader: ParsedToken;
     parsedTokens: ParsedToken[];
 }
 
@@ -75,54 +76,32 @@ const breakDownInline = (tokens: Token[]): ParsedToken[] => {
     }
     return result;
 }
-// const breakdownParagraphContent = (content: string): ParsedToken[] | string => {
-//     const newLineSplit = content.split('\n');
-//     if (newLineSplit.length === 1) {
-//         return content;
-//     }
- 
-//     const result: ParsedToken[] = [];
-//     for (const line of newLineSplit) {
-//         const emRegex = /(\*{1,2})(.*?)\1/g;
-//         if (emRegex.test(line)) {
-//             const mod = line.includes('**') ? 'strong' : 'em';
-//             result.push({
-//                 type: 'p',
-//                 modify: mod,
-//                 content: line.replace(/\*{1,2}/g, '')
-//             });
-//             continue;
-//         }
-
-//         result.push({
-//             type: 'p',
-//             modify: null,
-//             content: line
-//         });
-//     }
-//     return result;
-// }
 
 const divideParsedTokensIntoSections = (tokens: ParsedToken[], splitter: TokenType): ParsedTokenSection[] => {
     const result: ParsedTokenSection[] = [];
 
     let nextSection: ParsedToken[] = [];
+    let lastSectionHeader: ParsedToken | null = null;
     for (const toke of tokens) {
         if (toke.type === splitter) {
-            if (nextSection.length !== 0) {
+            if (nextSection.length !== 0 && lastSectionHeader != null) {
                 result.push({
+                    sectionHeader: lastSectionHeader,
                     parsedTokens: nextSection,
                 });
                 nextSection = [];
             }
-            nextSection.push(toke);
+            lastSectionHeader = toke;
         } else {
             nextSection.push(toke);
         }
     }
-    result.push({
-        parsedTokens: nextSection
-    })
+    if (lastSectionHeader !== null) {
+        result.push({
+            sectionHeader: lastSectionHeader,
+            parsedTokens: nextSection
+        });
+    }
 
     return result;
 }
