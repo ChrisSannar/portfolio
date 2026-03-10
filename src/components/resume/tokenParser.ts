@@ -1,14 +1,18 @@
 import { Token } from 'markdown-it';
 
+const randomKey = () => Math.random().toString(16).slice(2);
+
 export type TokenType = 'h2' | 'h3' | 'p' | 'ul' | 'li' | null;
 export type ModifyType = 'em' | 'strong' | null;
 export interface ParsedToken {
+    id: string;
     type: TokenType;
     modify: ModifyType
     content: string | null;
     listEnd?: boolean;
 }
 export interface ParsedTokenSection {
+    id: string;
     sectionHeader: ParsedToken;
     parsedTokens: ParsedToken[];
 }
@@ -35,6 +39,7 @@ const breakDownInline = (tokens: Token[]): ParsedToken[] => {
         }
         else if (toke.type === "bullet_list_open") {
             result.push({
+                id: randomKey(),
                 type: 'ul',
                 modify: null,
                 content: null,
@@ -42,6 +47,7 @@ const breakDownInline = (tokens: Token[]): ParsedToken[] => {
         }
         else if (toke.type === "bullet_list_close") {
             result.push({
+                id: randomKey(),
                 type: 'ul',
                 modify: null,
                 content: null,
@@ -52,6 +58,7 @@ const breakDownInline = (tokens: Token[]): ParsedToken[] => {
         if (toke.type === 'inline') {
             if (currentTag === 'h2' || currentTag === 'h3') {
                 result.push({
+                    id: randomKey(),
                     type: currentTag,
                     modify: null,
                     content: toke.content
@@ -59,6 +66,7 @@ const breakDownInline = (tokens: Token[]): ParsedToken[] => {
             }
             else if (currentTag === 'p') {
                 result.push({
+                    id: randomKey(),
                     type: 'p',
                     modify: null,
                     content: toke.content
@@ -66,6 +74,7 @@ const breakDownInline = (tokens: Token[]): ParsedToken[] => {
             }
             else if (currentTag === 'li') {
                 result.push({
+                    id: randomKey(),
                     type: 'li',
                     modify: null,
                     content: toke.content
@@ -86,6 +95,7 @@ const divideParsedTokensIntoSections = (tokens: ParsedToken[], splitter: TokenTy
         if (toke.type === splitter) {
             if (nextSection.length !== 0 && lastSectionHeader != null) {
                 result.push({
+                    id: randomKey(),
                     sectionHeader: lastSectionHeader,
                     parsedTokens: nextSection,
                 });
@@ -98,6 +108,7 @@ const divideParsedTokensIntoSections = (tokens: ParsedToken[], splitter: TokenTy
     }
     if (lastSectionHeader !== null) {
         result.push({
+            id: randomKey(),
             sectionHeader: lastSectionHeader,
             parsedTokens: nextSection
         });

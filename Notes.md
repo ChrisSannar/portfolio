@@ -1,7 +1,6 @@
 # Notes
 
 ## MVP
- - Get markdown content to parse to the page and render my resume
  - Create a "Contact" button
    * How do we implement this? Icons at the bottom: Mail, GitHub, LinkedIn
    * Modal?

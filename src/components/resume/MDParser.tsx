@@ -21,7 +21,7 @@ export const MDParser: React.FC<IMDParser> = ({
     }, [tokens])
 
     return <div className="MDParser">
-        {sections.map(parsedSection => <MDSection section={parsedSection} />)}
+        {sections.map(parsedSection => <MDSection section={parsedSection} key={parsedSection.id} />)}
     </div>
 }
 
@@ -47,8 +47,12 @@ export const MDSection: React.FC<{ section: ParsedTokenSection }> = ({ section }
 
     const toggleContents = () => setViewContents(view => !view);
 
-    return <div className="MDSection">
-        <h2 className="sectionHeader" onClick={() => toggleContents()}>{section.sectionHeader.content}</h2>
+    return <div key={section.id} className="MDSection">
+        <h2 
+            key={section.id} 
+            className="sectionHeader unselectable" 
+            onClick={() => toggleContents()}
+        >{section.sectionHeader.content}</h2>
         {viewContents && <div className="contents">
             {components}
         </div>}
@@ -56,19 +60,24 @@ export const MDSection: React.FC<{ section: ParsedTokenSection }> = ({ section }
 }
 
 
-const h3Comp = (content: string | null) => <h3>{content}</h3>
-const liComp = (content: string | null) => <li>{content}</li>
-const pComp = (content: string | null) => {
+const h3Comp = (content: string | null, id: string) => <h3 key={id + " " + 1}>{content}</h3>
+const liComp = (content: string | null, id: string) => <li key={id + " " + 2}>{content}</li>
+const pComp = (content: string | null, id: string) => {
     if (content === null) return <></>
 
     const result = [];
     const newLineSplit = content.split('\n');
-    const emRegex = /(\*{1,2})(.*?)\1/g;
+    const strongRegex = /(\*\*|__)(.*?)\1/;
+    const emRegex = /(?<!\*)\*([^*]+)\*(?!\*)/;
+    let i = 0;
     for (const line of newLineSplit) {
-        if (emRegex.test(line)) {
-            result.push(<p><em>{line.replace(/\*{1,2}/g, '')}</em></p>)
+        if (strongRegex.test(line)) {
+            result.push(<p key={id + " " + i++}><b>{line.replace(/\*\*/g, '')}</b></p>)
+        }
+        else if (emRegex.test(line)) {
+            result.push(<p key={id + " " + i++}><em>{line.replace(/\*/g, '')}</em></p>)
         } else {
-            result.push(<p>{line}</p>);
+            result.push(<p key={id + " " + i++}>{line}</p>);
         }
     }
     return result;
@@ -76,13 +85,13 @@ const pComp = (content: string | null) => {
 
 const parsedTokenToComponent = (token: ParsedToken): JSX.Element | JSX.Element[] | null => {
     if (token.type === 'h3') {
-        return h3Comp(token.content)
+        return h3Comp(token.content, token.id)
     }
     if (token.type === 'p') {
-        return pComp(token.content)
+        return pComp(token.content, token.id)
     }
     if (token.type === 'li') {
-        return liComp(token.content)
+        return liComp(token.content, token.id)
     }
     return null;
 }
@@ -91,7 +100,7 @@ const isListType = (type: string) => type === 'li' || type === 'ul';
 const parseTokenListToComponent = (tokens: ParsedToken[]): JSX.Element => {
     const headToken = tokens.shift();
     if (headToken?.type === 'ul') {
-        return <ul>{tokens.map(toke => parsedTokenToComponent(toke))}</ul>
+        return <ul key={headToken.id + " " + 0}>{tokens.map(toke => parsedTokenToComponent(toke))}</ul>
     }
     return <></>
 }

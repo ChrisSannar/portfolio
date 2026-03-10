@@ -7,6 +7,7 @@ import { Token } from 'markdown-it';
 import { MDParser } from './MDParser';
 
 import mailIcon from '../../assets/mail-icon.svg';
+import githubIcon from '../../assets/github-icon.svg';
 import linkedinIcon from '../../assets/linkedin-icon.svg';
 import resumeMDFile from '../../assets/Resume.md';
 
@@ -38,12 +39,17 @@ export const Resume: React.FC<IResume> = () => {
         <div className="contact">
             <div className="contact-icons">
                 <div className="contact-icon">
-                    <a href="mailto:chris.sannar.dev@gmail.com" target="_blank">
+                    <a href="mailto:chris.sannar.dev@gmail.com" target="_blank"  rel="noopener noreferrer">
                         <img src={mailIcon} alt="mail-icon" />
                     </a>
                 </div>
                 <div className="contact-icon">
-                    <a href="https://www.linkedin.com/in/christopher-sannar-8753ab9a/" target="_blank">
+                    <a href="https://github.com/ChrisSannar" target="_blank"  rel="noopener noreferrer">
+                        <img src={githubIcon} alt="github-icon" />
+                    </a>
+                </div>
+                <div className="contact-icon">
+                    <a href="https://www.linkedin.com/in/christopher-sannar-8753ab9a/" target="_blank"  rel="noopener noreferrer">
                         <img src={linkedinIcon} alt="linkedin-icon" />
                     </a>
                 </div>
