@@ -1,128 +1,135 @@
 import { Token } from 'markdown-it';
 
-export type TokenType = 'h2' | 'h3' | 'p' | 'ul' | 'li' | 'default';
+export type TokenType = 'h2' | 'h3' | 'p' | 'ul' | 'li' | null;
 export type ModifyType = 'em' | 'strong' | null;
 export interface ParsedToken {
     type: TokenType;
     modify: ModifyType
-    content: string | ParsedToken[];
+    content: string | null;
+    listEnd?: boolean;
+}
+export interface ParsedTokenSection {
+    parsedTokens: ParsedToken[];
 }
 
-const defaultToken = (): ParsedToken => ({
-    type: 'default',
-    modify: null,
-    content: ''
-});
-const breakdownParagraphContent = (content: string): ParsedToken[] | string => {
-    const newLineSplit = content.split('\n');
-    if (newLineSplit.length === 1) {
-        return content;
-    }
-
+const breakDownInline = (tokens: Token[]): ParsedToken[] => {
     const result: ParsedToken[] = [];
-    for (const line of newLineSplit) {
-        const emRegex = /(\*{1,2})(.*?)\1/g;
-        if (emRegex.test(line)) {
-            const mod = line.includes('**') ? 'strong' : 'em';
+    let currentTag: TokenType = null;
+    for (const toke of tokens) {
+        if (toke.type === 'heading_open') {
+            if (toke.tag === 'h2') {
+                currentTag = 'h2'
+            } 
+            else if (toke.tag === 'h3') {
+                currentTag = 'h3'
+            }
+        }
+        else if (toke.type === 'paragraph_open') {
+            if (currentTag !== 'li') {
+                currentTag = 'p'
+            }
+        }
+        else if (toke.type === 'list_item_open') {
+            currentTag = 'li'
+        }
+        else if (toke.type === "bullet_list_open") {
             result.push({
-                type: 'p',
-                modify: mod,
-                content: line.replace(/\*{1,2}/g, '')
+                type: 'ul',
+                modify: null,
+                content: null,
             });
-            continue;
+        }
+        else if (toke.type === "bullet_list_close") {
+            result.push({
+                type: 'ul',
+                modify: null,
+                content: null,
+                listEnd: true,
+            });
         }
 
-        result.push({
-            type: 'p',
-            modify: null,
-            content: line
-        });
+        if (toke.type === 'inline') {
+            if (currentTag === 'h2' || currentTag === 'h3') {
+                result.push({
+                    type: currentTag,
+                    modify: null,
+                    content: toke.content
+                });
+            }
+            else if (currentTag === 'p') {
+                result.push({
+                    type: 'p',
+                    modify: null,
+                    content: toke.content
+                });
+            }
+            else if (currentTag === 'li') {
+                result.push({
+                    type: 'li',
+                    modify: null,
+                    content: toke.content
+                });
+            }
+            currentTag = null;
+        }
     }
-    console.log('result', result);
+    return result;
+}
+// const breakdownParagraphContent = (content: string): ParsedToken[] | string => {
+//     const newLineSplit = content.split('\n');
+//     if (newLineSplit.length === 1) {
+//         return content;
+//     }
+ 
+//     const result: ParsedToken[] = [];
+//     for (const line of newLineSplit) {
+//         const emRegex = /(\*{1,2})(.*?)\1/g;
+//         if (emRegex.test(line)) {
+//             const mod = line.includes('**') ? 'strong' : 'em';
+//             result.push({
+//                 type: 'p',
+//                 modify: mod,
+//                 content: line.replace(/\*{1,2}/g, '')
+//             });
+//             continue;
+//         }
+
+//         result.push({
+//             type: 'p',
+//             modify: null,
+//             content: line
+//         });
+//     }
+//     return result;
+// }
+
+const divideParsedTokensIntoSections = (tokens: ParsedToken[], splitter: TokenType): ParsedTokenSection[] => {
+    const result: ParsedTokenSection[] = [];
+
+    let nextSection: ParsedToken[] = [];
+    for (const toke of tokens) {
+        if (toke.type === splitter) {
+            if (nextSection.length !== 0) {
+                result.push({
+                    parsedTokens: nextSection,
+                });
+                nextSection = [];
+            }
+            nextSection.push(toke);
+        } else {
+            nextSection.push(toke);
+        }
+    }
+    result.push({
+        parsedTokens: nextSection
+    })
+
     return result;
 }
 
-enum MultiplexerState {
-    DEFAULT = 'default',
-    // H1 = 'h1',
-    H2 = 'h2',
-    H3 = 'h3',
-    P = 'p',
-    UL = 'ul'
-}
-export const multiplexer = () => {
-    let state: MultiplexerState = MultiplexerState.DEFAULT;
-    let listState: ParsedToken[] = [];
-    return (token: Token): ParsedToken => {
-        // ***
-        if (token.content.includes("2021") || token.content.includes("passion")) {
-            console.log(token, state);
-        }
-        // ***
-        // console.log(token);
-        if (token.type === 'heading_open' && token.tag === 'h2') {
-            if (token.tag === 'h2') {
-                state = MultiplexerState.H2;
-            }
-            else if (token.tag === 'h3') {
-                state = MultiplexerState.H3;
-            }
-        }
-        else if (token.type === 'paragraph_open') {
-            if (state !== MultiplexerState.UL) {
-                state = MultiplexerState.P;
-            }
-        }
-        else if (token.type === 'bullet_list_open' || token.type === 'list_item_open') {
-            state = MultiplexerState.UL;
-        }
-        else if (token.type === 'bullet_list_close') {
-            const temp = [...listState];
-            listState = [];
-            state = MultiplexerState.DEFAULT;
-            return {
-                type: 'ul',
-                modify: null,
-                content: temp
-            } as ParsedToken;
-        }
+export const parseTokens = (tokens: Token[]): ParsedTokenSection[] => {
 
-        else if (token.type === 'inline') {
-            if (state === MultiplexerState.H2) {
-                return {
-                    type: 'h2',
-                    modify: null,
-                    content: token.content
-                } as ParsedToken;
-            }
-            else if (state === MultiplexerState.H3) {
-                return {
-                    type: 'h3',
-                    modify: null,
-                    content: token.content
-                } as ParsedToken;
-            }
-            else if (state === MultiplexerState.P) {
-                return {
-                    type: 'p',
-                    modify: null,
-                    content: breakdownParagraphContent(token.content)
-                } as ParsedToken;
-            }
-            else if (state === MultiplexerState.UL) {
-                listState.push({
-                    type: 'li',
-                    modify: null,
-                    content: token.content
-                } as ParsedToken);
-            }
-        }
-        else if (
-            token.type === 'heading_close' || 
-            token.type === 'paragraph_close'
-        ) {
-            state = MultiplexerState.DEFAULT;
-        }
-        return defaultToken();
-    }
+    const parsed: ParsedToken[] = breakDownInline(tokens);
+    const sections: ParsedTokenSection[] = divideParsedTokensIntoSections(parsed, 'h2');
+    return sections;
 }
