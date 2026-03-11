@@ -10,6 +10,7 @@
   --color-lighter: #E9ECEF;
   --color-lightest: #F8F9FA;
   --portfolio-border-radius: 2px;
+  --portfolio-border: 2px solid var(--color-darker); /* fallback for browsers without light-dark() support */
   --portfolio-border: 2px solid light-dark(var(--color-darker), var(--color-lighter));
 
   --ld-inactive: light-dark(var(--color-gray), var(--color-gray));
@@ -37,7 +38,6 @@ body {
   height: 100%;
   margin: 0;
   background-color: light-dark(var(--color-lighter), var(--color-darkest));
-  transition: 0.2s;
 }
 
 /* keep scrolling but hide scrollbars */

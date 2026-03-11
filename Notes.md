@@ -1,9 +1,21 @@
 # Notes
 
-## MVP
- - Create a "Contact" button
-   * How do we implement this? Icons at the bottom: Mail, GitHub, LinkedIn
-   * Modal?
+## Next
+ - List item format, break lines, break at end with message, better flow when opening/closing sections, favicon
+ - Update proper content
+ - Once Click button for Resume download
+ - Blog?
+ - Terminal input
+ - SSH (When deployed)
+   * Consider all security implications with this and be VERY careful
+   * White-list all content input (email?)
+   * Invite them to contact you via other links and open them in the browser
+ - Pass Lighthouse inspection (or Not because it passed? Maybe test after all the other features)
+ - Add an MCP or update Robots.txt file to make yourself visible to employers
+
+## Ideas
+ - "Hi, I'm Chris": "I Build AI Educational Tools"
+ - This is your niche: Building AI teaching tools
 
 ## Previous Ideas:
 

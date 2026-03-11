@@ -11,12 +11,16 @@ export function AppComp() {
 
   const setDarkMode = () => {
     App.Instance.ColorMode = ColorModeType.DARK;
-    document.documentElement.style.setProperty('color-scheme', 'dark');
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('color-scheme', 'dark');
+    });
   };
   
   const setLightMode = () => {
     App.Instance.ColorMode = ColorModeType.LIGHT;
-    document.documentElement.style.setProperty('color-scheme', 'light');
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('color-scheme', 'light');
+    });
   };
 
   React.useEffect(() => {
