@@ -23,7 +23,8 @@
     "build": "react-scripts build",
     "lint": "eslint \"src/**/*{.js,.jsx,.ts,.tsx}\"",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "check-deploy": "curl -H \"Authorization: Bearer $GITHUB_PORTFOLIO_TOKEN\" https://api.github.com/repos/chrissannar/portfolio/pages/builds/latest"
   },
   "eslintConfig": {
     "extends": [
