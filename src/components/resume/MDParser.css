@@ -19,5 +19,18 @@
         p {
             margin: 1rem 0;
         }
+
+        ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            list-style: none;
+
+            li {
+                border: 1px solid light-dark(var(--color-darkest), var(--color-lightest));
+                padding: 0.5rem 1rem;
+            }
+        }
     }
 }
