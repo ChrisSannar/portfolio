@@ -1,10 +1,12 @@
 ## About
  
-With over a decade of coding experience and five years working professionally, I specialize in web development, networking, and building educational applications.
+I build systems that teach systems.
 
-Having many years of experience working before, and after, the popularization of LLM models. I know how to leverage AI in development yet still have a strong understanding of the fundamentals.
+Over the past five years, I’ve developed interactive simulations of real-world technical environments for leaning. This includes operating systems, networks, and enterprise software used by tens of thousands of learners.
 
-I have a passion for teaching, love making content to help others learn computer science.
+My focus sits at the intersection of engineering and education. I can break down complex ideas into intuitive, hands-on, AI-powered, applications.
+
+Want a complex idea to click? I'm your guy.
 
 ## Skills
  - LLM/AI
@@ -30,37 +32,45 @@ I have a passion for teaching, love making content to help others learn computer
 **Full-Stack Software Engineer**
 *Mar 2021 - Jan 2025*
 
-Simulated real world applications like Windows, Linux, and computer networks. Designed Complicated Software to be robust yet flexible; most of the code was designed to mimic real systems to a degree.
+Built interactive simulations of operating systems, networking tools, and development environments used by tens of thousands of learners.
+
+Lead the development of several company projects: Windows 11 File Explorer rebuild in Typescript, Windows 11 Window functionality, Linux Command Line, A Vulnerability Scanner (modeled after OpenVAS), several aspects of Networking Implementation, and many others.
+
+Working on a small team of other engineers, we were effective at translating complex technical concepts into easy-to-understand lessons for our many users.
 
 ### 2U
 
 **Tutor/Teaching Assistant**
 *Mar 2020 - May 2021*
 
-Teaching/Tutoring the fundamentals of Full-Stack Web Development, Coding, Debugging, and Networking Principles.
+Taught full-stack development, debugging, and networking concepts to students in a structured bootcamp environment.
+
+Mentored students 1:1, helping them break down complex problems and confidently implement solutions.
 
 ### UVU
 
 **CS Tutor**
 *Jan 2019 - May 2019*
 
-Teaching/Tutoring the fundamentals of Computer Science and Software Engineering. Worked to explain coding principles in a wide variety of Languages.
+Tutored computer science fundamentals across multiple languages, focusing on clear explanations of core concepts.
 
 ### Elite Roofing
 
 **Jr. Full Stack Developer**
 *Aug 2017 - Nov 2018*
 
-Creating a Full-Stack Application. Coordinating with other developers to build a web app to estimate construction work orders.
+Built a full-stack application (MEAN stack) to estimate construction work orders.
+
+Developed backend services and database models for pricing logic and data management.
+
+Collaborated in a small Agile team to deliver production features.
 
 ## Education
 
 ### Utah Valley University
 
-**Computer Science: Networking Emphasis**
+**B. S. Computer Science (Networking Emphasis)**
 *May 2019*
-
-Intermediate to advanced computer science concepts, including algorithms, data structures, and software development, with a strong focus on networking principles, protocols, and implementation.
 
 ### Awards
 

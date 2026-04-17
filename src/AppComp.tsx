@@ -62,7 +62,7 @@ export function AppComp() {
         <div className="header">
           <h1>Hi, I&apos;m Chris</h1>
           <h3>Full Stack Software Engineer</h3>
-          <h3>AI/LLM - WebDev - Networking</h3>
+          <h3>Systems, Education, and AI Integrated Learning</h3>
         </div>
         <Resume />
       </div>
