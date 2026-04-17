@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/portfolio/react-windows/static/css/main.800fd817.css",
+    "main.js": "/portfolio/react-windows/static/js/main.1bdebba4.js",
+    "static/js/453.2d1c4e9b.chunk.js": "/portfolio/react-windows/static/js/453.2d1c4e9b.chunk.js",
+    "index.html": "/portfolio/react-windows/index.html",
+    "static/media/cube.svg": "/portfolio/react-windows/static/media/cube.47332547ae73f9bbd04386509211dea4.svg",
+    "static/media/close.svg": "/portfolio/react-windows/static/media/close.f450d5741b733f02b6919818306bc054.svg",
+    "static/media/doc.svg": "/portfolio/react-windows/static/media/doc.8e4c23747e48e1fdd8664b1765913419.svg",
+    "static/media/minimize.svg": "/portfolio/react-windows/static/media/minimize.b1cb87efcfe7ff7f0e9b3e9a164b0254.svg",
+    "main.800fd817.css.map": "/portfolio/react-windows/static/css/main.800fd817.css.map",
+    "main.1bdebba4.js.map": "/portfolio/react-windows/static/js/main.1bdebba4.js.map",
+    "453.2d1c4e9b.chunk.js.map": "/portfolio/react-windows/static/js/453.2d1c4e9b.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.800fd817.css",
+    "static/js/main.1bdebba4.js"
+  ]
+}

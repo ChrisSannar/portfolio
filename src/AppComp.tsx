@@ -1,7 +1,8 @@
 import React from 'react';
+
 import './AppComp.css';
-import { PortfolioAppList } from './components/PortfolioAppList';
-import { PortfolioFooter } from './components/PortfolioFooter';
+import { Resume } from './components/resume/Resume';
+
 import { App, ColorModeType } from './data/App';
 
 export function AppComp() {
@@ -10,12 +11,16 @@ export function AppComp() {
 
   const setDarkMode = () => {
     App.Instance.ColorMode = ColorModeType.DARK;
-    document.documentElement.style.setProperty('color-scheme', 'dark');
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('color-scheme', 'dark');
+    });
   };
   
   const setLightMode = () => {
     App.Instance.ColorMode = ColorModeType.LIGHT;
-    document.documentElement.style.setProperty('color-scheme', 'light');
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('color-scheme', 'light');
+    });
   };
 
   React.useEffect(() => {
@@ -49,15 +54,17 @@ export function AppComp() {
 
   return (
     <AppCompContext.Provider value={appCompRef.current}>
-      <div className="AppComp" ref={ref => appCompRef.current = ref}>
+      <div 
+        className="AppComp" 
+        ref={ref => appCompRef.current = ref}
+        style={{ height: app.ResumeMode ? "auto" : "100%"}}  
+      >
         <div className="header">
           <h1>Hi, I&apos;m Chris</h1>
-          <h3>Full Stack Software Engineer<br/>Networking Emphasis</h3>
+          <h3>Full Stack Software Engineer</h3>
+          <h3>Systems, Education, and AI Integrated Learning</h3>
         </div>
-        <PortfolioAppList />
-        <div className="footer">
-          <PortfolioFooter />
-        </div>
+        <Resume />
       </div>
     </AppCompContext.Provider>
   );

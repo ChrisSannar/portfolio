@@ -9,6 +9,7 @@ export class App {
     public ColorMode: ColorModeType = ColorModeType.DARK;
     public NotLogic: boolean = false;
     public AndLogic: boolean = false;
+    public ResumeMode: boolean = true;
 
     static toggleColorMode() {
         const currentMode = App.Instance.ColorMode;
@@ -28,6 +29,13 @@ export class App {
     static toggleAndLogic() {
         App.getHotInstance().setFunc((app) => {
             app.AndLogic = !app.AndLogic;
+            return app;
+        });
+    }
+
+    static toggleResumeMode() {
+        App.getHotInstance().setFunc((app) => {
+            app.ResumeMode = !app.ResumeMode;
             return app;
         });
     }
