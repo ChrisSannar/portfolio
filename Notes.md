@@ -9,7 +9,7 @@
   * Tools & Infrastructure: Docker, Git, CI/CD (Bitbucket Pipelines)
   * AI & Development: AI-assisted development, Prompt Engineering
   * Domains: System Simulation, Networking, Operating Systems, Educational Software
- - Update proper content
+ - Include Projects and Links to said projects
  - Once Click button for Resume download
  - Blog?
  - Terminal/AI input
