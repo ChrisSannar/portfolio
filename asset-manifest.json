@@ -1,20 +1,21 @@
 {
   "files": {
-    "main.css": "/portfolio/static/css/main.9a476c13.css",
-    "main.js": "/portfolio/static/js/main.4733b59d.js",
+    "main.css": "/portfolio/static/css/main.422a1a0b.css",
+    "main.js": "/portfolio/static/js/main.e5798994.js",
     "static/js/453.1407b060.chunk.js": "/portfolio/static/js/453.1407b060.chunk.js",
-    "static/media/figma-icon.svg": "/portfolio/static/media/figma-icon.f7ee46f0d169c54b52fc758b928b6e7b.svg",
+    "static/media/github-icon.svg": "/portfolio/static/media/github-icon.80f5ffdbe6b4360f9c5b933a1a4523c5.svg",
+    "static/media/Resume.md": "/portfolio/static/media/Resume.1e5c9295ee86600dc11f.md",
     "static/media/linkedin-icon.svg": "/portfolio/static/media/linkedin-icon.613cbb9cfb744606fb273906310d493d.svg",
     "index.html": "/portfolio/index.html",
     "static/media/day-icon.svg": "/portfolio/static/media/day-icon.a79a879cf35ef6aba8a0822703ddf8a8.svg",
     "static/media/mail-icon.svg": "/portfolio/static/media/mail-icon.b119a11164bc3a2b7b717ce713fe7c27.svg",
     "static/media/night-icon.svg": "/portfolio/static/media/night-icon.4d68ab5134e0eaa23ca945c76ebc1947.svg",
-    "main.9a476c13.css.map": "/portfolio/static/css/main.9a476c13.css.map",
-    "main.4733b59d.js.map": "/portfolio/static/js/main.4733b59d.js.map",
+    "main.422a1a0b.css.map": "/portfolio/static/css/main.422a1a0b.css.map",
+    "main.e5798994.js.map": "/portfolio/static/js/main.e5798994.js.map",
     "453.1407b060.chunk.js.map": "/portfolio/static/js/453.1407b060.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.9a476c13.css",
-    "static/js/main.4733b59d.js"
+    "static/css/main.422a1a0b.css",
+    "static/js/main.e5798994.js"
   ]
 }
