@@ -134,9 +134,8 @@ An interactive character sheet I built for my my DnD group.
 ### Utah Valley University
 
 **B. S. Computer Science (Networking Emphasis)**
-*May 2019*
 
 ### Awards
 
-National Science Foundation LEAP Academic Scholarship - AUG 2018
-SSI Scuba Instructor - APR 2024
+National Science Foundation LEAP Academic Scholarship
+SSI Scuba Instructor
