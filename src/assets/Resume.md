@@ -47,7 +47,7 @@ Taught full-stack development, debugging, and networking concepts to students in
 
 Mentored students 1:1, helping them break down complex problems and confidently implement solutions.
 
-### UVU
+### UVU - Utah Valley University
 
 **CS Tutor**
 *Jan 2019 - May 2019*
@@ -64,6 +64,27 @@ Built a full-stack application (MEAN stack) to estimate construction work orders
 Developed backend services and database models for pricing logic and data management.
 
 Collaborated in a small Agile team to deliver production features.
+
+## Projects
+
+### Walk Me Through It
+
+An AI assisted TUI to build walkthroughs of codebases.
+
+[https://github.com/ChrisSannar/walk-me-through-it/tree/dev](Github)
+
+### React Windows
+
+A simple React application to simulate the "Windows" effect from WindowsOS. Built on my own accord for a job interview.
+
+[https://chrissannar.github.io/portfolio/react-windows/](Live-Demo)
+[https://github.com/ChrisSannar/react-windows](Github)
+
+### Dungeon World Character Builder
+
+An interactive character sheet I built for my my DnD group.
+
+[https://dwcb.herokuapp.com/](Live-Demo)
 
 ## Education
 
