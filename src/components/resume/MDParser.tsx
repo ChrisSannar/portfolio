@@ -82,6 +82,12 @@ const pComp = (content: string | null, id: string) => {
     }
     return result;
 }
+const aComp = (content: string | null, href: string | null, id: string) => {
+    if (content === null || href === null) return <></>
+    return <p>
+        <a key={id} href={href} target="_blank" rel="noopener noreferrer">{content}</a>
+    </p>
+}
 
 const parsedTokenToComponent = (token: ParsedToken): JSX.Element | JSX.Element[] | null => {
     if (token.type === 'h3') {
@@ -92,6 +98,9 @@ const parsedTokenToComponent = (token: ParsedToken): JSX.Element | JSX.Element[]
     }
     if (token.type === 'li') {
         return liComp(token.content, token.id)
+    }
+    if (token.type === 'a') {
+        return aComp(token.content, token.secondaryContent ?? null, token.id)
     }
     return null;
 }

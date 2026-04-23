@@ -2,13 +2,14 @@ import { Token } from 'markdown-it';
 
 const randomKey = () => Math.random().toString(16).slice(2);
 
-export type TokenType = 'h2' | 'h3' | 'p' | 'ul' | 'li' | null;
+export type TokenType = 'h2' | 'h3' | 'p' | 'ul' | 'li' | 'a' | null;
 export type ModifyType = 'em' | 'strong' | null;
 export interface ParsedToken {
     id: string;
     type: TokenType;
-    modify: ModifyType
+    modify: ModifyType;
     content: string | null;
+    secondaryContent?: string | null;
     listEnd?: boolean;
 }
 export interface ParsedTokenSection {
@@ -18,6 +19,7 @@ export interface ParsedTokenSection {
 }
 
 const breakDownInline = (tokens: Token[]): ParsedToken[] => {
+    // console.log("tokes", tokens);
     const result: ParsedToken[] = [];
     let currentTag: TokenType = null;
     for (const toke of tokens) {
@@ -56,7 +58,19 @@ const breakDownInline = (tokens: Token[]): ParsedToken[] => {
         }
 
         if (toke.type === 'inline') {
-            if (currentTag === 'h2' || currentTag === 'h3') {
+            if (toke.children?.length === 3) {
+                const [open, text, close] = toke.children;
+                if (open.type === 'link_open' && close.type === 'link_close') {
+                    result.push({
+                        id: randomKey(),
+                        type: 'a',
+                        modify: null,
+                        content: text.content,
+                        secondaryContent: open.attrGet('href') ?? null,
+                    });
+                }
+            }
+            else if (currentTag === 'h2' || currentTag === 'h3') {
                 result.push({
                     id: randomKey(),
                     type: currentTag,

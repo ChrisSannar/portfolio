@@ -71,20 +71,21 @@ Collaborated in a small Agile team to deliver production features.
 
 An AI assisted TUI to build walkthroughs of codebases.
 
-[https://github.com/ChrisSannar/walk-me-through-it/tree/dev](Github)
+[Github](https://github.com/ChrisSannar/walk-me-through-it/tree/dev)
 
 ### React Windows
 
 A simple React application to simulate the "Windows" effect from WindowsOS. Built on my own accord for a job interview.
 
-[https://chrissannar.github.io/portfolio/react-windows/](Live-Demo)
-[https://github.com/ChrisSannar/react-windows](Github)
+[Live Demo](https://chrissannar.github.io/portfolio/react-windows/)
+
+[Github](https://github.com/ChrisSannar/react-windows)
 
 ### Dungeon World Character Builder
 
 An interactive character sheet I built for my my DnD group.
 
-[https://dwcb.herokuapp.com/](Live-Demo)
+[Live Demo](https://dwcb.herokuapp.com/)
 
 ## Education
 
