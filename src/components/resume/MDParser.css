@@ -32,5 +32,27 @@
                 padding: 0.5rem 1rem;
             }
         }
+
+        a:link {
+            color: #4A90E2;
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: #1f62cd;
+        }
+
+        a:hover {
+            color: #58A6FF;
+            text-decoration: none;
+        }
+
+        a:active {
+            color: #007bff;
+        }
+
+        a {
+            transition: 0.2s;
+        }
     }
 }
