@@ -47,14 +47,13 @@ export const MDSection: React.FC<{ section: ParsedTokenSection }> = ({ section }
 
     const toggleContents = () => setViewContents(view => !view);
 
-    return <div key={section.id} className="MDSection">
+    return <div className="MDSection">
         <h2 
-            key={section.id} 
             className="sectionHeader unselectable" 
             onClick={() => toggleContents()}
         >{section.sectionHeader.content}</h2>
         {viewContents && <div className="contents">
-            {components}
+            {React.Children.toArray(components)}
         </div>}
     </div>
 }
@@ -84,8 +83,8 @@ const pComp = (content: string | null, id: string) => {
 }
 const aComp = (content: string | null, href: string | null, id: string) => {
     if (content === null || href === null) return <></>
-    return <p>
-        <a key={id} href={href} target="_blank" rel="noopener noreferrer">{content}</a>
+    return <p key={id}>
+        <a href={href} target="_blank" rel="noopener noreferrer">{content}</a>
     </p>
 }
 
