@@ -4,7 +4,7 @@
 
         .sectionHeader {
             cursor: pointer;
-            margin-top: 2rem;
+            margin-top: 3rem;
             margin-bottom: 0;
         }
 
@@ -18,14 +18,16 @@
 
         p {
             margin: 1rem 0;
+            font-size: 13pt;
         }
 
         ul {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
+            justify-content: left;
             gap: 1rem;
             list-style: none;
+            padding-left: 0;
 
             li {
                 border: 1px solid light-dark(var(--color-darkest), var(--color-lightest));
