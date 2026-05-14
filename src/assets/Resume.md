@@ -115,7 +115,7 @@ A simple React application to simulate the "Windows" effect from WindowsOS. Buil
  * Javascript/Typescript
  * Git
 
-[Live Demo](https://chrissannar.github.io/portfolio/react-windows/)
+[Live Demo](https://www.chrissannar.com/react-windows/)
 
 [Github](https://github.com/ChrisSannar/react-windows)
 
