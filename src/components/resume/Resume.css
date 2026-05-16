@@ -25,9 +25,13 @@
         width: 100%;
         pointer-events: none;
 
-        .footer-left, .footer-right {
+        .footer-left, .footer-center, .footer-right {
             pointer-events: all;
             display: flex;
+        }
+
+        .footer-center {
+            margin: 1.5rem 0;
         }
 
         .footer-right {

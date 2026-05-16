@@ -6,6 +6,7 @@ import { Token } from 'markdown-it';
 
 import { App, ColorModeType } from '../../data/App';
 import { MDParser } from './MDParser';
+import { TerminalInput } from './TerminalInput';
 
 import mailIcon from '../../assets/mail-icon.svg';
 import githubIcon from '../../assets/github-icon.svg';
@@ -23,6 +24,7 @@ interface IResume {
 export const Resume: React.FC<IResume> = () => {
     const app = App.getHotInstance().subscribe('PortfolioFooter');
     const [parsedTokens, setParsedTokens] = React.useState<Token[]>([]);
+    const [terminalInput, setTerminalInput] = React.useState('');
     
     React.useEffect(() => {
         fetch(resumeMDFile)
@@ -39,9 +41,8 @@ export const Resume: React.FC<IResume> = () => {
 
     const darkMode = app?.ColorMode === ColorModeType.DARK;
     
-    return <div className="Resume">
+    return <div className="Resume" onClick={e => console.log(e.target)}>
         <div className="resume-content">
-            {/* Add "call to action": Contact, etc. */}
             <MDParser tokens={parsedTokens} />
         </div>
         <div className="footer">
@@ -63,6 +64,9 @@ export const Resume: React.FC<IResume> = () => {
                         </a>
                     </div>
                 </div>
+            </div>
+            <div className='footer-center'>
+                <TerminalInput />
             </div>
             <div className="footer-right">
                 <div className="contact-icon">
