@@ -14,6 +14,7 @@ import nightIcon from '../../assets/night-icon.svg';
 import dayIcon from  '../../assets/day-icon.svg';
 
 import resumeMDFile from '../../assets/Resume.md';
+import resumePDFFile from '../../assets/001-Chris-Sannar-Resume.pdf';
 
 interface IResume {
 
@@ -65,9 +66,9 @@ export const Resume: React.FC<IResume> = () => {
             </div>
             <div className="footer-right">
                 <div className="contact-icon">
-                    <div className="resume-button" onClick={() => alert("Resume")}>
+                    <a className="resume-button" href={resumePDFFile} download="001-Chris-Sannar-Resume.pdf">
                         <p>PDF</p>
-                    </div>
+                    </a>
                 </div>
                 <div className="color-mode" onClick={() => App.toggleColorMode()}>
                     <div className={`night logic-selected`}>
