@@ -4,7 +4,7 @@
 
         .sectionHeader {
             cursor: pointer;
-            margin-top: 2rem;
+            margin-top: 3rem;
             margin-bottom: 0;
         }
 
@@ -18,19 +18,43 @@
 
         p {
             margin: 1rem 0;
+            font-size: 13pt;
         }
 
         ul {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
+            justify-content: left;
             gap: 1rem;
             list-style: none;
+            padding-left: 0;
 
             li {
                 border: 1px solid light-dark(var(--color-darkest), var(--color-lightest));
                 padding: 0.5rem 1rem;
             }
+        }
+
+        a:link {
+            color: #4A90E2;
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: #1f62cd;
+        }
+
+        a:hover {
+            color: #58A6FF;
+            text-decoration: none;
+        }
+
+        a:active {
+            color: #007bff;
+        }
+
+        a {
+            transition: 0.2s;
         }
     }
 }
