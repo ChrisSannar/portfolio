@@ -6,6 +6,7 @@ interface ITerminalInput {}
 export const TerminalInput: React.FC<ITerminalInput> = () => {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [inputValue, setInputValue] = React.useState('');
+    const [inputFocused, setInputFocused] = React.useState(false);
 
     React.useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -23,7 +24,17 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
         }
     }, []);
 
+    const submitQuery = (query: string) => {
+        setInputValue('');
+    }
+
+    const contentBoxStyle: React.CSSProperties = inputFocused ?
+        { opacity: 1, visibility: 'visible' } :
+        { opacity: 0, visibility: 'hidden' };
+
     return <div className='TerminalInput'>
+        <div className="content-box" style={contentBoxStyle}>
+        </div>
         <input
             className="terminal-input" 
             type='text' 
@@ -34,9 +45,11 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
             }}
             onKeyDown={e => {
                 if (e.key === 'Enter') {
-                    setInputValue('');
+                    submitQuery(inputValue);
                 }
             }}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
             placeholder='Ctrl + /'
         />
     </div>

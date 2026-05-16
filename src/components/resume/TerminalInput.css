@@ -1,4 +1,7 @@
 .TerminalInput {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
     width: 100%;
 
     input {
@@ -9,11 +12,23 @@
         border-radius: 3px;
         border: var(--portfolio-border);
         border-color: var(--color-gray);
-        background-color: var(--color-darkest);
+        background-color: light-dark(var(--color-lightest), var(--color-darkest));
         transition: 0.2s;
         
         &:focus {
             border-color: light-dark(var(--color-darker), var(--color-lighter));
         }
+    }
+
+    .content-box {
+        width: 99%;
+        height: 10rem;
+        
+        border: var(--portfolio-border);
+        border-color: var(--color-lighter);
+        background-color: light-dark(var(--color-lightest), var(--color-darkest));
+        border-radius: 3px;
+
+        transition: 0.2s;
     }
 }

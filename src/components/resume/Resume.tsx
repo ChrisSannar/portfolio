@@ -65,7 +65,7 @@ export const Resume: React.FC<IResume> = () => {
                 </div>
             </div>
             <div className='footer-center'>
-                <div className="terminal-input">
+                <div className="terminal-input-container">
                     <TerminalInput />
                 </div>
             </div>

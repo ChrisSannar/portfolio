@@ -113,12 +113,12 @@
         color: white;
     }
 
-    .terminal-input {
-        width: 75%;
+    .terminal-input-container {
+        width: 56%;
         position: absolute;
         left: 50%;
         bottom: 0.8rem;
-        transform: translateX(-46%);
+        transform: translateX(-41%);
     }
 
 }
@@ -138,9 +138,9 @@
             text-align: center;
         }
 
-        .terminal-input {
-            width: 60%;
-            transform: translateX(-55%);
+        .terminal-input-container {
+            width: 50%;
+            transform: translateX(-60%);
         }
     }
 
