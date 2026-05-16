@@ -1,3 +1,19 @@
 .TerminalInput {
-    padding: 0.5rem 1rem;
+    width: 100%;
+
+    input {
+        all: unset;
+        font-family: monospace;
+
+        padding: 0.5rem 1rem;
+        border-radius: 3px;
+        border: var(--portfolio-border);
+        border-color: var(--color-gray);
+        background-color: var(--color-darkest);
+        transition: 0.2s;
+        
+        &:focus {
+            border-color: light-dark(var(--color-darker), var(--color-lighter));
+        }
+    }
 }

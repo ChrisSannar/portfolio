@@ -24,7 +24,6 @@ interface IResume {
 export const Resume: React.FC<IResume> = () => {
     const app = App.getHotInstance().subscribe('PortfolioFooter');
     const [parsedTokens, setParsedTokens] = React.useState<Token[]>([]);
-    const [terminalInput, setTerminalInput] = React.useState('');
     
     React.useEffect(() => {
         fetch(resumeMDFile)
@@ -37,7 +36,7 @@ export const Resume: React.FC<IResume> = () => {
             .catch(error => {
                 console.error('Error fetching resume content:', error);
             });
-    }, [])
+    }, []);
 
     const darkMode = app?.ColorMode === ColorModeType.DARK;
     
@@ -66,7 +65,9 @@ export const Resume: React.FC<IResume> = () => {
                 </div>
             </div>
             <div className='footer-center'>
-                <TerminalInput />
+                <div className="terminal-input">
+                    <TerminalInput />
+                </div>
             </div>
             <div className="footer-right">
                 <div className="contact-icon">

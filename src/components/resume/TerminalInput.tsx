@@ -21,7 +21,7 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         }
-    }, [inputRef.current])
+    }, []);
 
     return <div className='TerminalInput'>
         <input

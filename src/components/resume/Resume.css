@@ -113,6 +113,13 @@
         color: white;
     }
 
+    .terminal-input {
+        width: 75%;
+        position: absolute;
+        left: 50%;
+        bottom: 0.8rem;
+        transform: translateX(-46%);
+    }
 
 }
 
@@ -129,6 +136,11 @@
     
         h2 {
             text-align: center;
+        }
+
+        .terminal-input {
+            width: 60%;
+            transform: translateX(-55%);
         }
     }
 
