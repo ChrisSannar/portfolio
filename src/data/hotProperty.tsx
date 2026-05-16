@@ -63,6 +63,7 @@ export function hotProperty<T>(initialState: T, key: string): IHotProperty<T> {
                         return !(listener.key === key && listener.subscriber === subscriber);
                     });
                 };
+            // eslint-disable-next-line
             }, []);
 
             return stateInstances.get(key) as T ?? globalState as T;

@@ -24,8 +24,18 @@
         width: 100%;
         pointer-events: none;
 
-        .contact, .color-mode {
+        .footer-left, .footer-right {
             pointer-events: all;
+            display: flex;
+        }
+
+        .footer-right {
+            flex-direction: column;
+            align-items: flex-end;
+            position: relative;
+            bottom: 1rem;
+            right: 1rem;
+            gap: 1rem;
         }
 
         .contact {
@@ -50,13 +60,11 @@
             border: var(--portfolio-border);
             border-radius: 100%;
             transition: background-color 0.2s;
+            cursor: pointer;
         }
 
         .color-mode {
             cursor: pointer;
-            position: relative;
-            bottom: 1rem;
-            right: 1rem;
             display: flex;
             align-items: center;
             padding: 0.4rem 0.5rem;

@@ -44,7 +44,7 @@ export const Resume: React.FC<IResume> = () => {
             <MDParser tokens={parsedTokens} />
         </div>
         <div className="footer">
-            <div className="contact">
+            <div className="footer-left contact">
                 <div className="contact-icons">
                     <div className="contact-icon">
                         <a href="mailto:chris.sannar.dev@gmail.com" target="_blank"  rel="noopener noreferrer">
@@ -63,14 +63,21 @@ export const Resume: React.FC<IResume> = () => {
                     </div>
                 </div>
             </div>
-            <div className="color-mode" onClick={() => App.toggleColorMode()}>
-                <div className={`night logic-selected`}>
-                    <img src={nightIcon} alt="night-mode" />
+            <div className="footer-right">
+                <div className="contact-icon">
+                    <div className="resume-button" onClick={() => alert("Resume")}>
+                        <p>PDF</p>
+                    </div>
                 </div>
-                <div className={`day`}>
-                    <img src={dayIcon} alt="day-mode" />
+                <div className="color-mode" onClick={() => App.toggleColorMode()}>
+                    <div className={`night logic-selected`}>
+                        <img src={nightIcon} alt="night-mode" />
+                    </div>
+                    <div className={`day`}>
+                        <img src={dayIcon} alt="day-mode" />
+                    </div>
+                    <div className="color-mode-selector" style={{ transform: `translateX(${darkMode ? '0' : '155'}%)`}} />
                 </div>
-                <div className="color-mode-selector" style={{ transform: `translateX(${darkMode ? '0' : '155'}%)`}} />
             </div>
         </div>
     </div>

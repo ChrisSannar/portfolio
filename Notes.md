@@ -40,12 +40,9 @@
 ## Previous Ideas:
 
 ### Next
- - Populate with real data
- - Have some pre selected skills on load
- - Fix all React Warnings
+ - One-click resume + one-click message
 
 ### Potential Features
- - One-click resume + one-click message
  - `ssh chrissannar.com`
  - Create a terminal input? On the "Resume" view?
     * Can type in commands to open views
