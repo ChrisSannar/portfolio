@@ -40,7 +40,7 @@ export const Resume: React.FC<IResume> = () => {
 
     const darkMode = app?.ColorMode === ColorModeType.DARK;
     
-    return <div className="Resume" onClick={e => console.log(e.target)}>
+    return <div className="Resume">
         <div className="resume-content">
             <MDParser tokens={parsedTokens} />
         </div>
