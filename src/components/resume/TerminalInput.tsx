@@ -1,14 +1,19 @@
 import * as React from 'react';
-import './TerminalInput.css';
+import './TerminalInput.css'; 
 import { sendLLMQueryToServer } from '../../services/server_requests';
 
 interface ITerminalInput {}
 
+const DEFAULT_BOX_VALUE = [
+    "Welcome to the interactive terminal.",
+    "You can ask specific questions about my resume, projects, or skills here through a language model interface.",
+];
+
 export const TerminalInput: React.FC<ITerminalInput> = () => {
     const inputRef = React.useRef<HTMLInputElement>(null);
-    const [inputValue, setInputValue] = React.useState('');
-    const [inputFocused, setInputFocused] = React.useState(false);
-    const [boxValue, setBoxValue] = React.useState('');
+    const [inputValue, setInputValue] = React.useState<string>('');
+    const [inputFocused, setInputFocused] = React.useState<boolean>(false);
+    const [boxValue, setBoxValue] = React.useState<string[]>(DEFAULT_BOX_VALUE);
 
     React.useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -27,12 +32,14 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
     }, []);
 
     const submitQuery = (query: string) => {
+        if (!query.trim()) {
+            return;
+        }
         sendLLMQueryToServer(query, process.env.REACT_APP_ENV === "development").then(response => {
-            console.log('LLM response:', response);
             setBoxValue(response.output);
+            setInputValue('');
         }).catch(error => {
-            console.error('Error sending LLM query:', error);
-            setBoxValue('Error: ' + error.message);
+            setBoxValue(['There was an error responding to your input.', 'Please try again later.']);
         });
     }
 
@@ -42,7 +49,9 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
 
     return <div className='TerminalInput'>
         <div className="content-box" style={contentBoxStyle}>
-            <div className="inner-box-content">{boxValue}</div>
+            <div className="inner-box-content">
+                {boxValue.map(val => <p key={val}>{val}</p>)}
+            </div>
         </div>
         <input
             className="terminal-input" 
