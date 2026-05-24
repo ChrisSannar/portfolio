@@ -140,6 +140,15 @@ This website. Completely coded by hand.
  * Docker
  * Nginx
 
+### Portfolio
+
+This website. Completely coded by hand.
+
+ * React
+ * Typescript
+ * LLM/AI
+ * Go
+
 ## Education
 
 ### Utah Valley University
