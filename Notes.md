@@ -37,15 +37,19 @@
   * Linux Command-Line tools
   * npm versioning and package management?
 
-## Previous Ideas:
+## Execution:
 
 ### Next
- - One-click resume + one-click message
-
-### Potential Features
- - `ssh chrissannar.com`
- - Create a terminal input? On the "Resume" view?
+  - Create a terminal input? On the "Resume" view?
+    * Put in a spinner while it's reaching out to the backend
     * Can type in commands to open views
     * use certain features like `ls` or `\` to search (make it very "vim" like)
- - Reset button for skill selections
- - Left/Right hand position of content for accessibility?
+    * Use a separate server to request the LLM API (using go to build it)
+
+### Potential Features
+  - `ssh chrissannar.com`
+  - Left/Right hand position of content for accessibility?
+  - Make the server/content interface-able by another AI/LLM (the llm can ask questions about me and I'll give responses) 
+
+### Considerations
+  - For the LLM, include safeguards and rate limits to how much they can use it (eg. 12 prompts maximum per person. Max character limit for each message)

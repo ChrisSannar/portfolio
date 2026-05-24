@@ -115,7 +115,7 @@ A simple React application to simulate the "Windows" effect from WindowsOS. Buil
  * Javascript/Typescript
  * Git
 
-[Live Demo](https://chrissannar.github.io/portfolio/react-windows/)
+[Live Demo](https://chrissannar.com/react-windows/)
 
 [Github](https://github.com/ChrisSannar/react-windows)
 
@@ -127,7 +127,18 @@ A simple React application to simulate the "Windows" effect from WindowsOS. Buil
 
 An interactive character sheet I built for my my DnD group.
 
-[Live Demo](https://dwcb.herokuapp.com/)
+[Live Demo](https://dwcb.chrissannar.com/)
+
+### Portfolio
+
+This website. Completely coded by hand.
+
+ * React
+ * Typescript
+ * LLM/AI
+ * Go
+ * Docker
+ * Nginx
 
 ## Education
 
