@@ -148,5 +148,8 @@ This website. Completely coded by hand.
 
 ### Awards
 
-National Science Foundation LEAP Academic Scholarship
-SSI Scuba Instructor
+**National Science Foundation LEAP Academic Scholarship**
+*AUG 2018*
+
+**SSI Scuba Instructor**
+*APR 2024*

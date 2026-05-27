@@ -19,7 +19,6 @@ export interface ParsedTokenSection {
 }
 
 const breakDownInline = (tokens: Token[]): ParsedToken[] => {
-    // console.log("tokes", tokens);
     const result: ParsedToken[] = [];
     let currentTag: TokenType = null;
     for (const toke of tokens) {
@@ -68,6 +67,13 @@ const breakDownInline = (tokens: Token[]): ParsedToken[] => {
                         content: text.content,
                         secondaryContent: open.attrGet('href') ?? null,
                     });
+                } else {
+                    result.push({
+                        id: randomKey(),
+                        type: currentTag,
+                        modify: null,
+                        content: toke.content
+                    })
                 }
             }
             else if (currentTag === 'h2' || currentTag === 'h3') {
