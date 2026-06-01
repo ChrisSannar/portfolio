@@ -35,7 +35,7 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
         if (!query.trim()) {
             return;
         }
-        sendLLMQueryToServer(query, process.env.REACT_APP_ENV === "development").then(response => {
+        sendLLMQueryToServer(query).then(response => {
             setBoxValue(response.output);
             setInputValue('');
         }).catch(error => {

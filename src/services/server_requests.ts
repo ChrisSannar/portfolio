@@ -17,8 +17,8 @@ const formatLLMResponseText = (response: string): string[] => {
     return response.split('\n');
 }
 
-const sendLLMQueryToServer = async (query: string, test: boolean = false) => {
-    const response = await fetch(process.env.REACT_APP_PORTFOLIO_SERVE_URL + '/' + (test ? 'llm-test' : 'llm'), {
+const sendLLMQueryToServer = async (query: string) => {
+    const response = await fetch('/llm', {
         method: 'POST',
         body: query,
     });

@@ -16,8 +16,6 @@ echo "🔨 Building React Windows for /react-windows"
 echo "🔨 Building portfolio for /"
 (
 	cd "$PORTFOLIO_DIR"
-	REACT_APP_PORTFOLIO_SERVE_URL="${REACT_APP_PORTFOLIO_SERVE_URL:-http://localhost:8080}" \
-	REACT_APP_ENV="${REACT_APP_ENV:-development}" \
 	PUBLIC_URL="${PUBLIC_URL:-/}" \
 		npm run build
 )
