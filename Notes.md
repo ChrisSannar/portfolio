@@ -41,10 +41,9 @@
 
 ### Next
   - Create a terminal input? On the "Resume" view?
-    * Put in a spinner while it's reaching out to the backend
     * Can type in commands to open views
     * use certain features like `ls` or `\` to search (make it very "vim" like)
-    * Use a separate server to request the LLM API (using go to build it)
+    * Include the prompt with the response message
 
 ### Potential Features
   - `ssh chrissannar.com`

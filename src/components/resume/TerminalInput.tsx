@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './TerminalInput.css'; 
-import { sendLLMQueryToServer, sendLLMQueryToServerTEST } from '../../services/server_requests';
+import { sendLLMQueryToServer } from '../../services/server_requests';
 
 interface ITerminalInput {}
 
@@ -10,16 +10,18 @@ interface IResponse {
     output: string[];
 }
 
-const DEFAULT_BOX_VALUE = [
-    "Welcome to the interactive terminal.",
-    "You can ask specific questions about my resume, projects, or skills here through a language model interface.",
-];
+const DEFAULT_RESPONSE_VALUE: IResponse = {
+    id: '0',
+    output: [
+        "Welcome to the interactive terminal.",
+        "You can ask specific questions about my resume, projects, or skills here through a language model interface.",
+    ],
+};
 
 export const TerminalInput: React.FC<ITerminalInput> = () => {
     const inputRef = React.useRef<HTMLInputElement>(null);
     const [inputValue, setInputValue] = React.useState<string>('');
     const [inputFocused, setInputFocused] = React.useState<boolean>(false);
-    const [boxValue, setBoxValue] = React.useState<string[]>(DEFAULT_BOX_VALUE);
     const [loadingResponse, setLoadingResponse] = React.useState<boolean>(false);
     const [responses, setResponses] = React.useState<IResponse[]>([]);
 
@@ -64,7 +66,12 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
             setInputValue('');
             setTimeout(() => inputRef.current?.focus(), 0);
         }).catch(error => {
-            setBoxValue(['There was an error responding to your input.', 'Please try again later.']);
+            addResponse({
+                id: Date.now().toString(),
+                error: true,
+                output: ["An error occurred while processing your query. Please try again."]
+            });
+            setLoadingResponse(false);
         });
     }
 
@@ -72,19 +79,29 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
         { opacity: 1, visibility: 'visible' } :
         { opacity: 0, visibility: 'hidden' };
 
+    const responseTSX = responses.map(resp => (
+        <div key={resp.id} className={`response-box`}>
+            <div className="inner-box-content">
+                <PrinterContent 
+                    content={resp.output} 
+                    activate={resp.output.length > 0} 
+                    tick={() => scrollToResponseBottom()}
+                />
+            </div>
+        </div>
+    ));
+
+    const defaultResponseTSX = (
+        <div className={`response-box default-response`}>
+            <div className="inner-box-content">
+                {DEFAULT_RESPONSE_VALUE.output.map((line, idx) => <p key={line + ":" + idx}>{line}</p>)}
+            </div>
+        </div>
+    );
+
     return <div className='TerminalInput'>
         <div className='response-container' style={responseContainerStyle}>
-            {responses.map(resp => (
-                <div key={resp.id} className={`response-box`}>
-                    <div className="inner-box-content">
-                        <PrinterContent 
-                            content={resp.output} 
-                            activate={resp.output.length > 0} 
-                            tick={() => scrollToResponseBottom()}
-                        />
-                    </div>
-                </div>
-            ))}
+            {responses.length > 0 ? responseTSX : defaultResponseTSX}
             {loadingResponse && <div className={`response-box loading`}>
                 <LoadingResponse />
             </div>}
@@ -123,7 +140,7 @@ interface IPrinterContent {
 const PrinterContent: React.FC<IPrinterContent> = ({ 
     content, 
     activate, 
-    printSpeed = 20,
+    printSpeed = 10,
     printingDone = () => {},
     tick = () => {},
 }) => {
