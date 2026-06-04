@@ -88,7 +88,7 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
             </div>
         ))}
         {loadingResponse && <div className={`response-box loading`} style={responseBoxStyle}>
-            <div className="loading-indicator inner-box-content">Loading...</div>
+            <LoadingResponse />
         </div>}
         <input
             className="terminal-input" 
@@ -96,6 +96,7 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
             type='text' 
             ref={inputRef}
             value={inputValue}
+            disabled={loadingResponse}
             onChange={e => {
                 setInputValue(e.target.value);
             }}
@@ -150,4 +151,27 @@ const PrinterContent: React.FC<IPrinterContent> = ({
     return <>
         {displayedContent.map((val, idx) => <p key={val + ":" + idx}>{val}</p>)}
     </>
+}
+
+interface ILoadingResponse {
+    rate?: number;
+}
+const LoadingResponse: React.FC<ILoadingResponse> = ({ rate = 200 }) => {
+    const [dots, setDots] = React.useState<string>('');
+    
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            setDots(prev => prev.length < 6 ? prev + '. ' : '');
+        }, rate);
+        return () => clearInterval(interval);
+    }, []);
+
+    const loadingStyle: React.CSSProperties = {
+        fontStyle: 'italic',
+        height: '1rem', 
+        paddingBottom: '0',
+        wordSpacing: '-0.5rem',
+    };
+
+    return <p className="loading-indicator inner-box-content" style={loadingStyle}>{dots}</p>
 }
