@@ -21,9 +21,9 @@
         }
     }
 
-    .content-box {
+    .response-box {
         width: 99%;
-        padding-bottom: 1rem; 
+        /* padding-bottom: 1rem;  */
         
         border: var(--portfolio-border);
         border-color: var(--color-lighter);

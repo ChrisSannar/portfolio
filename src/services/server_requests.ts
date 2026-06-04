@@ -36,4 +36,19 @@ const sendLLMQueryToServer = async (query: string) => {
     } as ILLMResponse;
 }
 
-export { sendLLMQueryToServer };
+const sendLLMQueryToServerTEST = async (query: string) => {
+    return new Promise<ILLMResponse>((resolve) => {
+        setTimeout(() => {
+            resolve({
+                id: getNewResponseId(),
+                output: [
+                    `You asked: ${query}`,
+                    "This is a simulated response for testing purposes.",
+                    "In a real implementation, this would be the response from the server.",
+                ],
+            });
+        }, 1000);
+    });
+}
+
+export { sendLLMQueryToServer, sendLLMQueryToServerTEST };

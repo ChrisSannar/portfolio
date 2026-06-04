@@ -1,8 +1,14 @@
 import * as React from 'react';
 import './TerminalInput.css'; 
-import { sendLLMQueryToServer } from '../../services/server_requests';
+import { sendLLMQueryToServer, sendLLMQueryToServerTEST } from '../../services/server_requests';
 
 interface ITerminalInput {}
+
+interface IResponse {
+    id: string;
+    error?: boolean;
+    output: string[];
+}
 
 const DEFAULT_BOX_VALUE = [
     "Welcome to the interactive terminal.",
@@ -14,6 +20,8 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
     const [inputValue, setInputValue] = React.useState<string>('');
     const [inputFocused, setInputFocused] = React.useState<boolean>(false);
     const [boxValue, setBoxValue] = React.useState<string[]>(DEFAULT_BOX_VALUE);
+    const [loadingResponse, setLoadingResponse] = React.useState<boolean>(false);
+    const [responses, setResponses] = React.useState<IResponse[]>([]);
 
     React.useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -31,28 +39,57 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
         }
     }, []);
 
+    // const submitQuery = (query: string) => {
+    //     if (!query.trim()) {
+    //         return;
+    //     }
+    //     setLoadingResponse(true);
+    //     sendLLMQueryToServer(query).then(response => {
+    //         setLoadingResponse(false);
+    //         setBoxValue(response.output);
+    //         setInputValue('');
+    //     }).catch(error => {
+    //         setBoxValue(['There was an error responding to your input.', 'Please try again later.']);
+    //     });
+    // }
+
+    const addResponse = (response: IResponse) => {
+        setResponses(prev => [...prev, response]);
+    }
+
     const submitQuery = (query: string) => {
         if (!query.trim()) {
             return;
         }
-        sendLLMQueryToServer(query).then(response => {
-            setBoxValue(response.output);
+        setLoadingResponse(true);
+        sendLLMQueryToServerTEST(query).then(response => {
+            setLoadingResponse(false);
+            // setBoxValue(response.output);
+            addResponse(response);
             setInputValue('');
         }).catch(error => {
             setBoxValue(['There was an error responding to your input.', 'Please try again later.']);
         });
     }
 
-    const contentBoxStyle: React.CSSProperties = inputFocused ?
-        { opacity: 1, visibility: 'visible' } :
-        { opacity: 0, visibility: 'hidden' };
+    // ***
+    // const responseBoxStyle: React.CSSProperties = inputFocused ?
+    //     { opacity: 1, visibility: 'visible' } :
+    //     { opacity: 0, visibility: 'hidden' };
+
+    const responseBoxStyle: React.CSSProperties = { opacity: 1, visibility: 'visible' };
 
     return <div className='TerminalInput'>
-        <div className="content-box" style={contentBoxStyle}>
-            <div className="inner-box-content">
-                {boxValue.map(val => <p key={val}>{val}</p>)}
+        {responses.map(resp => (
+            <div key={resp.id} className={`response-box`} style={responseBoxStyle}>
+                <div className="inner-box-content">
+                    {boxValue.map(val => <p key={val}>{val}</p>)}
+                </div>
             </div>
-        </div>
+        ))}
+        {loadingResponse && <div className={`response-box loading`} style={responseBoxStyle}>
+            <div className="loading-indicator inner-box-content">Loading...</div>
+        </div>}
         <input
             className="terminal-input" 
             alt="llm query input"
