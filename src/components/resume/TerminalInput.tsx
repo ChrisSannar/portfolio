@@ -83,7 +83,7 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
         {responses.map(resp => (
             <div key={resp.id} className={`response-box`} style={responseBoxStyle}>
                 <div className="inner-box-content">
-                    {boxValue.map(val => <p key={val}>{val}</p>)}
+                    <PrinterContent content={resp.output} activate={resp.output.length > 0} />
                 </div>
             </div>
         ))}
@@ -109,4 +109,45 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
             placeholder='Ctrl + /'
         />
     </div>
+}
+
+interface IPrinterContent {
+    content: string[];
+    activate: boolean;
+    printSpeed?: number;
+}
+const PrinterContent: React.FC<IPrinterContent> = ({ 
+    content, 
+    activate, 
+    printSpeed = 20,
+}) => {
+    const [displayedContent, setDisplayedContent] = React.useState<string[]>([]);
+
+    React.useEffect(() => {
+        const splitContent: string[][] = content.map(line => line.split(''));
+        async function printContent(splitContent: string[][]) {
+            for (const lineIdx in splitContent) {
+                const line = splitContent[lineIdx];
+                let lineStr = "";
+                for (const tokenIdx in line) {
+                    lineStr += line[tokenIdx];
+                    setDisplayedContent(prev => {
+                        const newContent = [...prev];
+                        newContent[lineIdx] = lineStr;
+                        return newContent;
+                    });
+                    await new Promise(resolve => setTimeout(resolve, printSpeed));
+                }
+                setDisplayedContent(prev => [...prev]); 
+            }
+        }
+        if (activate){
+            printContent(splitContent);
+        }
+    }
+    , [activate]);
+
+    return <>
+        {displayedContent.map((val, idx) => <p key={val + ":" + idx}>{val}</p>)}
+    </>
 }
