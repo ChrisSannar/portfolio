@@ -23,6 +23,8 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
     const [loadingResponse, setLoadingResponse] = React.useState<boolean>(false);
     const [responses, setResponses] = React.useState<IResponse[]>([]);
 
+    const responseEndRef = React.useRef<HTMLDivElement>(null);
+
     React.useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.ctrlKey && e.key === '/') {
@@ -39,19 +41,13 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
         }
     }, []);
 
-    // const submitQuery = (query: string) => {
-    //     if (!query.trim()) {
-    //         return;
-    //     }
-    //     setLoadingResponse(true);
-    //     sendLLMQueryToServer(query).then(response => {
-    //         setLoadingResponse(false);
-    //         setBoxValue(response.output);
-    //         setInputValue('');
-    //     }).catch(error => {
-    //         setBoxValue(['There was an error responding to your input.', 'Please try again later.']);
-    //     });
-    // }
+    React.useEffect(() => {
+        scrollToResponseBottom();
+    }, [loadingResponse]);
+
+    const scrollToResponseBottom = () => {
+        responseEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
 
     const addResponse = (response: IResponse) => {
         setResponses(prev => [...prev, response]);
@@ -62,34 +58,38 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
             return;
         }
         setLoadingResponse(true);
-        sendLLMQueryToServerTEST(query).then(response => {
+        sendLLMQueryToServer(query).then(response => {
             setLoadingResponse(false);
-            // setBoxValue(response.output);
             addResponse(response);
             setInputValue('');
+            setTimeout(() => inputRef.current?.focus(), 0);
         }).catch(error => {
             setBoxValue(['There was an error responding to your input.', 'Please try again later.']);
         });
     }
 
-    // ***
-    // const responseBoxStyle: React.CSSProperties = inputFocused ?
-    //     { opacity: 1, visibility: 'visible' } :
-    //     { opacity: 0, visibility: 'hidden' };
-
-    const responseBoxStyle: React.CSSProperties = { opacity: 1, visibility: 'visible' };
+    const responseContainerStyle: React.CSSProperties = inputFocused ?
+        { opacity: 1, visibility: 'visible' } :
+        { opacity: 0, visibility: 'hidden' };
 
     return <div className='TerminalInput'>
-        {responses.map(resp => (
-            <div key={resp.id} className={`response-box`} style={responseBoxStyle}>
-                <div className="inner-box-content">
-                    <PrinterContent content={resp.output} activate={resp.output.length > 0} />
+        <div className='response-container' style={responseContainerStyle}>
+            {responses.map(resp => (
+                <div key={resp.id} className={`response-box`}>
+                    <div className="inner-box-content">
+                        <PrinterContent 
+                            content={resp.output} 
+                            activate={resp.output.length > 0} 
+                            tick={() => scrollToResponseBottom()}
+                        />
+                    </div>
                 </div>
-            </div>
-        ))}
-        {loadingResponse && <div className={`response-box loading`} style={responseBoxStyle}>
-            <LoadingResponse />
-        </div>}
+            ))}
+            {loadingResponse && <div className={`response-box loading`}>
+                <LoadingResponse />
+            </div>}
+            <div className="response-end" ref={responseEndRef} />
+        </div>
         <input
             className="terminal-input" 
             alt="llm query input"
@@ -102,6 +102,7 @@ export const TerminalInput: React.FC<ITerminalInput> = () => {
             }}
             onKeyDown={e => {
                 if (e.key === 'Enter') {
+                    scrollToResponseBottom();
                     submitQuery(inputValue);
                 }
             }}
@@ -116,11 +117,15 @@ interface IPrinterContent {
     content: string[];
     activate: boolean;
     printSpeed?: number;
+    printingDone?: () => void;
+    tick?: () => void;
 }
 const PrinterContent: React.FC<IPrinterContent> = ({ 
     content, 
     activate, 
     printSpeed = 20,
+    printingDone = () => {},
+    tick = () => {},
 }) => {
     const [displayedContent, setDisplayedContent] = React.useState<string[]>([]);
 
@@ -138,15 +143,17 @@ const PrinterContent: React.FC<IPrinterContent> = ({
                         return newContent;
                     });
                     await new Promise(resolve => setTimeout(resolve, printSpeed));
+                    tick();
                 }
                 setDisplayedContent(prev => [...prev]); 
             }
+            tick();
+            printingDone();
         }
         if (activate){
             printContent(splitContent);
         }
-    }
-    , [activate]);
+    }, [activate]);
 
     return <>
         {displayedContent.map((val, idx) => <p key={val + ":" + idx}>{val}</p>)}
